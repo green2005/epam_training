@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rla"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/titleView"
+        android:layout_below="@+id/titleView"
+        android:layout_marginTop="5dp"
+        android:text="TextView" 
+        />
+
+    <TextView
+        android:id="@+id/authorView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/authorView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:text="TextView" 
+        android:textColor="@color/lightblue"
+        />
+
+    <TextView
+        android:id="@+id/titleView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/timeView"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/timeView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/authorView"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/commentQtyLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/body"
+        android:layout_below="@+id/body"
+        android:layout_marginBottom="7dp"
+        android:layout_marginTop="7dp"
+        android:text="Комментариев:" />
+
+    <TextView
+        android:id="@+id/commentQtyView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/commentQtyLabel"
+        android:layout_alignBottom="@+id/commentQtyLabel"
+        android:layout_marginLeft="2dp"
+        android:layout_toRightOf="@+id/commentQtyLabel"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/body"
+        android:layout_below="@+id/commentQtyView"
+        android:layout_marginBottom="7dp"
+        android:layout_marginTop="7dp"
+        android:text="Изменить"
+        android:textColor="@color/lightblue"
+        android:visibility="gone" />
+</RelativeLayout>

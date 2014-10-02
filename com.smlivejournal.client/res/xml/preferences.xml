@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<!-- This is a primitive example showing the different types of preferences available. -->
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+  		
+  		<PreferenceCategory
+            android:title="@string/sSettings">
+   
+        <CheckBoxPreference
+                android:key="loadimages"
+                android:title="@string/loadimages" 
+                android:defaultValue="true"
+                />
+        
+        <CheckBoxPreference
+            android:key="noscreenswitchoff"
+            android:title="@string/noscreenswitchoff"
+            android:summary="@string/noscreenswitchoffdesc"
+            android:defaultValue="false"
+            />
+        
+        <ListPreference
+            android:key="fontsize"
+            android:title="@string/fontsize"
+            android:entries="@array/fontsizes"
+            android:entryValues="@array/fontsizesvalues"
+        	android:defaultValue="1"
+         />
+        
+          <ListPreference
+            android:key="topLanguage"
+            android:title="@string/stoplanguage"
+            android:entries="@array/toplanguage"
+            android:entryValues="@array/toplanguagevalues"
+        	android:defaultValue="cyr"
+         />
+        
+         <PreferenceScreen
+             	android:key="authsettings"
+                android:title="@string/authsettings"
+                android:summary="@string/authsettingsdesc">
+            <intent android:action="android.intent.action.VIEW"
+                    android:data="http://www.android.com" />
+        </PreferenceScreen>
+	</PreferenceCategory>
+
+</PreferenceScreen>

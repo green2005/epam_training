@@ -1,0 +1,29 @@
+<resources>
+
+    <style name="Widget.DefaultTitlePageIndicator" parent="@style/Widget.TitlePageIndicator">
+        <item name="selectedColor">?android:attr/textColorPrimary</item>
+        <item name="footerColor">?android:attr/textColorPrimary</item>
+        <item name="footerIndicatorStyle">underline</item>
+        <item name="footerIndicatorHeight">4dp</item>
+        <item name="footerLineHeight">2dp</item>
+        <item name="footerPadding">8dp</item>
+    </style>
+
+    <style name="TitleText">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/vpi__background_holo_dark</item>
+        <item name="android:typeface">sans</item>
+        <item name="android:shadowColor">#336633</item>
+        <item name="android:shadowRadius">2 </item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+    </style>
+    
+    <style name="CommonText">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/vpi__background_holo_dark</item>
+        <item name="android:typeface">sans</item>
+        <item name="android:shadowColor">#336633</item>
+    </style>
+        	
+</resources>

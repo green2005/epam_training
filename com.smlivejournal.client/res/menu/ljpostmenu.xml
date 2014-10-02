@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+       <item android:id="@+id/menu_item_more"
+        android:showAsAction="always"
+        android:title=""
+         >
+           <menu>
+               
+               <item android:id="@+id/iAddToFav" android:title="@string/add_to_favourities" android:icon="@drawable/favorities"/>
+               <item android:id="@+id/iAddComment" android:title="@string/add_comment" android:icon="@drawable/addcomment"/>
+               <item android:id="@+id/iShare" android:title="@string/share" android:icon="@drawable/share" android:visible="true" 
+                  android:actionViewClass="android.widget.ImageButton"
+                  android:showAsAction="ifRoom" 
+                   />
+           </menu>
+       </item>
+
+    
+
+</menu>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="fontsizes">
+        	<item>Мелкий</item>
+        	<item>Средний</item>
+        	<item>Крупный</item>
+    </string-array>  
+    
+    <string-array name="toplanguage">
+        	<item>Кириллический</item>
+        	<item>Украинский</item>
+        	<item>Некириллический</item>
+    </string-array>  
+      
+</resources>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:gravity="center" >
+
+
+     <ExpandableListView
+         android:id="@+id/routeslv"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_weight="1"
+         android:childDivider="@drawable/vpi__tab_indicator"
+         android:clickable="true"
+         android:divider="@drawable/vpi__tab_indicator"
+         android:groupIndicator="@null"
+         android:scrollingCache="false"
+         android:visibility="gone" >
+
+    </ExpandableListView>
+    
+    <view
+	    android:id="@+id/ixlv"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:divider="@drawable/vpi__tab_indicator"
+	    class="by.grodno.indexableListView.IndexableListView"
+	 android:visibility="gone"/>
+
+
+    <ListView
+        android:id="@+id/favLv"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/bla"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:visibility="visible" >
+
+    </ListView>
+
+
+
+
+
+    <RelativeLayout
+        android:id="@+id/bla"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true" android:visibility="visible">
+
+        <Button
+            android:id="@+id/delBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Удалить" android:drawableLeft="@drawable/delenabled"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/favEmptyTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Список избранного пуст."
+        android:textColor="@color/light_blue" android:layout_centerVertical="true"/>
+    
+</RelativeLayout>
