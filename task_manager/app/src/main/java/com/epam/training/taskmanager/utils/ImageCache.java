@@ -24,22 +24,6 @@ public class ImageCache {
         }
     }
 
-    public void addImage(String url,Bitmap bitmap){
-        if (bitmap != null) {
-            String fileName =filePath.getAbsolutePath()  +File.separator + url.hashCode() + "";
-            try {
-                File f = new File(fileName);
-                if (f.exists()) f.delete();
-                f.createNewFile();
-                OutputStream stream = new FileOutputStream(fileName);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream );
-            } catch (Exception e)
-            {e.printStackTrace();
-                Log.d(e.getMessage(),"");
-            }
-        }
-    }
-
     public Bitmap getImage(String url){
         Bitmap bmp = null;
         String fileName =filePath.getAbsolutePath() +File.separator +url.hashCode() + "";

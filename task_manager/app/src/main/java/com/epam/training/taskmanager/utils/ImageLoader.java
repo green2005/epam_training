@@ -92,7 +92,7 @@ public class ImageLoader {
             } ;
         }
     }
-
+  
     private void doLoadImage(final ImageView imageView, final String url) {
         if (!url.equals(imageView.getTag())) {
             Log.d("ImageLoadCanceled", "");
