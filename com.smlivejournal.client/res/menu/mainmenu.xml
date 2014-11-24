@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/addPostMenuItem" android:title="@string/sAddPost"></item>
-    <item android:id="@+id/topMenuItem" android:title="@string/sTop"></item>
-    <item android:id="@+id/friendLineMenuItem" android:title="@string/sFrendLine"></item>
-    <item android:id="@+id/myJournalMenuItem" android:title="@string/sMyJournal"></item>
-    <item android:id="@+id/memories" android:title="@string/sMemories"></item>
-    <item android:id="@+id/settingsMenuItem" android:title="@string/sSettings"></item>
-</menu>
