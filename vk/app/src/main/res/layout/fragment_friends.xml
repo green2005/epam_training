@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress"
+        android:layout_centerInParent="true"
+        android:visibility="visible"
+        android:maxHeight="32dp"
+        android:minHeight="32dp"
+        android:maxWidth="32dp"
+        android:minWidth="32dp"
+        />
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/friends"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        />
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <ListView
+        android:id="@+id/itemsList"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="gone"
+     />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</RelativeLayout>

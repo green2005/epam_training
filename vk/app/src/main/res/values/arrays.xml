@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="icons">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </array>
+
+<array name="pages">
+    <item>Новости</item>
+    <item>Друзья</item>
+    <item>Группы</item>
+    <item>Фотографии</item>
+    <item>Сообщения</item>
+</array>
+
+    <array name="colors">
+        <item>#FFFF0000</item>
+        <item>#FF00FF00</item>
+        <item>#FF0000FF</item>
+    </array>
+</resources>
