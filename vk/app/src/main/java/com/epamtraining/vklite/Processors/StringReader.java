@@ -1,4 +1,4 @@
-package com.epamtraining.vklite.Processors;
+package com.epamtraining.vklite.processors;
 
 
 import java.io.BufferedReader;

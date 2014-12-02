@@ -33,7 +33,11 @@
             android:configChanges="orientation|screenSize|screenLayout"
             >
          </activity>
-
+        <provider
+            android:name=".VKContentProvider"
+            android:authorities="com.epamtraining.vk"
+            android:enabled="true"
+            android:exported="true" >
+        </provider>
     </application>
-
 </manifest>

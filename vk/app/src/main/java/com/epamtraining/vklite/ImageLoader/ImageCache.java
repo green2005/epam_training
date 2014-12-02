@@ -1,4 +1,4 @@
-package com.epamtraining.vklite.ImageLoader;
+package com.epamtraining.vklite.imageLoader;
 
 
 import android.content.Context;
@@ -6,15 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import java.io.File;
-
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 
 public class ImageCache {
     private Context mContext;

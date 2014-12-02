@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,14 +18,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.epamtraining.vklite.ImageLoader.ImageLoader;
-import com.epamtraining.vklite.Processors.FriendsProcessor;
-import com.epamtraining.vklite.Processors.NewsProcessor;
-import com.epamtraining.vklite.Processors.Processor;
+import com.epamtraining.vklite.imageLoader.ImageLoader;
+import com.epamtraining.vklite.processors.FriendsProcessor;
+import com.epamtraining.vklite.processors.NewsProcessor;
+import com.epamtraining.vklite.processors.Processor;
 import com.epamtraining.vklite.auth.AuthHelper;
-import com.epamtraining.vklite.bo.BoItem;
 import com.epamtraining.vklite.fragments.BoItemFragment;
 import com.epamtraining.vklite.fragments.FragmentDataProvider;
 import com.epamtraining.vklite.fragments.FriendsFragment;
@@ -38,10 +37,7 @@ public class MainActivity extends ActionBarActivity
 
 {
 
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+     private NavigationDrawerFragment mNavigationDrawerFragment;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -54,13 +50,13 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
         if (getIntent().hasExtra(AuthHelper.TOKEN)) {
             token = getIntent().getStringExtra(AuthHelper.TOKEN);
         } else {
             //????
         }
+
+        setContentView(R.layout.activity_main);
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
@@ -97,11 +93,14 @@ public class MainActivity extends ActionBarActivity
             }
             else {
                 if (pages[position].equals(getResources().getString(R.string.friends))) {
-                   fragment = FriendsFragment.getFriendsFragment(this);
+                   fragment = FriendsFragment.getFriendsFragment(this, token);
 
                 } else
                 if (pages[position].equals(getResources().getString(R.string.news))) {
-                    fragment = NewsFragment.getNewsFragment(this);
+                    fragment = NewsFragment.getNewsFragment(this, token);
+                }
+                else{
+
                 }
             }
 
@@ -186,6 +185,8 @@ public class MainActivity extends ActionBarActivity
                 if (e.getClass().equals(java.net.UnknownHostException.class)){
                     errorMessage = getResources().getString(R.string.checkInetConnection);
                 };
+                if (TextUtils.isEmpty(errorMessage))
+                    errorMessage = e.toString();
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setNegativeButton(getString(R.string.ok),new AlertDialog.OnClickListener(){
                     @Override
@@ -212,16 +213,11 @@ public class MainActivity extends ActionBarActivity
 
 
         if (fragment instanceof FriendsFragment){
-           new DataSource(new FriendsProcessor(list, token), callbacks).fillData();
+           new DataSource(new FriendsProcessor(token, this), callbacks).fillData(DataSource.DataLocation.WEB, this);
         } else
         if (fragment instanceof  NewsFragment){
-            new DataSource(new NewsProcessor(list, token), callbacks).fillData();
+            new DataSource(new NewsProcessor( token, this), callbacks).fillData(DataSource.DataLocation.WEB, this);
         }
-    }
-
-    @Override
-    public void loadImage(ImageView imageView, String url) {
-        mImageLoader.loadImage(imageView, url);
     }
 
     /**

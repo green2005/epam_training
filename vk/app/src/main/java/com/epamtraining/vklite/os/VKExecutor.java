@@ -10,8 +10,8 @@ public class VKExecutor {
         BITMAP, LOAD_DATA, CACHE
     }
 
-    private static HashMap<ExecutorServiceType, ExecutorService> executorsMap;
-    private ExecutorService mExecutor;
+    private static HashMap<ExecutorServiceType, ThreadPoolExecutor> executorsMap;
+    private ThreadPoolExecutor mExecutor;
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
     private Runnable mRunnable;
 
@@ -20,15 +20,33 @@ public class VKExecutor {
     }
 
     public VKExecutor(ExecutorServiceType executorServiceType, Runnable runnable){
+        this(executorServiceType);
+        mRunnable = runnable;
+    }
+
+    public VKExecutor(ExecutorServiceType executorServiceType){
         mExecutor = executorsMap.get(executorServiceType);
         if (mExecutor == null){
             mExecutor = new ThreadPoolExecutor(CPU_COUNT, CPU_COUNT, 0L, TimeUnit.MILLISECONDS, new LIFOLinkedBlockingDeque<Runnable>());
             executorsMap.put(executorServiceType, mExecutor);
         }
-        mRunnable = runnable;
     }
 
     public void start(){
+        if (mRunnable != null)
         mExecutor.execute(mRunnable);
     }
+
+    public void start(Runnable runnable){
+      if (runnable == null)
+          throw  new IllegalArgumentException("Runnable cannot be null");
+         mExecutor.execute(runnable);
+    }
+
+    public boolean remove(Runnable runnable){
+        if (runnable == null)
+            throw  new IllegalArgumentException("Runnable cannot be null");
+        return mExecutor.remove(runnable);
+     }
+
 }

@@ -1,42 +1,62 @@
 package com.epamtraining.vklite.fragments;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import com.epamtraining.vklite.ImageLoader.ImageLoader;
+import com.epamtraining.vklite.VKContentProvider;
+import com.epamtraining.vklite.imageLoader.ImageLoader;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.bo.Friend;
 
 import java.util.List;
-import java.util.zip.Inflater;
 
-public class FriendsAdapter extends BaseAdapter {
+public class FriendsAdapter extends SimpleCursorAdapter {
     private Context mContext;
-    private List<Friend> mItems;
     private LayoutInflater mInflater;
-    FragmentDataProvider mDataProvider;
+    private ImageLoader mImageLoader;
 
-    public FriendsAdapter(Context context, List<Friend> items, FragmentDataProvider provider){
+    int nickNameCol = -1;
+    int nameCol = -1;
+    int imageUrlCol = -1;
+    int firstNameCol = -1;
+    int lastNameCol = -1;
+
+//    public NewsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
+//        super(context, layout, c, from, to, flags);
+//        mInflater = LayoutInflater.from(context);
+//        mContext =  context;
+//        mImageLoader = new ImageLoader(context);
+//    }
+//
+    public FriendsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
+        super(context, layout, c, from, to, flags);
         mContext = context;
-        mItems = items;
         mInflater = LayoutInflater.from(context);
-        mDataProvider = provider;
+        mImageLoader = new ImageLoader(context);
+    }
+
+    public void onStop(){
+        mImageLoader.stopLoadingImages();
     }
 
     @Override
     public int getCount() {
-        return mItems.size();
+        if (getCursor() !=null)
+            return getCursor().getCount(); else
+            return 0;
     }
 
     @Override
     public Object getItem(int position) {
-        return mItems.get(position);
+        return getCursor();
     }
 
     @Override
@@ -44,12 +64,29 @@ public class FriendsAdapter extends BaseAdapter {
         return position;
     }
 
+    private void fillColumnIndexes(){
+        nickNameCol = getCursor().getColumnIndex(VKContentProvider.FRIEND_COLUMN_NICK_NAME);
+        firstNameCol = getCursor().getColumnIndex(VKContentProvider.FRIEND_COLUMN_FIRST_NAME);
+        lastNameCol = getCursor().getColumnIndex(VKContentProvider.FRIEND_COLUMN_LAST_NAME);
+        imageUrlCol = getCursor().getColumnIndex(VKContentProvider.FRIEND_COLUMN_IMAGE_URL);
+
+//        news_col = getCursor().getColumnIndex(VKContentProvider.NEWS_COLUMN_TEXT);
+//        id_col = getCursor().getColumnIndex(VKContentProvider.NEWS_COULMN_ID);
+//        imageUrl_col = getCursor().getColumnIndex(VKContentProvider.NEWS_COLUMN_IMAGE_URL);
+//        date_col = getCursor().getColumnIndex(VKContentProvider.NEWS_COLUMN_DATE);
+//        url_col = getCursor().getColumnIndex(VKContentProvider.NEWS_COLUMN_URL);
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        if (getCursor() == null) return null;
+        getCursor().moveToPosition(position);
         View v = null;
         ViewHolder holder = null;
         v = convertView;
         if (v == null){
+            if (firstNameCol == -1)
+                fillColumnIndexes();
              v = mInflater.inflate(R.layout.friend_listview_item, null);
             holder = new ViewHolder();
             holder.tvName = (TextView) v.findViewById(R.id.name);
@@ -60,17 +97,20 @@ public class FriendsAdapter extends BaseAdapter {
         {
             holder = (ViewHolder) v.getTag();
         }
-        Friend friend = mItems.get(position);
+
+        //Friend friend = mItems.get(position);
         try {
-            holder.tvName.setText(friend.getName());
-            holder.tvNick.setText(friend.getNick());
-            String imageUrl = friend.getImageUrl();
-           // mImageLoader.loadImage(holder.imPhoto, imageUrl);
-            mDataProvider.loadImage(holder.imPhoto, imageUrl);
+            holder.tvName.setText(getCursor().getString(firstNameCol)+" "+getCursor().getString(lastNameCol));
+            //лучше было бы в бд хранить скленные фамилию и имя
+
+            holder.tvNick.setText(getCursor().getString(nickNameCol));
+            String imageUrl = getCursor().getString(imageUrlCol);
+            if (!TextUtils.isEmpty(imageUrl))
+            mImageLoader.loadImage(holder.imPhoto, imageUrl); else
+                holder.imPhoto.setImageBitmap(null);
         } catch (Exception e){
             e.printStackTrace();
         }
-
         return v;
     }
 

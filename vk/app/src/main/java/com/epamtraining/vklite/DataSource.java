@@ -1,25 +1,25 @@
 package com.epamtraining.vklite;
 
 import android.content.Context;
-import android.content.res.Resources;
 
-import com.epamtraining.vklite.Processors.FriendsProcessor;
-import com.epamtraining.vklite.Processors.Processor;
-import com.epamtraining.vklite.bo.BoItem;
+import com.epamtraining.vklite.processors.Processor;
 import com.epamtraining.vklite.os.VKExecutor;
 
+import java.io.InputStream;
 import java.net.URL;
-import java.util.List;
-import java.util.logging.Handler;
 
 public class DataSource {
-    interface DataSourceCallbacks {
+   public interface DataSourceCallbacks {
         public void onError(Exception e);
 
         public void onLoadEnd();
 
         public void onBeforeStart();
     }
+
+    public enum DataLocation {WEB, ASSETS}
+
+    ;
 
     private Exception mException;
     private Processor mProcessor;
@@ -29,29 +29,42 @@ public class DataSource {
     public DataSource(Processor processor, DataSourceCallbacks callbacks) {
         mProcessor = processor;
         mCallbacks = callbacks;
+        mHandler = new android.os.Handler();
     }
 
-    public void fillData() {
-        mHandler = new android.os.Handler();
+    private InputStream getIputStream(DataLocation location, Context context) throws  Exception{
+             switch (location) {
+                case ASSETS: {
+                    String assetName = mProcessor.getAssetName();
+                    return context.getAssets().open(assetName);
+                }
+                case WEB: {
+                    URL url = new URL(mProcessor.getUrl());
+                    return url.openStream();
+                }
+            };
+         return null;
+    }
+
+    public void fillData(final DataLocation dataLocation, final Context context) {
         Runnable dataLoader = new Runnable() {
             @Override
             public void run() {
                 try {
-                    Context xn;
-                    URL url = new URL(mProcessor.getUrl());
-                    mProcessor.process(url.openStream());
+                    InputStream inputStream = getIputStream(dataLocation, context);
+                    mProcessor.process(inputStream);
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
                             mCallbacks.onLoadEnd();
                         }
                     });
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     mException = e;
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            mCallbacks.onError(mException);
+                            mCallbacks.onError(e);
                         }
                     });
                 }

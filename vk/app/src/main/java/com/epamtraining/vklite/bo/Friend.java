@@ -24,6 +24,31 @@ public class Friend extends BoItem {
         }
     }
 
+    public String getFirstName() throws Exception {
+        try {
+            return mJO.getString(FIRST_NAME);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    public String getLastName() throws Exception {
+        try {
+            return mJO.getString(LAST_NAME);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+
+    public String getId()throws Exception{
+        try {
+            return mJO.getString(ID);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
     public String getNick() throws Exception {
         try {
             return mJO.getString(NICKNAME);
