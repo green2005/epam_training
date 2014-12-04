@@ -1,6 +1,7 @@
 package com.epamtraining.vklite.imageLoader;
 
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.widget.ImageView;
 
 import android.content.Context;
@@ -18,11 +19,44 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 public class ImageLoader {
+    private class LoadingImages{
+        private Map<Integer, HashSet<ImageView>> loadingImagesList;
+        LoadingImages(){
+            loadingImagesList = new ConcurrentHashMap<Integer,HashSet<ImageView>>();
+        }
+
+        void addImage(Integer hashCode, ImageView imageView){
+            HashSet<ImageView> imageViews = loadingImagesList.get(hashCode);
+            if (imageViews == null){
+                imageViews = new HashSet<ImageView>();
+                imageViews.add(imageView);
+                loadingImagesList.put(hashCode, imageViews);
+            } else
+            {
+                imageViews.add(imageView);
+            }
+        }
+
+        void loadingDone(Integer hashCode){
+            loadingImagesList.remove(hashCode);
+        }
+
+        boolean isImageLoading(Integer hashCode){
+            return loadingImagesList.containsKey(hashCode);
+        }
+
+        HashSet<ImageView> getImageViews(Integer hashCode){
+            return loadingImagesList.get(hashCode);
+        }
+    }
+
     private enum ImageThreadState{
       THREAD_DELETED,
       THREAD_NOT_EXISTS,
@@ -34,9 +68,9 @@ public class ImageLoader {
 
     private Context mContext;
     private long imagesLoaded = 0;
-    private boolean needBitmapRecycle = false;
     private Handler mHandler;
-    private Map<Integer, Runnable> mLoadingList;
+    private LoadingImages mLoadingList;
+    //private Map<Integer, Runnable> mLoadingList;
     private VKExecutor mExecutor;
 
 
@@ -45,48 +79,18 @@ public class ImageLoader {
         mContext = context;
         mCache = new ImageCache(context);
         mExecutor = new VKExecutor(VKExecutor.ExecutorServiceType.BITMAP);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) needBitmapRecycle = true;
-        mLoadingList = new ConcurrentHashMap<Integer, Runnable>();
-    }
-
-    private void  addLoadingImage(int hashCode, Runnable runnable){
-            mLoadingList.put(hashCode, runnable);
-    }
-
-    private ImageThreadState delLoadingImage(int hashCode ){
-            Runnable r =  mLoadingList.get(hashCode);
-            if (r != null){
-                if (mExecutor.remove(r)){
-                    {
-                        return ImageThreadState.THREAD_DELETED;}
-                } else return ImageThreadState.THREAD_NOT_DELETED;
-            } else
-            {return ImageThreadState.THREAD_NOT_EXISTS;}
-    }
-
-    private void doneLoadingImage(int hashCode){
-            mLoadingList.remove(hashCode);
+       // if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) needBitmapRecycle = true;
+        mLoadingList = new LoadingImages();//ConcurrentHashMap<Integer, Runnable>();
     }
 
     public void loadImage(final ImageView imageView, final String url) {
         if (imageView == null) {
             throw new IllegalArgumentException("ImageView cannot be null");
         }
-
-        Bitmap oldBmp = null;
-        if (needBitmapRecycle)
-            if (imageView.getDrawable() != null)
-                oldBmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        //imageView.setImageBitmap(null);
-        if (oldBmp != null) {
-            oldBmp.recycle();
-            oldBmp = null;
-        }
         imageView.setImageBitmap(null);
         imageView.setTag(url);
         if (!TextUtils.isEmpty(url)) {
            new LoadThread(mHandler, imageView, url ).start();
-
         }
     }
 
@@ -107,7 +111,6 @@ public class ImageLoader {
             try {
                 final Bitmap bmp = mCache.getImage(mUrl);
                 if (bmp != null) {
-                   // Thread.sleep(LOAD_IMAGE_DELAY);
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -117,16 +120,14 @@ public class ImageLoader {
                     });
                 } else {
                     final int imageHashCode = mUrl.hashCode();
-                    ImageThreadState state = delLoadingImage(imageHashCode); //ищем поток, который грузит ту же картинку
-                    if (state == ImageThreadState.THREAD_NOT_EXISTS)        //
-                    Thread.sleep(LOAD_IMAGE_DELAY);
-                        Runnable r = new Runnable() {
-                            @Override
-                            public void run() {
-                                doLoadImage(mImageView, mUrl, mFileName, mHandler, imageHashCode);
-                            }
-                        };
-                        mHandler.post(r);
+                    if (mLoadingList.isImageLoading(imageHashCode)){
+                        mLoadingList.addImage(imageHashCode, mImageView);
+                        Log.d("image is loading", "image");
+                    } else {
+//                    Thread.sleep(LOAD_IMAGE_DELAY);
+                        mLoadingList.addImage(imageHashCode, mImageView);
+                        doLoadImage(mImageView, mUrl, mFileName, mHandler, imageHashCode);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -147,11 +148,10 @@ public class ImageLoader {
                     URL url = new URL(imageUrl);
                     try {
                         is = url.openStream();
-                        fOut = new FileOutputStream(mFileName);
-                         copyStreams(is, fOut);
+                        fOut = new FileOutputStream(f);
+                        copyStreams(is, fOut);
                     } finally {
-                        doneLoadingImage(imageHashCode);
-                        is.close();
+                       is.close();
                         if (fOut != null) {
                             fOut.flush();
                             fOut.close();
@@ -160,24 +160,26 @@ public class ImageLoader {
                     FileInputStream bitmapStream = new FileInputStream(mFileName);
                     try {
                         final Bitmap bmp = BitmapFactory.decodeStream(bitmapStream);
+                        mCache.addBitmapToLRUCache(imageUrl, bmp);
                         mHandler.post(new Runnable() {
                             @Override
                             public void run() {
-
-                                    if (imageUrl.equals(imageView.getTag()))
-                                    imageView.setImageBitmap(bmp);
+                                    for (ImageView image:mLoadingList.getImageViews(imageHashCode)){
+                                        if (imageUrl.equals(image.getTag()))
+                                            image.setImageBitmap(bmp);
+                                    }
+                                mLoadingList.loadingDone(imageHashCode);
                             }
                         });
                     } finally {
                         bitmapStream.close();
                     }
                 } catch (Exception e) {
-                    //TODO exception handling
-                    e.printStackTrace();
+                    mCache.removeImage(imageUrl);
                 }
             }
         };
-        addLoadingImage(imageHashCode, imageThread);
+       // addLoadingImage(imageHashCode, imageThread);
         mExecutor.start(imageThread);
 //        new VKExecutor(VKExecutor.ExecutorServiceType.BITMAP, imageThread).start();
     }
@@ -202,18 +204,16 @@ public class ImageLoader {
     }
 
     public void stopLoadingImages(){
-        synchronized (mLoadingList){
-            for (int hashCode  : mLoadingList.keySet()){
-                mExecutor.remove(mLoadingList.get(hashCode));
-            }
-            mLoadingList.clear();
-        }
+//        synchronized (mLoadingList){
+//            for (int hashCode  : mLoadingList.keySet()){
+//                mExecutor.remove(mLoadingList.get(hashCode));
+//            }
+//            mLoadingList.clear();
+//        }
     }
 
     public void clear() {
         mCache.clearImages();
     }
-
-
 
 }
