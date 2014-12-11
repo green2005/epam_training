@@ -2,7 +2,13 @@ package com.epam.training.taskmanager;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.widget.ImageView;
 
+import com.epam.training.image.ImageDisplayer;
+import com.epam.training.image.MySuperImageLoader;
+import com.epam.training.taskmanager.processing.BitmapProcessor;
+import com.epam.training.taskmanager.source.CachedHttpDataSource;
 import com.epam.training.taskmanager.source.HttpDataSource;
 import com.epam.training.taskmanager.source.VkDataSource;
 
@@ -12,13 +18,17 @@ import com.epam.training.taskmanager.source.VkDataSource;
 public class CoreApplication extends Application {
 
     private HttpDataSource mHttpDataSource;
+    private CachedHttpDataSource mCachedHttpDataSource;
     private VkDataSource mVkDataSource;
+    private MySuperImageLoader<Bitmap, ImageView> mMySuperImageLoader;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        mMySuperImageLoader = new MySuperImageLoader<Bitmap, ImageView>(this, new BitmapProcessor(), new ImageDisplayer());
         mHttpDataSource = new HttpDataSource();
         mVkDataSource = new VkDataSource();
+        mCachedHttpDataSource = new CachedHttpDataSource(this);
     }
 
     @Override
@@ -30,12 +40,26 @@ public class CoreApplication extends Application {
             }
             return mHttpDataSource;
         }
+        if (CachedHttpDataSource.KEY.equals(name)) {
+            //for android kitkat +
+            if (mCachedHttpDataSource == null) {
+                mCachedHttpDataSource = new CachedHttpDataSource(this);
+            }
+            return mCachedHttpDataSource;
+        }
         if (VkDataSource.KEY.equals(name)) {
             //for android kitkat +
             if (mVkDataSource == null) {
                 mVkDataSource = new VkDataSource();
             }
             return mVkDataSource;
+        }
+        if (MySuperImageLoader.KEY.equals(name)) {
+            //for android kitkat +
+            if (mMySuperImageLoader == null) {
+                mMySuperImageLoader = new MySuperImageLoader<Bitmap, ImageView>(this, new BitmapProcessor(), new ImageDisplayer());
+            }
+            return mMySuperImageLoader;
         }
         return super.getSystemService(name);
     }

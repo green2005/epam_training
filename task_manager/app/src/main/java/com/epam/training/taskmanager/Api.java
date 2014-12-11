@@ -10,6 +10,4 @@ public class Api {
     public static final String VERSION_PARAM = "v";
 
     public static final String FRIENDS_GET = BASE_PATH + "friends.get?fields=photo_200_orig,online,nickname";
-    public static final String USERSFORTEST_GET = BASE_PATH + "users.search?fields=photo_200_orig,online,nickname&count=100&city=1";
-
 }
