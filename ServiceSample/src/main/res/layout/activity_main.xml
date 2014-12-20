@@ -1,0 +1,71 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="16dp"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="16dp"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/pendingServiceBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Service with PendingIntent"
+        android:layout_centerHorizontal="true"
+        android:onClick="startPendingIntentService"
+        android:background="@drawable/buttonbackground"
+        />
+    <Button
+        android:id="@+id/broadCastRecieverBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Service with BroadCastReciever"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/pendingServiceBtn"
+        android:onClick="startBroadCastService"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/buttonbackground"
+
+        />
+
+    <Button
+        android:id="@+id/startThreadBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="startThread"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/broadCastRecieverBtn"
+        android:onClick="startThread"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/buttonbackground"
+
+        />
+
+    <Button
+        android:id="@+id/stopThreadBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="stopThread"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/startThreadBtn"
+        android:onClick="stopThread"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/buttonbackground"
+
+        />
+    <Button
+        android:id="@+id/stopThreadBtn2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="stopThread2"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/stopThreadBtn"
+        android:onClick="stopThread2"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/buttonbackground"
+        />
+
+
+</RelativeLayout>
