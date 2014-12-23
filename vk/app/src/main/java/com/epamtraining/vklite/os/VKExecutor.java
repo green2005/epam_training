@@ -1,52 +1,63 @@
 package com.epamtraining.vklite.os;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+
+import com.epamtraining.vklite.VKApplication;
+
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class VKExecutor {
-    public enum ExecutorServiceType {
-        BITMAP, LOAD_DATA, CACHE
-    }
 
-    private static HashMap<ExecutorServiceType, ThreadPoolExecutor> executorsMap;
+
     private ThreadPoolExecutor mExecutor;
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
     private Runnable mRunnable;
+    public static final String KEY = "Executor";
 
-    static {
-        executorsMap = new HashMap();
-    }
+    public VKExecutor() {
+        mExecutor = new ThreadPoolExecutor(CPU_COUNT, CPU_COUNT, 0L, TimeUnit.MILLISECONDS, new LIFOLinkedBlockingDeque<Runnable>());
+      }
 
-    public VKExecutor(ExecutorServiceType executorServiceType, Runnable runnable){
-        this(executorServiceType);
-        mRunnable = runnable;
-    }
-
-    public VKExecutor(ExecutorServiceType executorServiceType){
-        mExecutor = executorsMap.get(executorServiceType);
-        if (mExecutor == null){
-            mExecutor = new ThreadPoolExecutor(CPU_COUNT, CPU_COUNT, 0L, TimeUnit.MILLISECONDS, new LIFOLinkedBlockingDeque<Runnable>());
-            executorsMap.put(executorServiceType, mExecutor);
+      public void start() {
+        if (mRunnable != null) {
+            mExecutor.execute(mRunnable);
         }
     }
 
-    public void start(){
-        if (mRunnable != null)
-        mExecutor.execute(mRunnable);
+    public static VKExecutor getExecutor(Context context){
+        try {
+            return VKApplication.get(context, VKExecutor.KEY);
+        } catch (Exception e) {
+            AlertDialog.Builder b = new AlertDialog.Builder(context);
+            b.setTitle("Exception");
+            b.setMessage(e.getMessage());
+            b.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog dialog = b.create();
+            dialog.show();
+        }
+        return null;
     }
 
-    public void start(Runnable runnable){
-      if (runnable == null)
-          throw  new IllegalArgumentException("Runnable cannot be null");
-         mExecutor.execute(runnable);
+    public void start(Runnable runnable) {
+        if (runnable == null) {
+            throw new IllegalArgumentException("Runnable cannot be null");
+        }
+        mExecutor.execute(runnable);
     }
 
-    public boolean remove(Runnable runnable){
+    public boolean remove(Runnable runnable) {
         if (runnable == null)
-            throw  new IllegalArgumentException("Runnable cannot be null");
+            throw new IllegalArgumentException("Runnable cannot be null");
         return mExecutor.remove(runnable);
-     }
-
+    }
 }

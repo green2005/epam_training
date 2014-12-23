@@ -1,6 +1,8 @@
 package com.epamtraining.vklite.imageLoader;
 
-import android.graphics.BitmapFactory;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.media.Image;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -9,26 +11,36 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.text.TextUtils;
 
+import com.epamtraining.vklite.VKApplication;
 import com.epamtraining.vklite.os.VKExecutor;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.URL;
+import java.util.ArrayDeque;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class ImageLoader {
     private class LoadingImages {
         private Map<String, CopyOnWriteArraySet<ImageView>> mLoadingImagesList;
-        private Map<String, Runnable> mRunningThreads;
+        private Map<String, Runnable> mRunningRunnables;
 
         LoadingImages() {
             mLoadingImagesList = new ConcurrentHashMap<String, CopyOnWriteArraySet<ImageView>>();
-            mRunningThreads = new ConcurrentHashMap<String, Runnable>();
+            mRunningRunnables = new ConcurrentHashMap<String, Runnable>();
+        }
+
+        Set<ImageView> getImageViewsByUrl(String url) {
+            return mLoadingImagesList.get(url);
         }
 
         void addImage(String url, ImageView imageView) {
@@ -42,29 +54,25 @@ public class ImageLoader {
             }
         }
 
-        void addThread(String url, Runnable imageThread) {
-            mRunningThreads.put(url, imageThread);
+        void addThread(String url, Runnable imageRunnable) {
+            mRunningRunnables.put(url, imageRunnable);
         }
 
         Set<Runnable> getThreads() {
-            HashSet<Runnable> threads = new HashSet<Runnable>();
-            for (String s : mRunningThreads.keySet()) {
-                threads.add(mRunningThreads.get(s));
-            }
-            return threads;
+            return new HashSet<Runnable>(mRunningRunnables.values());
         }
 
         void loadingDone(String url) {
             mLoadingImagesList.remove(url);
-            mRunningThreads.remove(url);
+            mRunningRunnables.remove(url);
         }
 
-        boolean isImageLoading(String url) {
-            return mLoadingImagesList.containsKey(url);
-        }
+        //  boolean isImageLoading(String url) {
+        //      return mLoadingImagesList.containsKey(url);
+        //  }
 
         private void clear() {
-            mRunningThreads.clear();
+            mRunningRunnables.clear();
             mLoadingImagesList.clear();
         }
 
@@ -72,19 +80,42 @@ public class ImageLoader {
             return mLoadingImagesList.get(url);
         }
     }
-    
     //private static int LOAD_IMAGE_DELAY = 400;
     private ImageCache mCache;
     private Handler mHandler;
     private LoadingImages mLoadingList;
     private VKExecutor mExecutor;
+    public static final String KEY = "ImageLoader";
+    private AtomicBoolean mIsResumed ;
+    private LinkedList<Map<String,ImageView>> mPausedImages;
 
     public ImageLoader(Context context) {
         mHandler = new Handler();
         mCache = new ImageCache(context);
-        mExecutor = new VKExecutor(VKExecutor.ExecutorServiceType.BITMAP);
+        mExecutor = new VKExecutor();
         // if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) needBitmapRecycle = true;
         mLoadingList = new LoadingImages();
+        mIsResumed = new AtomicBoolean(true);
+        mPausedImages = new LinkedList<>();
+    }
+
+    public static ImageLoader getImageLoader(Context context) {
+        try {
+            return VKApplication.get(context, ImageLoader.KEY);
+        } catch (Exception e) {
+            AlertDialog.Builder b = new AlertDialog.Builder(context);
+            b.setTitle("Exception");
+            b.setMessage(e.getMessage());
+            b.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog dialog = b.create();
+            dialog.show();
+        }
+        return null;
     }
 
     public void loadImage(final ImageView imageView, final String url) {
@@ -98,17 +129,44 @@ public class ImageLoader {
             if (bmp != null) {
                 imageView.setImageBitmap(bmp);
             } else {
-                new LoadThread(mHandler, imageView, url).start();
+                if (mIsResumed.get()) {
+                    Thread imageLoadThread = new ImageLoadThread(mHandler, imageView, url);
+                    mLoadingList.addThread(url, imageLoadThread);
+                    mExecutor.start(imageLoadThread);
+                } else
+                {   //если ListView скроллится
+                    Map<String, ImageView> map = new HashMap<>();
+                    map.put(url, imageView);
+                    mPausedImages.push(map);
+                }
             }
         }
     }
 
-    private class LoadThread extends Thread {
+    public void pauseLoadingImages(){
+        mIsResumed.set(false);
+    }
+
+    public void resumeLoadingImages(){
+        mIsResumed.set(true);
+        while (!mPausedImages.isEmpty() && mIsResumed.get()) {
+            Map<String, ImageView> map = mPausedImages.pop();
+            for (String url:map.keySet()){
+              ImageView imageView = map.get(url);
+              if (url.equals(imageView.getTag())){
+                  loadImage(imageView, url);
+              }
+            }
+        }
+        //mPausedImages.clear();
+    }
+
+    private class ImageLoadThread extends Thread {
         Handler mHandler;
         ImageView mImageView;
         String mUrl;
 
-        LoadThread(Handler handler, ImageView imageView, String url) {
+        ImageLoadThread(Handler handler, ImageView imageView, String url) {
             mHandler = handler;
             mImageView = imageView;
             mUrl = url;
@@ -116,65 +174,59 @@ public class ImageLoader {
 
         public void run() {
             try {
-                final Bitmap bmp = mCache.getImage(mUrl);
-                if (bmp != null) {
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mUrl.equals(mImageView.getTag()))
-                                mImageView.setImageBitmap(bmp);
-                        }
-                    });
+                Set<ImageView> imageViews = mLoadingList.getImageViews(mUrl);
+                if (imageViews != null) {
+                    //image is already loading
+                    imageViews.add(mImageView);
                 } else {
-                    if (mLoadingList.isImageLoading(mUrl)) {
-                        mLoadingList.addImage(mUrl, mImageView);
-                        Log.d("image is loading", "image");
+                    //try to find it in cache
+                    final Bitmap bmp = mCache.getImage(mUrl);
+                    if (bmp != null) {
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (mUrl.equals(mImageView.getTag()))
+                                    mImageView.setImageBitmap(bmp);
+                            }
+                        });
                     } else {
-//                    Thread.sleep(LOAD_IMAGE_DELAY);
+                        //                    Thread.sleep(LOAD_IMAGE_DELAY);
                         mLoadingList.addImage(mUrl, mImageView);
-                        doLoadImage(mImageView, mUrl, mHandler);
+                        doLoadImage(mUrl, mHandler);
                     }
                 }
             } catch (Exception e) {
                 mCache.removeImage(mUrl);
                 mLoadingList.loadingDone(mUrl);
-            }
-            ;
+            };
         }
     }
 
-    private void doLoadImage(final ImageView imageView, final String imageUrl, final Handler mHandler) {
-        Runnable imageThread = new Runnable() {
-            @Override
-            public void run() {
-                InputStream is = null;
-                try {
-                    URL url = new URL(imageUrl);
-                    is = url.openStream();
-                    mCache.putImage(imageUrl, is);
-                    final Bitmap bmp = mCache.getImage(imageUrl);
-                    mCache.addBitmapToLRUCache(imageUrl, bmp);
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Set<ImageView> imageViews = mLoadingList.getImageViews(imageUrl);
-                            if (imageViews != null) {
-                                for (ImageView image : imageViews) {
-                                    if (imageUrl.equals(image.getTag()))
-                                        image.setImageBitmap(bmp);
-                                }
-                                mLoadingList.loadingDone(imageUrl);
-                            }
+    private void doLoadImage(final String imageUrl, final Handler mHandler) {
+        InputStream is = null;
+        try {
+            URL url = new URL(imageUrl);
+            is = url.openStream();
+            mCache.putImage(imageUrl, is);
+            final Bitmap bmp = mCache.getImage(imageUrl);
+            mCache.addBitmapToLRUCache(imageUrl, bmp);
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Set<ImageView> imageViews = mLoadingList.getImageViews(imageUrl);
+                    if (imageViews != null) {
+                        for (ImageView image : imageViews) {
+                            if (imageUrl.equals(image.getTag()))
+                                image.setImageBitmap(bmp);
                         }
-                    });
-                } catch (Exception e) {
-                    mCache.removeImage(imageUrl);
-                    mLoadingList.loadingDone(imageUrl);
+                        mLoadingList.loadingDone(imageUrl);
+                    }
                 }
-            }
-        };
-        mLoadingList.addThread(imageUrl, imageThread);
-        mExecutor.start(imageThread);
+            });
+        } catch (Exception e) {
+            mCache.removeImage(imageUrl);
+            mLoadingList.loadingDone(imageUrl);
+        }
     }
 
     public void stopLoadingImages() {

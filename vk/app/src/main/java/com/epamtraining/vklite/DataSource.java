@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class DataSource {
-   public interface DataSourceCallbacks {
+    public interface DataSourceCallbacks {
         public void onError(Exception e);
 
         public void onLoadEnd();
@@ -32,26 +32,17 @@ public class DataSource {
         mHandler = new android.os.Handler();
     }
 
-    private InputStream getIputStream(DataLocation location, Context context) throws  Exception{
-             switch (location) {
-                case ASSETS: {
-                    String assetName = mProcessor.getAssetName();
-                    return context.getAssets().open(assetName);
-                }
-                case WEB: {
-                    URL url = new URL(mProcessor.getUrl());
-                    return url.openStream();
-                }
-            };
-         return null;
+    private InputStream getInputStream(Context context) throws Exception {
+        URL url = new URL(mProcessor.getUrl());
+        return url.openStream();
     }
 
-    public void fillData(final DataLocation dataLocation, final Context context) {
+    public void fillData(final Context context) {
         Runnable dataLoader = new Runnable() {
             @Override
             public void run() {
                 try {
-                    InputStream inputStream = getIputStream(dataLocation, context);
+                    InputStream inputStream = getInputStream(context);
                     mProcessor.process(inputStream);
                     mHandler.post(new Runnable() {
                         @Override
@@ -71,6 +62,10 @@ public class DataSource {
             }
         };
         mCallbacks.onBeforeStart();
-        new VKExecutor(mProcessor.getExecutorType(), dataLoader).start();
+        VKExecutor executor = VKExecutor.getExecutor(context);
+        if (executor != null) {
+            executor.start(dataLoader);
+        }
+        // /new VKExecutor(dataLoader).start();
     }
 }

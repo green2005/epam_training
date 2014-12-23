@@ -11,6 +11,7 @@
     <string name="search">"Поиск"</string>
     <string name="news">Новости</string>
     <string name="friends">Друзья</string>
+    <string name="wall">Стена</string>
     <string name="groups">Группы</string>
     <string name="photo">Фотографии</string>
     <string name="messages">Сообщения</string>
@@ -19,6 +20,7 @@
     <string name="checkInetConnection">Ошибка получения данных. Проверьте подключение к сети Интернет.</string>
     <string name="noFriends">Нет друзей? Наверное их нужно найти. </string>
     <string name="noNews">Нет новостей? Выберите нужные из тысяч новостных ресурсов.</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 
 </resources>

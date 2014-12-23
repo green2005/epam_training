@@ -7,7 +7,7 @@ public class Friend extends BoItem {
     private static final String FIRST_NAME = "first_name";
     private static final String LAST_NAME = "last_name";
     private static final String NICKNAME = "nickname";
-    private static final String PHOTO = "photo_200_orig";
+    private static final String PHOTO = "photo_100";
     private static final String ONLINE = "online";
     private static final String ID = "id";
 

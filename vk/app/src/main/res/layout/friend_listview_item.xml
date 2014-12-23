@@ -2,15 +2,18 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="8dp"
+    android:paddingTop="8dp"
+    >
 
     <ImageView
         android:id="@+id/photo"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="16dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:scaleType="centerCrop"
+        android:src="@drawable/ic_message"
         />
 
     <TextView
@@ -20,8 +23,9 @@
         android:layout_alignParentTop="true"
         android:text="userName"
         android:layout_toRightOf="@+id/photo"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:textColor="@android:color/black"
+        android:paddingLeft="8dp"
         />
     <TextView
         android:id="@+id/nick"
@@ -29,9 +33,9 @@
         android:layout_width="wrap_content"
         android:layout_toRightOf="@+id/photo"
         android:layout_below="@+id/name"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
         android:text="nick"
+        android:paddingLeft="8dp"
         />
 
 </RelativeLayout>

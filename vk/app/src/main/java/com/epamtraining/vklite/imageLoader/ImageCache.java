@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 
 public class ImageCache {
     private Context mContext;
@@ -22,15 +24,11 @@ public class ImageCache {
         mContext = context;
         if (android.os.Environment.getExternalStorageState().equals(
                 android.os.Environment.MEDIA_MOUNTED))
-            filePath = context.getExternalFilesDir(null);  /*Returns absolute paths to application-specific directories on all
-                                                            * external storage devices where the application can place persistent files
-                                                            * it owns. These files are internal to the application, and not typically
-                                                            * visible to the user as media.*/
+            filePath = context.getExternalCacheDir();
         else
             filePath = context.getCacheDir();
         if (!filePath.exists())
             filePath.mkdirs();
-
         int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         final int cacheSize = maxMemory / 8;
         mLruCache = new LruCache<String, Bitmap>(cacheSize) {
@@ -77,12 +75,14 @@ public class ImageCache {
         }
         if (bmp == null) {
             String fileName = getFileName(url);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
             synchronized (mFileObject) {
                 File f = new File(fileName);
                 if (f.exists()) {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     bmp = BitmapFactory.decodeFile(fileName, options);
+                }
+                if (bmp != null) {
                     addBitmapToLRUCache(url, bmp);
                 }
             }
@@ -96,13 +96,16 @@ public class ImageCache {
         }
         FileOutputStream fOut = null;
         try {
-            String mFileName = getFileName(imageUrl);
+            String fileName = getFileName(imageUrl);
+            File tmpFile = new File(fileName + ".tmp");
+            tmpFile.createNewFile();
+            fOut = new FileOutputStream(tmpFile);
+            copyStreams(is, fOut);
             synchronized (mFileObject) {
-                File f = new File(mFileName);
-                f.createNewFile();
-                fOut = new FileOutputStream(f);
-                copyStreams(is, fOut);
+                File file = new File(fileName);
+                tmpFile.renameTo(file);
             }
+
         } finally {
             is.close();
             if (fOut != null) {
@@ -146,10 +149,5 @@ public class ImageCache {
         }
         return null;
     }
-
-    public String getFilecahedir() {
-        return filePath.getAbsolutePath();
-    }
-
 }
 
