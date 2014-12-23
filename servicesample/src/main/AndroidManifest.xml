@@ -18,13 +18,6 @@
         <service
             android:name=".LoaderService"
             android:exported="false" />
-
-        <receiver android:name="LoaderReciever">
-            <intent-filter>
-                <action android:name="com.epamtraining.servicesample.testservice" />
-            </intent-filter>
-        </receiver>
-
     </application>
 
 </manifest>

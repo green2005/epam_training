@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 
 
 public class LoaderService extends Service {
@@ -15,6 +16,7 @@ public class LoaderService extends Service {
     public static final int STATE_PROGRESS = 1;
     public static final int STATE_FINISHED = 2;
 
+    public static final String ACTION_NAME = "com.epamtraining.servicesample.loaderservice";
     public static final String PARAM_PENDING_INTENT = "param_pending_intent";
     public static final String PARAM_STATE = "state";
     public static final String PARAM_ACTIVITY_CONNECTION_TYPE = "connection_type";
@@ -61,7 +63,6 @@ public class LoaderService extends Service {
                     }
                 }
             }).start();
-        //mPendingIntent.getCreatorPackage()
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -69,13 +70,14 @@ public class LoaderService extends Service {
         switch (connectionType){
             case (USE_PENDING_INTENT):{
                 if (mPendingIntent != null) {
+                    Log.d("service package created from", mPendingIntent.getCreatorPackage());
                     mPendingIntent.send(LoaderService.this, state, null);
                 }
                 break;
             }
             case (USE_BROADCAST_RECIEVER):{
                 Intent intent = new Intent();
-                intent.setAction("com.epamtraining.servicesample.testservice");
+                intent.setAction(ACTION_NAME);
                 intent.putExtra(PARAM_STATE, state);
                 sendBroadcast(intent);
                 break;
