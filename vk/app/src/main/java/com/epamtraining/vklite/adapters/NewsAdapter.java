@@ -14,15 +14,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.epamtraining.vklite.VKContentProvider;
-import com.epamtraining.vklite.imageLoader.ImageLoader;
 import com.epamtraining.vklite.R;
 
 public class NewsAdapter extends BoItemAdapter {
     private Context mContext;
     private LayoutInflater mInflater;
-    private ImageLoader mImageLoader;
-    private int mImageSize;
-    private DataAdapterCallback mGetDataCallBack;
     private CursorHolder mCursorHolder;
 
 
@@ -30,22 +26,6 @@ public class NewsAdapter extends BoItemAdapter {
         super(context, layout, c, from, to, flags);
         mInflater = LayoutInflater.from(context);
         mContext = context;
-        mImageLoader = ImageLoader.getImageLoader(context);
-    }
-
-    public void initAdapter(Activity activity, DataAdapterCallback callback) {
-        mGetDataCallBack = callback;
-        setImageViewSize(activity);
-    }
-
-    private void setImageViewSize(Activity activity) {
-        DisplayMetrics metrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int screenWidth = metrics.widthPixels;
-        int screenHeight = metrics.heightPixels;
-
-        //todo переделать
-        mImageSize = Math.min(screenHeight, screenWidth);
     }
 
     @Override
@@ -75,8 +55,9 @@ public class NewsAdapter extends BoItemAdapter {
         }
         getCursor().moveToPosition(position);
         if (position == getCursor().getCount() - 1) {
-            String id = getCursor().getString(mCursorHolder.post_id_col);
-            mGetDataCallBack.onGetMoreData(position, id);
+            String next_from = getCursor().getString(mCursorHolder.next_col);
+            loadMoreData(position+1, next_from);
+            //mGetDataCallBack.onGetMoreData(position, next_from);
         }
 
         View v = convertView;
@@ -90,8 +71,8 @@ public class NewsAdapter extends BoItemAdapter {
             holder.userImage = (ImageView) v.findViewById(R.id.profileimageview);
             holder.image = (ImageView) v.findViewById(R.id.image);
 
-            holder.image.getLayoutParams().width = mImageSize;
-            holder.image.getLayoutParams().height = mImageSize;
+           // holder.image.getLayoutParams().width = getMaxImageWidth();
+           // holder.image.getLayoutParams().height = mImageSize;
 
 
             holder.url = (TextView) v.findViewById(R.id.url);
@@ -129,16 +110,16 @@ public class NewsAdapter extends BoItemAdapter {
         if (TextUtils.isEmpty(getCursor().getString(imageColumnIndex))) {
             imageView.setVisibility(View.GONE);
         } else {
-            if (mImageLoader != null) {
+            if (getImageLoader() != null) {
                 imageView.setVisibility(View.VISIBLE);
-                mImageLoader.loadImage(imageView, getCursor().getString(imageColumnIndex));
+                getImageLoader().loadImage(imageView, getCursor().getString(imageColumnIndex));
             }
         }
     }
 
     public void onStop() {
-        if (mImageLoader != null)
-            mImageLoader.stopLoadingImages();
+        if (getImageLoader() != null)
+            getImageLoader().stopLoadingImages();
     }
 
     class ViewHolder {
@@ -151,7 +132,6 @@ public class NewsAdapter extends BoItemAdapter {
     }
 
     class CursorHolder{
-
         int news_col = -1;
         int id_col = -1;
         int imageUrl_col = -1;
@@ -161,6 +141,7 @@ public class NewsAdapter extends BoItemAdapter {
         int post_id_col = -1;
         int userName_col = -1;
         int userImageUrl_col = -1;
+        int next_col = -1;
 
         CursorHolder(Cursor cursor){
             news_col = cursor.getColumnIndex(VKContentProvider.NEWS_COLUMN_TEXT);
@@ -172,6 +153,7 @@ public class NewsAdapter extends BoItemAdapter {
             post_id_col = cursor.getColumnIndex(VKContentProvider.NEWS_COLUMN_POST_ID);
             userName_col = cursor.getColumnIndex(VKContentProvider.NEWS_COLUMN_USERNAME);
             userImageUrl_col  = cursor.getColumnIndex(VKContentProvider.NEWS_COLUMN_USERIMAGE);
+            next_col = cursor.getColumnIndex(VKContentProvider.NEWS_COLUMN_NEXT_FROM);
         }
     }
 }

@@ -21,31 +21,13 @@ import com.epamtraining.vklite.imageLoader.ImageLoader;
 public class WallAdapter extends BoItemAdapter {
     private Context mContext;
     private LayoutInflater mInflater;
-    private ImageLoader mImageLoader;
     private int mImageSize;
-    private DataAdapterCallback mGetDataCallBack;
     private CursorHolder mCursorHolder;
 
     public WallAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
         mInflater = LayoutInflater.from(context);
         mContext = context;
-        mImageLoader = ImageLoader.getImageLoader(context);
-    }
-
-    @Override
-    public void initAdapter(Activity activity, DataAdapterCallback callback) {
-        mGetDataCallBack = callback;
-        setImageViewSize(activity);
-    }
-
-    private void setImageViewSize(Activity activity) {
-        DisplayMetrics metrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int screenWidth = metrics.widthPixels;
-        int screenHeight = metrics.heightPixels;
-        //todo переделать
-        mImageSize = Math.min(screenHeight, screenWidth);
     }
 
     @Override
@@ -75,8 +57,7 @@ public class WallAdapter extends BoItemAdapter {
         }
         getCursor().moveToPosition(position);
         if (position == getCursor().getCount() - 1) {
-            //String id = "";//getCursor().getString(mCursorHolder.post_id_col);
-            mGetDataCallBack.onGetMoreData(position, "");
+           loadMoreData(position+1, null);
         }
 
         View v = convertView;
@@ -90,11 +71,6 @@ public class WallAdapter extends BoItemAdapter {
             holder.userImage = (ImageView)v.findViewById(R.id.profileimageview);
 
             holder.image = (ImageView) v.findViewById(R.id.image);
-
-            holder.image.getLayoutParams().width = mImageSize;
-            holder.image.getLayoutParams().height = mImageSize;
-
-
             holder.url = (TextView) v.findViewById(R.id.url);
             holder.url.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -133,16 +109,16 @@ public class WallAdapter extends BoItemAdapter {
         if (TextUtils.isEmpty(imageUrl)) {
             imageView.setVisibility(View.GONE);
         } else {
-            if (mImageLoader != null) {
+            if (getImageLoader() != null) {
                 imageView.setVisibility(View.VISIBLE);
-                mImageLoader.loadImage(imageView, imageUrl);
+                getImageLoader().loadImage(imageView, imageUrl);
             }
         }
     }
 
     public void onStop() {
-        if (mImageLoader != null)
-            mImageLoader.stopLoadingImages();
+        if (getImageLoader() != null)
+            getImageLoader().stopLoadingImages();
     }
 
     class ViewHolder {
@@ -164,6 +140,7 @@ public class WallAdapter extends BoItemAdapter {
         int posterImage = -1;
 
         CursorHolder(Cursor cursor){
+            //TODO create helper for cursor
             itemText = cursor.getColumnIndex(VKContentProvider.WALL_COLUMN_TEXT);
             id = cursor.getColumnIndex(VKContentProvider.WALL_COLUMN_ITEM_ID);
             imageUrl = cursor.getColumnIndex(VKContentProvider.WALL_COLUMN_IMAGE_URL);

@@ -11,17 +11,21 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.text.TextUtils;
 
+//TODO create helper to work with tables,
+//TODO ideal create simple ORM
 public class VKContentProvider extends ContentProvider {
     private static final String DB_NAME = "VKLite";
     private static final int DB_VERSION = 1;
     private static final String DB_DROP_NEWS = "DROP TABLE IF EXISTS News";
     private static final String DB_DROP_FRIENDS = "DROP TABLE IF EXISTS Friends";
     private static final String DB_DROP_WALL = "DROP TABLE IF EXISTS Wall";
+    private static final String DB_DROP_DIALOGS = "DROP TABLE IF EXISTS Dialogs";
 
     private static final String DB_CREATE_NEWS = "CREATE TABLE News (_id Integer NOT NULL PRIMARY KEY AUTOINCREMENT,NewsText text,Url text,Date text,Image_Url text, Post_id text, Raw_Date text, Next_From text, username text, userimage text) ";
     private static final String DB_CREATE_FRIENDS =   "CREATE TABLE Friends(_id Integer NOT NULL PRIMARY KEY AUTOINCREMENT, First_Name text, Last_Name text, Image_Url text, id text, Nick_Name text)";
     private static final String DB_CREATE_WALL = "CREATE TABLE Wall(_id Integer not null PRIMARY KEY AUTOINCREMENT, id text, from_id text,"+
             " owner_id text, rawDate text, date text, itemText text, post_type text, Image_Url text, level int, Url text, username text, userimage text)";
+    private static  final String DB_CREATE_DIALOGS = "CREATE TABLE Dialogs(_id Integer NOT NULL PRIMARY KEY AUTOINCREMENT, message_id text, body text, title text, Raw_Date text, Date text, user_id text, user_name text, user_image text)";
 
     public static final String NEWS_COLUMN_DATE = "Date";
     public static final String NEWS_COULMN_ID = "_id";
@@ -55,10 +59,21 @@ public class VKContentProvider extends ContentProvider {
     public static final String WALL_COLUMN_USERIMAGE = "userimage";
     public static final String WALL_COLUMN_NEXT_FROM = "Next_From";
 
+    //CREATE TABLE Dialogs(_id Integer NOT NULL PRIMARY KEY AUTOINCREMENT, message_id text, body text, title text, Raw_Date text, Date text,
+    // //user_id text, user_name text, user_image text)";
+    public static final String DIALOGS_COLUMN_ID = "_id";
+    public static final String DIALOGS_COLUMN_MESSAGE_ID = "message_id";
+    public static final String DIALOGS_COLUMN_BODY = "body";
+    public static final String DIALOGS_COLUMN_TITLE = "title";
+    public static final String DIALOGS_COLUMN_RAW_DATE = "Raw_Date";
+    public static final String DIALOGS_COLUMN_DATE = "Date";
+
+
     private static final String AUTHORITY = "com.epamtraining.vk";
     private static final String NEWS_TABLENAME = "News";
     private static final String FRIENDS_TABLENAME = "Friends";
     private static  final String WALL_TABLENAME = "Wall";
+    private static  final String DIALOGS_TABLENAME = "Dialogs";
 
     private static final int URI_NEWS = 1;
     private static final int URI_NEWS_ID = 2;
@@ -66,6 +81,8 @@ public class VKContentProvider extends ContentProvider {
     private static final int URI_FRIENDS_ID = 4;
     private static  final int URI_WALL = 5;
     private static final int URI_WALL_ID = 6;
+    private static final int URI_DIALOGS = 7;
+    private static final int URI_DIALOGS_ID = 8;
 
     private static final String NEWS_CONTENT_TYPE = "vnd.android.cursor.dir/vnd."
             + AUTHORITY + "." + NEWS_TABLENAME;
@@ -93,6 +110,9 @@ public class VKContentProvider extends ContentProvider {
 
     public static final Uri WALL_CONTENT_URI = Uri.parse("content://"
             + AUTHORITY + "/" + WALL_TABLENAME);
+
+    public static final Uri DIALOGS_CONTENT_URI = Uri.parse("content://"
+            + AUTHORITY + "/" + DIALOGS_TABLENAME);
 
     private DBHelper mDbHelper;
     private SQLiteDatabase mDb;

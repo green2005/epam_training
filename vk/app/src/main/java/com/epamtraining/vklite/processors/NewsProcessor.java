@@ -7,7 +7,6 @@ import android.text.TextUtils;
 
 import com.epamtraining.vklite.VKContentProvider;
 import com.epamtraining.vklite.bo.News;
-import com.epamtraining.vklite.os.VKExecutor;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,40 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class NewsProcessor implements Processor {
+public class NewsProcessor extends Processor {
     private static final String ITEMS = "items";
-    private static final String RESPONSE = "response";
     private static final String NEXT_FROM = "next_from";
 
-    private String mToken;
     private Context mContext;
-    private String mEnd_id;
+    private int mRecordsFetched;
 
-    public NewsProcessor(String token, Context context, String endID) {
-        mToken = token;
+    public NewsProcessor(Context context) {
+        super(context);
         mContext = context;
-        mEnd_id = endID;
-    }
-
-    @Override
-    public String getUrl() {
-        String s = "";
-        if (!TextUtils.isEmpty(mEnd_id)) {
-            //подгружаем данные
-            Cursor cursor = mContext.getContentResolver().query(
-                    VKContentProvider.NEWS_CONTENT_URI,
-                    new String[]{VKContentProvider.NEWS_COLUMN_NEXT_FROM}, VKContentProvider.NEWS_COLUMN_POST_ID + " = ?",
-                    new String[]{mEnd_id}, null);
-            cursor.moveToFirst();
-            s = cursor.getString(0);
-            cursor.close();
-            if (!TextUtils.isEmpty(s)) {
-                s = "&start_from=" + s;
-            }
-        }
-        return "https://api.vk.com/method/newsfeed.get?filters=post&fields=photo_100" +
-                "&count=10&access_token=" + mToken + "&v="
-                + API_KEY + s;
     }
 
     private String getPostIDByRawDate(String rawDate) {
@@ -59,6 +34,7 @@ public class NewsProcessor implements Processor {
                 new String[]{VKContentProvider.NEWS_COLUMN_POST_ID}, VKContentProvider.NEWS_COLUMN_RAW_DATE + " = ?",
                 new String[]{rawDate}, null);
         try {
+            //TODO check cursor size
             cursor.moveToFirst();
             return cursor.getString(0);
         } finally {
@@ -71,7 +47,8 @@ public class NewsProcessor implements Processor {
         String maxDate = null;
         String postIDWithMaxDate = null;
 
-        if (TextUtils.isEmpty(mEnd_id)) {
+        if (getIsTopRequest()) {
+            //TODO create helper to work with cursors
             Cursor cursor = mContext.getContentResolver().query(
                     VKContentProvider.NEWS_CONTENT_URI,
                     new String[]{"MAX(" + VKContentProvider.NEWS_COLUMN_RAW_DATE + ") AS max_date"}, null,
@@ -81,9 +58,8 @@ public class NewsProcessor implements Processor {
             cursor.close();
         }
 
-        String s = new StringReader().readFromStream(stream);
         String next_from = "";
-        JSONObject response = new JSONObject(s).getJSONObject(RESPONSE);
+        JSONObject response = getVKResponse(stream);
         PostersProcessor posters = new PostersProcessor(response);
         next_from = response.getString(NEXT_FROM);
         JSONArray newsItems = response.getJSONArray(ITEMS);
@@ -132,19 +108,30 @@ public class NewsProcessor implements Processor {
             contentValues.add(value);
         }
 
-        if ((delCache) && (TextUtils.isEmpty(mEnd_id))) {
+        ////TODO !!!debug!!!! убрать нафик
+       // if (getIsTopRequest()) {
+        //    mContext.getContentResolver().delete(VKContentProvider.NEWS_CONTENT_URI, null, null);
+      //  }
+
+        if ((delCache) && (getIsTopRequest())) {
             mContext.getContentResolver().delete(VKContentProvider.NEWS_CONTENT_URI,
                     VKContentProvider.NEWS_COLUMN_RAW_DATE + " <= ?",
-                    new String[]{maxDate}); // удаляем старые записи
+                    new String[]{maxDate}); //delete old records from cache
         }
 
         int i = 0;
         ContentValues vals[] = new ContentValues[contentValues.size()];
         contentValues.toArray(vals);
-
+            mRecordsFetched = newsItems.length();
         if (vals.length > 0) {
             mContext.getContentResolver().bulkInsert(VKContentProvider.NEWS_CONTENT_URI, vals);
         }
         mContext.getContentResolver().notifyChange(VKContentProvider.NEWS_CONTENT_URI, null);
     }
+
+    @Override
+    public int getRecordsFetched() {
+        return mRecordsFetched;
+    }
+
 }

@@ -24,7 +24,6 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:visibility="gone"
-            android:divider="@drawable/vpi__tab_indicator"
             />
     </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>

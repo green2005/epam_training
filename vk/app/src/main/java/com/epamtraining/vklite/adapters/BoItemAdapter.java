@@ -5,29 +5,44 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.util.DisplayMetrics;
 
 import com.epamtraining.vklite.imageLoader.ImageLoader;
 
 public abstract class BoItemAdapter extends SimpleCursorAdapter {
     private ImageLoader mImageLoader;
+    private DataAdapterCallback mGetDataCallBack;
+    private int mImageWidth;
 
     public BoItemAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
-        mImageLoader = ImageLoader.getImageLoader(context);
     }
 
-    public void onScrollStopped(){
-        mImageLoader.resumeLoadingImages();
+    public void initAdapter(Activity activity, DataAdapterCallback callback, ImageLoader imageLoader){
+        mImageLoader = imageLoader;
+        mGetDataCallBack = callback;
+        setMaxImageSize(activity);
     }
 
-    public void onScrollStarted(){
-        mImageLoader.pauseLoadingImages();
+    private void setMaxImageSize(Activity activity) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int screenWidth = metrics.widthPixels;
+        int screenHeight = metrics.heightPixels;
+        mImageWidth = Math.min(screenHeight, screenWidth);
     }
 
-    public ImageLoader getImageLoader(){
+    protected ImageLoader getImageLoader(){
         return mImageLoader;
     }
 
-    public abstract void initAdapter(Activity activity, DataAdapterCallback callback);
-    public abstract void onStop();
+    protected void loadMoreData(int offset, String nextId){
+        mGetDataCallBack.onGetMoreData(offset, nextId);
+    }
+
+
+
+    public void onStop(){
+        mImageLoader.stopLoadingImages();
+    };
 }

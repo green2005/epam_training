@@ -22,5 +22,5 @@
     <string name="noNews">Нет новостей? Выберите нужные из тысяч новостных ресурсов.</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
-
+    <string name="unknown_server_error">Неизвестная ошибка</string>
 </resources>

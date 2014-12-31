@@ -15,9 +15,8 @@ import com.epamtraining.vklite.imageLoader.ImageLoader;
 import com.epamtraining.vklite.R;
 
 public class FriendsAdapter extends BoItemAdapter {
-    private Context mContext;
-    private LayoutInflater mInflater;
-    private DataAdapterCallback mGetDataCallBack;
+   private LayoutInflater mInflater;
+
 
     int nickNameCol = -1;
     int nameCol = -1;
@@ -27,17 +26,7 @@ public class FriendsAdapter extends BoItemAdapter {
 
     public FriendsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
-        mContext = context;
         mInflater = LayoutInflater.from(context);
-    }
-
-    @Override
-    public void initAdapter(Activity activity, DataAdapterCallback callback) {
-        mGetDataCallBack = callback;
-    }
-
-    public void onStop() {
-        getImageLoader().stopLoadingImages();
     }
 
     @Override

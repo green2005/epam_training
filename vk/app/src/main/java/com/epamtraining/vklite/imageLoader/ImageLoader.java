@@ -2,15 +2,22 @@ package com.epamtraining.vklite.imageLoader;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
+import com.epamtraining.vklite.ErrorHelper;
 import com.epamtraining.vklite.VKApplication;
 import com.epamtraining.vklite.os.VKExecutor;
 
@@ -103,19 +110,15 @@ public class ImageLoader {
         try {
             return VKApplication.get(context, ImageLoader.KEY);
         } catch (Exception e) {
-            AlertDialog.Builder b = new AlertDialog.Builder(context);
-            b.setTitle("Exception");
-            b.setMessage(e.getMessage());
-            b.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            AlertDialog dialog = b.create();
-            dialog.show();
+            ErrorHelper.showError(context, e);
         }
         return null;
+    }
+
+    private Bitmap scaleToFitWidth(Bitmap b, int width)
+    {
+        float factor = width / (float) b.getWidth();
+        return Bitmap.createScaledBitmap(b, width, (int) (b.getHeight() * factor), true);
     }
 
     public void loadImage(final ImageView imageView, final String url) {
@@ -128,14 +131,13 @@ public class ImageLoader {
             Bitmap bmp = mCache.getBitmapFromLRUCache(url);
             if (bmp != null) {
                 imageView.setImageBitmap(bmp);
-            } else {
+             } else {
                 if (mIsResumed.get()) {
                     Thread imageLoadThread = new ImageLoadThread(mHandler, imageView, url);
                     mLoadingList.addThread(url, imageLoadThread);
                     mExecutor.start(imageLoadThread);
                 } else
-                {   //если ListView скроллится
-                    Map<String, ImageView> map = new HashMap<>();
+                {   Map<String, ImageView> map = new HashMap<>();
                     map.put(url, imageView);
                     mPausedImages.push(map);
                 }

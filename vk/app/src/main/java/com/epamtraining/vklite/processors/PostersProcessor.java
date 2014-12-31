@@ -9,8 +9,7 @@ public class PostersProcessor {
     private static final String GROUPS_ARRAY_NAME = "groups";
     private static final String GROUPS_NAME = "name";
     private static final String GROUP_ID = "id";
-    //TODO размеры фоток ???
-    private static final String GROUPS_IMAGEURL = "photo_100";
+     private static final String GROUPS_IMAGEURL = "photo_100";
 
     private static final String USERS_ARRAY_NAME = "profiles";
     private static final String USER_FIRST_NAME = "first_name";
@@ -31,12 +30,14 @@ public class PostersProcessor {
             return mName;
         }
 
+         //TODO
         public String getmImageUrl() {
             return mImageUrl;
         }
     }
 
     private JSONObject mJo;
+    //TODO to Map, not threadsafe, move from member to varable in method
     private HashMap<Long, Poster> mPostersMap;
 
     public PostersProcessor(JSONObject jo) {

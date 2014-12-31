@@ -1,67 +1,70 @@
 package com.epamtraining.vklite.fragments;
 
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
+import com.epamtraining.vklite.DataSource;
+import com.epamtraining.vklite.ErrorHelper;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.adapters.BoItemAdapter;
 import com.epamtraining.vklite.adapters.DataAdapterCallback;
+import com.epamtraining.vklite.imageLoader.ImageLoader;
+import com.epamtraining.vklite.processors.Processor;
 
-public class BoItemFragment extends android.support.v4.app.Fragment
-        implements android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback {
+public abstract class BoItemFragment extends Fragment
+        implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback {
+    private enum DataState {LOADING, NO_MORE_DATA, BROWSING}
+
+    ;
     private ProgressBar mProgressBar;
     private ListView mListView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private BoItemAdapter mAdapter;
-    private boolean mIsDataLoading = false;
-    private String[] mDataFields;
-    private Uri mContentUri;
-    private FragmentDataProvider mDataProvider;
     private View mFooterView;
+    private ImageLoader mImageLoader;
+    private DataState mDataState = DataState.BROWSING;
+    private DataSource mDataSource;
 
-    public void init(String[] dataFields, Uri contentUri, SimpleCursorAdapter adapter, FragmentDataProvider dataProvider) {
-        mDataFields = dataFields;
-        mContentUri = contentUri;
-        mAdapter = (BoItemAdapter) adapter;
-        mDataProvider = dataProvider;
-        mAdapter.onScrollStopped();
-    }
+    public abstract FragmentType getItemFragmentType();
+
+    public abstract String[] getDataFields();
+
+    public abstract BoItemAdapter getAdapter();
+
+    public abstract Processor getProcessor();
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_list, null);
+        mImageLoader = ImageLoader.getImageLoader(getActivity());
         mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
         mListView = (ListView) v.findViewById(R.id.itemsList);
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-               if (scrollState == SCROLL_STATE_IDLE){
-                   //stopped
-                   mAdapter.onScrollStopped();
-                   Log.d("scroll stopped","");
-               }
+                if (scrollState == SCROLL_STATE_IDLE) {
+                    mImageLoader.resumeLoadingImages();
+                    // mAdapter.onScrollStopped();
+                }
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (firstVisibleItem>0) {
-                    mAdapter.onScrollStarted();
+                if (firstVisibleItem > 0) {
+                    mImageLoader.pauseLoadingImages();
+                    // mAdapter.onScrollStarted();
                 }
-                Log.d("scroll scrolled",firstVisibleItem + ";" + visibleItemCount + ";" + totalItemCount);
-                //started
-               // Toast.makeText(getActivity(),"started",Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -69,16 +72,18 @@ public class BoItemFragment extends android.support.v4.app.Fragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mDataProvider.loadData(BoItemFragment.this, 0, null);
+                loadData(0, null);
             }
         });
         showProgress(View.VISIBLE);
-        getLoaderManager().initLoader(0, null, this);
+
+        getLoaderManager().initLoader(getItemFragmentType().getId(), null, this);
         mFooterView = getFooterView();
         // setFooterVisible(false);
-        mDataProvider.loadData(BoItemFragment.this, 0, null);
+        loadData(0, null);
         //mAdapter = new NewsAdapter(getActivity(), R.layout.post_listview_item, null, mDataFields, null, 0);
-        mAdapter.initAdapter(getActivity(), this);
+        BoItemAdapter mAdapter = getAdapter();
+        mAdapter.initAdapter(getActivity(), this, mImageLoader);
         mListView.setAdapter(mAdapter);
         return v;
     }
@@ -96,61 +101,96 @@ public class BoItemFragment extends android.support.v4.app.Fragment
     @Override
     public void onStop() {
         super.onStop();
-        //  setFooterVisible(false);
-        mAdapter.onStop();
+        getAdapter().onStop();
     }
 
     @Override
-    public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        android.support.v4.content.Loader cursorLoader = new android.support.v4.content.CursorLoader(this.getActivity(),
-                mContentUri, mDataFields, null, null, null);
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Loader cursorLoader = new CursorLoader(this.getActivity(),
+                getItemFragmentType().getContentUri(), getDataFields(), null, null, null);
         return cursorLoader;
     }
 
     @Override
-    public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor cursor) {
-        mAdapter.swapCursor(cursor);
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        getAdapter().swapCursor(cursor);
         showProgress(View.GONE);
+        loadDone();
+    }
+
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        getAdapter().swapCursor(null);
+        loadDone();
+    }
+
+    private void loadDone() {
         //mIsDataLoading = false;
-        //  setFooterVisible(false);
+        setFooterVisible(false);
         if (mSwipeRefreshLayout.isRefreshing()) {
             mSwipeRefreshLayout.setRefreshing(false);
         }
     }
 
-    @Override
-    public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
-        mAdapter.swapCursor(null);
-//        mIsDataLoading = false;
-    }
 
     public void onError(Exception e) {
-        // обработка ошибок выполняется в MainActivity
-        mIsDataLoading = false;
-         setFooterVisible(false);
+        loadDone();
+        ErrorHelper.showError(getActivity(), e);
     }
 
-    public void onBeforeStart() {
-    }
-
-    public void onDataLoaded() {
-        mIsDataLoading = false;
-        setFooterVisible(false);
-    }
 
     @Override
     public void onGetMoreData(int offset, String id) {
-        if (!mIsDataLoading) {
-            mIsDataLoading = true;
+        if (mDataState == DataState.BROWSING) {
             if (offset > 0) {
                 setFooterVisible(true);
             }
-            mDataProvider.loadData(BoItemFragment.this, offset, id);
+            loadData(offset, id);
         }
     }
 
+    private void loadData(int offset, String id) {
+        if (mDataState == DataState.BROWSING) {
+            getProcessor().setIsTopRequest(offset == 0);
+            String url = getItemFragmentType().getDataUrl(getActivity(), offset, id);
+            if (mDataSource == null) {
+                createDataSource();
+            }
+            mDataState = DataState.LOADING;
+            mDataSource.fillData(url, getActivity());
+        }
+    }
+
+    private void createDataSource() {
+        DataSource.DataSourceCallbacks callBacks = new DataSource.DataSourceCallbacks() {
+            @Override
+            public void onError(final Exception e) {
+                BoItemFragment.this.onError(e);
+                mDataState = DataState.BROWSING; //if error occures we give another chance to load data
+            }
+
+            @Override
+            public void onLoadEnd(int recordsFetched) {
+                if (recordsFetched == 0){
+                    mDataState = DataState.NO_MORE_DATA;
+                } else
+                {
+                    mDataState = DataState.BROWSING;
+                }
+            }
+
+            @Override
+            public void onBeforeStart() {
+
+            }
+        };
+        mDataSource = new DataSource(getProcessor(), callBacks);
+    }
+
+
     private View getFooterView() {
-        View view = mListView.inflate(getActivity(), R.layout.footer_progress_layout, null);
+        View view = getActivity().getLayoutInflater().inflate(R.layout.footer_progress_layout, null);
         mListView.addFooterView(view);
         return view;
     }
