@@ -2,50 +2,55 @@ package com.epamtraining.vklite.fragments;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.widget.ListView;
-import android.widget.ProgressBar;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.epamtraining.vklite.Api;
-import com.epamtraining.vklite.DataSource;
-import com.epamtraining.vklite.ErrorHelper;
+import com.epamtraining.vklite.MainActivity;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.VKContentProvider;
 import com.epamtraining.vklite.adapters.BoItemAdapter;
 import com.epamtraining.vklite.adapters.DataAdapterCallback;
 import com.epamtraining.vklite.adapters.FriendsAdapter;
-import com.epamtraining.vklite.bo.Friend;
 import com.epamtraining.vklite.processors.FriendsProcessor;
-import com.epamtraining.vklite.processors.NewsProcessor;
 import com.epamtraining.vklite.processors.Processor;
 
-import java.util.List;
+import java.nio.charset.MalformedInputException;
 
-public class FriendsFragment extends BoItemFragment implements  LoaderManager.LoaderCallbacks<Cursor> , DataAdapterCallback {
+public class FriendsFragment extends BoItemFragment implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback {
     private BoItemAdapter mAdapter;
     private Processor mProcessor;
+    private int requestCode = -1;
 
-    private static final String[] fields= new String[] {
-            VKContentProvider.NEWS_COULMN_ID ,
-            VKContentProvider.FRIEND_COLUMN_ID,VKContentProvider.FRIEND_COLUMN_FIRST_NAME
+    private static final String[] fields = new String[]{
+            VKContentProvider.NEWS_COULMN_ID,
+            VKContentProvider.FRIEND_COLUMN_ID, VKContentProvider.FRIEND_COLUMN_FIRST_NAME
             , VKContentProvider.FRIEND_COLUMN_IMAGE_URL, VKContentProvider.FRIEND_COLUMN_LAST_NAME,
             VKContentProvider.FRIEND_COLUMN_NICK_NAME};
 
 
-
-    public static FriendsFragment getNewFragment( ){
+    public static FriendsFragment getNewFragment(Bundle bundle) {
         FriendsFragment friendsFragment = new FriendsFragment();
+        if (bundle != null) {
+            friendsFragment.setArguments(bundle);
+        }
         return friendsFragment;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAdapter = new FriendsAdapter(getActivity(), R.layout.post_listview_item, null, getDataFields(), null, 0);
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            if (arguments.containsKey(MainActivity.FRAGMENT_REQUEST)) {
+                requestCode = arguments.getInt(MainActivity.FRAGMENT_REQUEST);
+            }
+        }
+        mAdapter = new FriendsAdapter(getActivity(), R.layout.item_post, null, getDataFields(), null, 0);
         mProcessor = new FriendsProcessor(getActivity());
     }
 
@@ -53,7 +58,6 @@ public class FriendsFragment extends BoItemFragment implements  LoaderManager.Lo
     public FragmentType getItemFragmentType() {
         return FragmentType.FRIENDFRAGMENT;
     }
-
 
 
     @Override
@@ -69,5 +73,29 @@ public class FriendsFragment extends BoItemFragment implements  LoaderManager.Lo
     @Override
     public Processor getProcessor() {
         return mProcessor;
+    }
+
+    @Override
+    public String getDataUrl(int offset, String next_id) {
+        return Api.getFriendsUrl(getActivity());
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (mAdapter.getCursor() != null) {
+            if (requestCode == MainActivity.REQUEST_CODE_CHOOSE_FRIEND) {
+                mAdapter.getCursor().moveToPosition(position);
+                String userId = mAdapter.getCursor().getString(mAdapter.getCursor().getColumnIndex(VKContentProvider.FRIEND_COLUMN_ID));
+                String firstName = mAdapter.getCursor().getString(mAdapter.getCursor().getColumnIndex(VKContentProvider.FRIEND_COLUMN_FIRST_NAME));
+                String lastName = mAdapter.getCursor().getString(mAdapter.getCursor().getColumnIndex(VKContentProvider.FRIEND_COLUMN_LAST_NAME));
+                //String userName = (firstName + " " +lastName).trim();
+                Intent intent = new Intent();
+                intent.putExtra(VKContentProvider.FRIEND_COLUMN_ID, userId);
+                intent.putExtra(VKContentProvider.FRIEND_COLUMN_FIRST_NAME, firstName);
+                intent.putExtra(VKContentProvider.FRIEND_COLUMN_LAST_NAME, lastName);
+                getActivity().setResult(Activity.RESULT_OK, intent);
+                getActivity().finish();
+            }
+        }
     }
 }

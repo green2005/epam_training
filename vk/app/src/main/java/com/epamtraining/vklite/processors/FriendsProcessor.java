@@ -6,18 +6,16 @@ import android.content.Context;
 
 import com.epamtraining.vklite.VKContentProvider;
 import com.epamtraining.vklite.bo.Friend;
-import com.epamtraining.vklite.os.VKExecutor;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.InputStream;
-import java.util.List;
 
 public class FriendsProcessor extends Processor {
     private Context mContext;
     private static  final String ITEMS = "items";
-    private int recordsFetched;
+    private int mRecordsFetched;
 
 
     public FriendsProcessor(  Context context)
@@ -28,8 +26,8 @@ public class FriendsProcessor extends Processor {
 
 
     @Override
-    public void process(InputStream stream) throws Exception {
-        JSONObject response = getVKResponse(stream);
+    public void process(InputStream stream, AdditionalInfoSource dataSource) throws Exception {
+        JSONObject response = getVKResponseObject(stream);
         JSONArray friendItems = response.getJSONArray(ITEMS);
         ContentValues[] vals = new ContentValues[friendItems.length()];
         for (int i = 0; i < friendItems.length(); i++) {
@@ -43,14 +41,15 @@ public class FriendsProcessor extends Processor {
             value.put(VKContentProvider.FRIEND_COLUMN_NICK_NAME, friend.getNick());
             vals[i] = value;
         }
-        recordsFetched = friendItems.length();
+        mRecordsFetched = friendItems.length();
         mContext.getContentResolver().delete(VKContentProvider.FRIENDS_CONTENT_URI, null, null);
         if (vals.length > 0)
             mContext.getContentResolver().bulkInsert(VKContentProvider.FRIENDS_CONTENT_URI, vals);
+        mContext.getContentResolver().notifyChange(VKContentProvider.FRIENDS_CONTENT_URI, null);
     }
 
     @Override
     public int getRecordsFetched() {
-        return recordsFetched;
+        return mRecordsFetched;
     }
 }

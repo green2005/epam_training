@@ -34,16 +34,18 @@ public class NewsProcessor extends Processor {
                 new String[]{VKContentProvider.NEWS_COLUMN_POST_ID}, VKContentProvider.NEWS_COLUMN_RAW_DATE + " = ?",
                 new String[]{rawDate}, null);
         try {
-            //TODO check cursor size
-            cursor.moveToFirst();
-            return cursor.getString(0);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                return cursor.getString(0);
+            } else
+            {return null;}
         } finally {
             cursor.close();
         }
     }
 
     @Override
-    public void process(InputStream stream) throws Exception {
+    public void process(InputStream stream, AdditionalInfoSource source) throws Exception {
         String maxDate = null;
         String postIDWithMaxDate = null;
 
@@ -59,7 +61,7 @@ public class NewsProcessor extends Processor {
         }
 
         String next_from = "";
-        JSONObject response = getVKResponse(stream);
+        JSONObject response = getVKResponseObject(stream);
         PostersProcessor posters = new PostersProcessor(response);
         next_from = response.getString(NEXT_FROM);
         JSONArray newsItems = response.getJSONArray(ITEMS);
@@ -99,6 +101,7 @@ public class NewsProcessor extends Processor {
             value.put(VKContentProvider.NEWS_COLUMN_RAW_DATE, newsItem.getRawDate());
             value.put(VKContentProvider.NEWS_COLUMN_POST_ID, newsItem.getPostId());
             if (poster != null) {
+                value.put(VKContentProvider.NEWS_COLUMN_OWNER_ID, newsItem.getPosterId());
                 value.put(VKContentProvider.NEWS_COLUMN_USERNAME, poster.getName());
                 value.put(VKContentProvider.NEWS_COLUMN_USERIMAGE, poster.getmImageUrl());
             }
@@ -107,11 +110,6 @@ public class NewsProcessor extends Processor {
             }
             contentValues.add(value);
         }
-
-        ////TODO !!!debug!!!! убрать нафик
-       // if (getIsTopRequest()) {
-        //    mContext.getContentResolver().delete(VKContentProvider.NEWS_CONTENT_URI, null, null);
-      //  }
 
         if ((delCache) && (getIsTopRequest())) {
             mContext.getContentResolver().delete(VKContentProvider.NEWS_CONTENT_URI,
@@ -122,7 +120,7 @@ public class NewsProcessor extends Processor {
         int i = 0;
         ContentValues vals[] = new ContentValues[contentValues.size()];
         contentValues.toArray(vals);
-            mRecordsFetched = newsItems.length();
+        mRecordsFetched = newsItems.length();
         if (vals.length > 0) {
             mContext.getContentResolver().bulkInsert(VKContentProvider.NEWS_CONTENT_URI, vals);
         }

@@ -41,7 +41,7 @@ public class WallProcessor extends Processor {
     }
 
     @Override
-    public void process(InputStream stream) throws Exception {
+    public void process(InputStream stream, AdditionalInfoSource dataSource) throws Exception {
         String maxDate = null;
         String postIDWithMaxDate = null;
         if (getIsTopRequest()) {
@@ -54,7 +54,7 @@ public class WallProcessor extends Processor {
             cursor.close();
         }
 
-        JSONObject response = getVKResponse(stream);
+        JSONObject response = getVKResponseObject(stream);
         PostersProcessor posters = new PostersProcessor(response);
         posters.process();
         JSONArray wallItems = response.getJSONArray(ITEMS);
@@ -121,6 +121,8 @@ public class WallProcessor extends Processor {
         }
         mContext.getContentResolver().notifyChange(VKContentProvider.WALL_CONTENT_URI, null);
     }
+
+
 
     @Override
     public int getRecordsFetched() {

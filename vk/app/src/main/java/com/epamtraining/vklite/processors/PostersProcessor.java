@@ -4,6 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PostersProcessor {
     private static final String GROUPS_ARRAY_NAME = "groups";
@@ -37,12 +39,10 @@ public class PostersProcessor {
     }
 
     private JSONObject mJo;
-    //TODO to Map, not threadsafe, move from member to varable in method
-    private HashMap<Long, Poster> mPostersMap;
-
+    private Map<Long, Poster> mPostersMap;
     public PostersProcessor(JSONObject jo) {
         mJo = jo;
-        mPostersMap = new HashMap<Long, Poster>();
+        mPostersMap = new ConcurrentHashMap<Long, Poster>();
     }
 
     public void process() throws Exception {

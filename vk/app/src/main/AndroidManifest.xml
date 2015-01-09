@@ -1,43 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.epamtraining.vklite">
-    <uses-permission android:name="android.permission.INTERNET"/>
+    package="com.epamtraining.vklite" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
     <!-- TODO garbage on my phone? -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:name=".VKApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_vklogo"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        >
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|screenLayout"
-            android:label="@string/app_name">
-          </activity>
-
+            android:label="@string/app_name"
+            android:launchMode="singleTask" >
+        </activity>
         <activity
-            android:name="com.epamtraining.vklite.auth.StartActivity"
-            android:configChanges="orientation|screenSize|screenLayout"
-            >
+            android:name=".auth.StartActivity"
+            android:configChanges="orientation|screenSize|screenLayout" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="com.epamtraining.vklite.auth.LoginActivity"
-            android:label="@string/app_name"
+            android:name=".auth.LoginActivity"
             android:configChanges="orientation|screenSize|screenLayout"
-            >
-         </activity>
+            android:label="@string/app_name" >
+        </activity>
+
         <provider
             android:name=".VKContentProvider"
             android:authorities="com.epamtraining.vk"
             android:enabled="true"
             android:exported="true" >
         </provider>
+
+        <activity
+            android:name=".activities.MessagesActivity"
+            android:label="@string/title_activity_messages"
+            android:parentActivityName=".MainActivity" >
+             />
+        </activity>
+        <activity
+            android:name=".activities.ChooseFriendActivity"
+            android:label="@string/title_activity_choose_friend"
+            android:parentActivityName=".MainActivity" >
+        </activity>
+        <activity
+            android:name=".activities.PostDetailActivity"
+            android:label="@string/title_activity_post_detail"
+            android:parentActivityName=".MainActivity" >
+        </activity>
     </application>
+
 </manifest>

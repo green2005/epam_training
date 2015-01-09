@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dip"
+    android:paddingTop="16dip"
+    android:paddingRight="16dip"
+    android:paddingBottom="16dip"
+    >
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:maxHeight="32dp"
+        android:maxWidth="32dp"
+        android:minHeight="32dp"
+        android:minWidth="32dp"
+        android:visibility="visible" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/editinglayout"
+        >
+        <ListView
+            android:id="@+id/itemsList"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:visibility="gone"
+            />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <!-- Dummy item to prevent AutoCompleteTextView from receiving focus -->
+    <LinearLayout
+        android:focusable="true" android:focusableInTouchMode="true"
+        android:layout_width="0px" android:layout_height="0px"/>
+
+    <RelativeLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/editinglayout"
+        >
+        <EditText
+            android:layout_alignParentTop="true"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_toLeftOf="@+id/btnsend"
+            android:minHeight="48dip"
+            android:id="@+id/messageedit"
+            android:hint="@string/enter_your_message"
+             />
+         <ImageButton
+            android:layout_alignParentTop="true"
+            android:id="@+id/btnsend"
+            android:layout_height="wrap_content"
+            android:layout_width="48dip"
+            android:layout_alignTop="@+id/messageedit"
+            android:layout_alignBottom="@+id/messageedit"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="8dip"
+            android:src="@drawable/ic_send"
+            />
+        </RelativeLayout>
+
+</RelativeLayout>

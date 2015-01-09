@@ -2,20 +2,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity" >
+    <item android:id="@+id/action_refresh"
+        android:title="@string/action_renew"
+        android:icon="@drawable/ic_action_action_autorenew"
+        app:showAsAction="always"
+        />
+    <!--
     <item android:id="@+id/action_search"
         android:title="@string/action_search"
         android:icon="@android:drawable/ic_menu_search"
         app:showAsAction="always|collapseActionView"
-        app:actionViewClass="android.support.v7.widget.SearchView" />
-
-            <item
-                android:id="@+id/menuSortNewest"
-                android:orderInCategory="100"
-                android:title="Sort by newest"
-                app:showAsAction="never"/>
-            <item
-                android:id="@+id/menuSortRating"
-                android:orderInCategory="100"
-                android:title="Sort by rating"
-                app:showAsAction="never"/>
+        app:actionViewClass="android.support.v7.widget.SearchView" />-->
 </menu>

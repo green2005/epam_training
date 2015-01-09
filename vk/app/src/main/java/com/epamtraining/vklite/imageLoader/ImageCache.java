@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.LruCache;
 
+import com.epamtraining.vklite.ErrorHelper;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -22,11 +24,16 @@ public class ImageCache {
 
     public ImageCache(Context context) {
         mContext = context;
-        if (android.os.Environment.getExternalStorageState().equals(
-                android.os.Environment.MEDIA_MOUNTED))
-            filePath = context.getExternalCacheDir();
-        else
-            filePath = context.getCacheDir();
+        filePath = context.getCacheDir();
+//        if (android.os.Environment.getExternalStorageState().equals(
+//                android.os.Environment.MEDIA_MOUNTED))
+//            filePath = context.getExternalCacheDir();
+//        else
+        if (filePath == null)
+        {
+            //ErrorHelper.showError(context, "");
+            return;
+        }
         if (!filePath.exists())
             filePath.mkdirs();
         int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);

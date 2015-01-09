@@ -18,7 +18,6 @@ public class News extends BoItem implements Serializable {
     private static final String ATTACHMENTS = "attachments";
     private static final String TYPE = "type";
     private static final String PHOTO = "photo";
-    //TODO размер фоток??
     private static final String PHOTO_604 = "photo_604";
     private static final String LINK = "link";
     private static final String TITLE = "title";
@@ -34,8 +33,7 @@ public class News extends BoItem implements Serializable {
     private String mPostID;
     private long mPosterID;
 
-    public News(JSONObject jo, DateFormat ft) {
-        try {
+    public News(JSONObject jo, DateFormat ft) throws Exception{
             mRawDate = jo.optString(DATE);
             mPostID = jo.optString(POST_ID);
             mPosterID = Math.abs(jo.optLong(SOURCE_ID));
@@ -53,16 +51,14 @@ public class News extends BoItem implements Serializable {
                     JSONObject attachment = attachments.getJSONObject(i);
                     String type = attachment.getString(TYPE);
                     if (type.equalsIgnoreCase(PHOTO)) {
-                        mImageUrl = attachment.getJSONObject(PHOTO).getString(PHOTO_604); //TODO getScreenSIZE and choose photo size
+                        mImageUrl = attachment.getJSONObject(PHOTO).getString(PHOTO_604);
                     } else if (type.equalsIgnoreCase(LINK)) {
                         mUrlHref = attachment.getJSONObject(LINK).getString(URL);
                         mUrlTitle = attachment.getJSONObject(LINK).getString(TITLE);
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
     }
 
     public String getRawDate() {

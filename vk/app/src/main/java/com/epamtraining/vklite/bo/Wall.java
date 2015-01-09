@@ -16,8 +16,7 @@ public class Wall extends BoItem {
     CREATE TABLE Wall(_id Integer not null PRIMARY KEY AUTOINCREMENT, postid text, from_id text,"+
             " owner_id text, rawDate text, date text, itemText text, post_type text, image_Url text, level int)";
      */
-    private static String OWNER_ID = "owner_id";
-    private static String FROM_ID = "from_id";
+     private static String FROM_ID = "from_id";
     private static String DATE = "date";
     private static String TEXT = "text";
     private static String ID = "id";
@@ -27,7 +26,6 @@ public class Wall extends BoItem {
     private static final String PHOTO = "photo";
     private static final String LINK = "link";
 
-    //todo размеры фоток???
     private static final String PHOTO_604 = "photo_604";
     private static final String TITLE = "title";
     private static final String URL = "url";
@@ -50,11 +48,11 @@ public class Wall extends BoItem {
             mJo = jo;
             mRawDate = jo.optString(DATE);
             mId = jo.optString(ID);
+            mPosterId = Math.abs(jo.optLong(POSTER_ID));
             if (jo.has(COPY_HISTORY)) {
                 jo = jo.getJSONArray(COPY_HISTORY).getJSONObject(0);
             };
             mText = jo.optString(TEXT);
-            mPosterId = Math.abs(jo.optLong(POSTER_ID));
             java.util.Date time = new java.util.Date((long) Long.parseLong(mRawDate) * 1000);
             // DateFormat ft = new SimpleDateFormat("dd.MM.yyyy");
             mDate =  ft.format(time);
@@ -64,7 +62,7 @@ public class Wall extends BoItem {
                     JSONObject attachment = attachments.getJSONObject(i);
                     String type = attachment.getString(TYPE);
                     if (type.equalsIgnoreCase(PHOTO)) {
-                        mImageUrl = attachment.getJSONObject(PHOTO).getString(PHOTO_604); //TODO getScreenSIZE and choose photo size
+                        mImageUrl = attachment.getJSONObject(PHOTO).getString(PHOTO_604);
                     } else if (type.equalsIgnoreCase(LINK)) {
                         mUrlHref = attachment.getJSONObject(LINK).getString(URL);
                         mUrlTitle = attachment.getJSONObject(LINK).getString(TITLE);
@@ -97,7 +95,7 @@ public class Wall extends BoItem {
     }
 
     public String getOwner_Id() throws Exception {
-        return mJo.optString(OWNER_ID);
+        return mJo.optString(POSTER_ID);
     }
 
     public Long getPosterId() {

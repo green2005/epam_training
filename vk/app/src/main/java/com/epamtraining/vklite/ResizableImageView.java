@@ -18,7 +18,6 @@ public class ResizableImageView extends ImageView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
         Drawable d = getDrawable();
-
         if(d!=null){
             // ceil not round - avoid thin vertical gaps along the left/right edges
             int width = MeasureSpec.getSize(widthMeasureSpec);

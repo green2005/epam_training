@@ -47,7 +47,7 @@ import com.epamtraining.vklite.fragments.FragmentType;
         View cnView = convertView;
         ViewHolder holder;
         if (cnView == null) {
-            cnView = mInflater.inflate(R.layout.drawer_list_item, null);
+            cnView = mInflater.inflate(R.layout.item_drawer_list, null);
             holder = new ViewHolder();
             cnView.setTag(holder);
             holder.textView = (TextView) cnView.findViewById(R.id.itemtext);

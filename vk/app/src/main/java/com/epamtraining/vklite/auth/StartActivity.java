@@ -8,7 +8,9 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.epamtraining.vklite.MainActivity;
-import com.epamtraining.vklite.auth.AuthHelper;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class StartActivity extends Activity {
     public static final int REQUEST_LOGIN = 1;
@@ -17,11 +19,15 @@ public class StartActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String token = getSavedToken();
+        String token;
+        String userId;
+        Map<String, String> accountInfo = getSavedCredentials();
+        token = accountInfo.get(AuthHelper.TOKEN);
+        userId  = accountInfo.get(AuthHelper.USER_ID);
         if (TextUtils.isEmpty(token)) {
             startLoginActivity();
         } else {
-            startMainActivity(token);
+            startMainActivity(token, userId);
             finish();
         }
     }
@@ -33,8 +39,9 @@ public class StartActivity extends Activity {
             if ((resultCode == RESULT_OK)) {
                 if (data.hasExtra(AuthHelper.TOKEN)) {
                     String token = data.getStringExtra(AuthHelper.TOKEN);
-                    saveToken(token);
-                    startMainActivity(token);
+                    String currentUserId = data.getStringExtra(AuthHelper.USER_ID);
+                    saveAuthCredentials(token, currentUserId);
+                    startMainActivity(token, currentUserId);
                 } else {//??
                 }
                 finish();
@@ -45,9 +52,10 @@ public class StartActivity extends Activity {
         }
     }
 
-    private void startMainActivity(String token) {
+    private void startMainActivity(String token, String userId) {
         Intent i = new Intent(this, MainActivity.class);
         i.putExtra(AuthHelper.TOKEN, token);
+        i.putExtra(AuthHelper.USER_ID, userId);
         startActivity(i);
     }
 
@@ -56,14 +64,16 @@ public class StartActivity extends Activity {
         startActivityForResult(i, REQUEST_LOGIN);
     }
 
-    private void saveToken(String token) {
+    private void saveAuthCredentials(String token, String userId) {
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         if (TextUtils.isEmpty(token)) {
             prefEditor.remove(AuthHelper.TOKEN);
+            prefEditor.remove(AuthHelper.USER_ID);
         } else {
             try {
                 token = EncrManager.encrypt(this, token);
                 prefEditor.putString(AuthHelper.TOKEN, token);
+                prefEditor.putString(AuthHelper.USER_ID, userId);
             } catch (Exception e) {
                 e.printStackTrace();
                 prefEditor.remove(AuthHelper.TOKEN);
@@ -73,8 +83,10 @@ public class StartActivity extends Activity {
         prefEditor.apply();
     }
 
-    private String getSavedToken() {
+    private Map<String, String> getSavedCredentials() {
+        HashMap<String, String> map = new HashMap<>();
         String token = PreferenceManager.getDefaultSharedPreferences(this).getString(AuthHelper.TOKEN, "");
+        String userId = PreferenceManager.getDefaultSharedPreferences(this).getString(AuthHelper.USER_ID, "");
         if (!TextUtils.isEmpty(token))
             try {
                 token = EncrManager.decrypt(this, token);
@@ -83,6 +95,8 @@ public class StartActivity extends Activity {
                 token = "";
                 //при  ошибке придется логиниться
             }
-        return token;
+        map.put(AuthHelper.USER_ID, userId);
+        map.put(AuthHelper.TOKEN, token);
+        return map;
     }
 }

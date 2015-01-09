@@ -14,11 +14,13 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
+import com.epamtraining.vklite.ErrorHelper;
 import com.epamtraining.vklite.R;
 
 public class LoginActivity extends ActionBarActivity implements AuthHelper.AuthCallBack{
     private WebView mWebView;
     private ProgressBar mProgress;
+    private AuthHelper mHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,33 +33,21 @@ public class LoginActivity extends ActionBarActivity implements AuthHelper.AuthC
         mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mWebView.setWebViewClient(new WebViewLoginClient());
         mWebView.loadUrl(AuthHelper.AUTORIZATION_URL);
+        mHelper = new AuthHelper();
     }
 
     @Override
-    public void onSuccess(String token) {
+    public void onSuccess(String token, String currentUserId) {
         Intent i = getIntent();
         i.putExtra(AuthHelper.TOKEN, token);
+        i.putExtra(AuthHelper.USER_ID, currentUserId);
         setResult(RESULT_OK, i);
         finish();
     }
 
     @Override
     public void onError(Exception e) {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Intent i = getIntent();
-                setResult(RESULT_CANCELED, i);
-                finish();
-                dialog.cancel();
-            }
-        });
-        dialogBuilder.setTitle(getResources().getString(R.string.auth_error));
-        dialogBuilder.setMessage(e.getMessage());
-        dialogBuilder.setCancelable(false);
-        dialogBuilder.create();
-        dialogBuilder.show();
+        ErrorHelper.showError(this, e);
    }
 
     private class WebViewLoginClient extends WebViewClient {

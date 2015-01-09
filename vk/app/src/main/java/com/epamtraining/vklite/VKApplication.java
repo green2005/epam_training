@@ -44,6 +44,13 @@ public class VKApplication extends Application {
         mSystemServices.put(Api.TOKEN_KEY, token);
     }
 
+    public void setUserId(String userId){
+        if (mSystemServices == null){
+            initLocalServices();
+        }
+        mSystemServices.put(Api.USERID_KEY, userId);
+    }
+
     private void initLocalServices(){
         mSystemServices = new HashMap<String, Object>();
         mImageLoader = new ImageLoader(this);

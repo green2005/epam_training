@@ -149,6 +149,10 @@ public class ImageLoader {
         mIsResumed.set(false);
     }
 
+    public boolean getIsPaused(){
+        return  !mIsResumed.get();
+    }
+
     public void resumeLoadingImages(){
         mIsResumed.set(true);
         while (!mPausedImages.isEmpty() && mIsResumed.get()) {
