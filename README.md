@@ -1,4 +1,4 @@
 epam_training
 =============
 
-VK - TestProject, VKontakte lite client
+VK - VKontakte lite client
