@@ -20,6 +20,7 @@ import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.VKContentProvider;
 import com.epamtraining.vklite.imageLoader.ImageLoader;
 
+//TODO add comments
 public class PostDetailFragment extends Fragment {
     private String mPostId;
     private String mUserId;

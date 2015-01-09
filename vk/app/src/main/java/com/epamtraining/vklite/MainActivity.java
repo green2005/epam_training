@@ -31,7 +31,7 @@ import com.epamtraining.vklite.fragments.BoItemFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-
+//TODO move to activities
 public class MainActivity extends ActionBarActivity {
     public static final int REQUEST_CODE_CHOOSE_FRIEND = 1;
     public static final String FRAGMENT_REQUEST = "request";
@@ -84,6 +84,9 @@ public class MainActivity extends ActionBarActivity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
+            //TODO change to enum
+            //FragmentType.values()[0] or
+            //FragmentType.NEWSFRAGMENT
             selectItem(0);
         }
     }
@@ -110,15 +113,19 @@ public class MainActivity extends ActionBarActivity {
         private class DrawerItemClickListener implements ListView.OnItemClickListener {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //TODO
+                //FragmentType.values()[position]
                 selectItem(position);
             }
         }
 
+    //TODO change to enum
     private void selectItem(int position) {
         if (position < mFragmentTypes.length) {
             BoItemFragment fragment = mFragmentTypes[position].getNewFragment();
             if ((fragment != null)) {
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                //TODO remove unused code
                 ft.replace(R.id.container, fragment, position + "");
                 ft.commit();
             }
@@ -131,6 +138,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //TODO rename static getImageLoader
         ImageLoader imageLoader = ImageLoader.getImageLoader(getApplication());
         if (imageLoader != null) {
             imageLoader.clear();
@@ -157,8 +165,10 @@ public class MainActivity extends ActionBarActivity {
         renew.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                //TODO refactoring, move to variable
                 if (getSupportFragmentManager() != null){
                     for (Fragment ft: getSupportFragmentManager().getFragments()){
+                        //TODO change to interface
                         if (ft instanceof BoItemFragment){
                             ((BoItemFragment)ft).refreshData();
                         }

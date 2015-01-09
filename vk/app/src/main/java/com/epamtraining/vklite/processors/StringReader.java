@@ -21,6 +21,7 @@ public class StringReader {
                     builder.append(s);
                 }
             } catch (IOException e) {
+                //TODO throws IOExciption and show dialog without result
                 e.printStackTrace();
             }
             return builder.toString();

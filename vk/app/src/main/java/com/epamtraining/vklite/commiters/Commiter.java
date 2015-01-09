@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
+//TODO join with SyncAdapter
 public abstract class Commiter {
     abstract protected Cursor getPendingChanges();                      //select records that are marked as pending
     abstract protected String getUrl(Cursor cursor) throws  Exception;                  //returns post url by cursor

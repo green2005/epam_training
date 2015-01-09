@@ -23,6 +23,7 @@ public class DialogsAdapter extends BoItemAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        //TODO replace with local variable
         if (getCursor() == null) return null;
         getCursor().moveToPosition(position);
         if (position == getCursor().getCount() - 1) {

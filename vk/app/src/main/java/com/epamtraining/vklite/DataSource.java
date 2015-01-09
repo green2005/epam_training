@@ -9,7 +9,7 @@ import com.epamtraining.vklite.os.VKExecutor;
 import java.io.InputStream;
 import java.net.URL;
 
-public class DataSource implements AdditionalInfoSource{
+public class DataSource implements AdditionalInfoSource {
 
 
     public interface DataSourceCallbacks {
@@ -25,6 +25,7 @@ public class DataSource implements AdditionalInfoSource{
     public DataSource(Processor processor, DataSourceCallbacks callbacks) {
         mProcessor = processor;
         mCallbacks = callbacks;
+        //TODO remove package name from Hanler
         mHandler = new android.os.Handler();
     }
 

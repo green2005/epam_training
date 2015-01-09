@@ -26,9 +26,10 @@ public class NewsAdapter extends BoItemAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (getCursor() == null) return null;
-
+        //TODO change to Cursor item = (Cursor) getItem(position);
         getCursor().moveToPosition(position);
         if (position == getCursor().getCount() - 1) {
+            //TODO rename
             String next_from = CursorHelper.getString(getCursor(), VKContentProvider.NEWS_COLUMN_NEXT_FROM);
             loadMoreData(position+1, next_from);
         }

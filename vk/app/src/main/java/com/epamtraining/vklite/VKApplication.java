@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class VKApplication extends Application {
+    //TODO remove
     private ImageLoader mImageLoader;
     private VKExecutor mExecutor;
     private Map<String, Object> mSystemServices;
@@ -52,6 +53,7 @@ public class VKApplication extends Application {
     }
 
     private void initLocalServices(){
+        //TODO create common interface for all local services
         mSystemServices = new HashMap<String, Object>();
         mImageLoader = new ImageLoader(this);
         mExecutor = new VKExecutor();
@@ -59,7 +61,7 @@ public class VKApplication extends Application {
         mSystemServices.put(VKExecutor.KEY, mExecutor);
     }
 
-    public static <T> T get(Context context, String key) throws Exception{
+    public static <T> T get(Context context, String key) {
         if ((context == null)||(TextUtils.isEmpty(key))){
             throw new IllegalArgumentException("Parameters are null");
         }
@@ -67,7 +69,7 @@ public class VKApplication extends Application {
         if (systemService == null){
             systemService = (T)context.getApplicationContext().getSystemService(key);
             if (systemService == null){
-                throw new Exception("Service by key "+ key + " is unavaliable");
+                throw new IllegalArgumentException("Service by key "+ key + " is unavaliable");
             }
         }
         return systemService;

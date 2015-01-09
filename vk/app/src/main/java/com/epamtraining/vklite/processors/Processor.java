@@ -28,6 +28,7 @@ public  abstract class Processor  {
         mContext = context;
     }
 
+    //TODO create VKException that will extends from Exception and catch in Error handler
     private JSONObject getResponse(InputStream stream) throws Exception{
         if (stream == null){
             throw new Exception(mContext.getResources().getString(R.string.response_is_empty));
@@ -61,6 +62,7 @@ public  abstract class Processor  {
         throw new Exception(errorMsg);
     }
 
+    //TODO move to news related class
     public boolean getIsTopRequest()
     {
         return mIsTopRequest;

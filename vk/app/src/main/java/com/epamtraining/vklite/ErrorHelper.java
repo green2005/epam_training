@@ -32,9 +32,11 @@ public class ErrorHelper {
         }
     }
 
+    //TODO code format
     public static void showError(Context context, Exception e) {
         if (context != null) {
             String errorMessage;
+            //TODO check other types of error
             if (e.getClass().equals(java.net.UnknownHostException.class)) {
                 errorMessage = context.getResources().getString(R.string.checkInetConnection);
             } else

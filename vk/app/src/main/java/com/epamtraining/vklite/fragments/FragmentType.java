@@ -4,11 +4,13 @@ import android.net.Uri;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.VKContentProvider;
 
+//TODO change to MenuItem
 public enum FragmentType {
     NEWSFRAGMENT(1, R.string.news, R.drawable.ic_news, VKContentProvider.NEWS_CONTENT_URI),
     WALLFRAGMENT(2, R.string.wall, R.drawable.ic_wall, VKContentProvider.WALL_CONTENT_URI),
     FRIENDFRAGMENT(3, R.string.friends, R.drawable.ic_friends, VKContentProvider.FRIENDS_CONTENT_URI),
     DIALOGSFRAGMENT(4, R.string.messages, R.drawable.ic_messages, VKContentProvider.DIALOGS_CONTENT_URI),
+    //TODO remove нафик
     MESSAGESFRAGMENT(5, 0, 0, VKContentProvider.MESSAGES_CONTENT_URI), ;
     ;
 
@@ -29,6 +31,7 @@ public enum FragmentType {
         return mNameResourceId != 0;
     }
 
+    //TODO rename to getLoaderId
     public int getId() {
         return mId;
     }

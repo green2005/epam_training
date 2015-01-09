@@ -51,7 +51,8 @@ public class Friend extends BoItem {
 
     public String getNick() throws Exception {
         try {
-            return mJO.getString(NICKNAME);
+            //TODO
+            return mJO.optString(NICKNAME);
         } catch (Exception e) {
             throw new Exception(e);
         }

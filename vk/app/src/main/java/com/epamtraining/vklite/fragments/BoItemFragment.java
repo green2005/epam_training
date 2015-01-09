@@ -26,12 +26,14 @@ import com.epamtraining.vklite.adapters.DataAdapterCallback;
 import com.epamtraining.vklite.imageLoader.ImageLoader;
 import com.epamtraining.vklite.processors.Processor;
 
+//TODO split, create 2-3 abstraction
 public abstract class BoItemFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback,
         AdapterView.OnItemClickListener
 {
     private enum DataState {LOADING, NO_MORE_DATA, BROWSING};
     private ProgressBar mProgressBar;
+    //TODO will be new one with RecyclerView
     private ListView mListView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private View mFooterView;
@@ -39,6 +41,7 @@ public abstract class BoItemFragment extends Fragment
     private DataState mDataState = DataState.BROWSING;
     private DataSource mDataSource;
 
+    //TODO maybe change to some Configuration with Builder pattern
     public abstract FragmentType getItemFragmentType();
 
     public abstract String[] getDataFields();
@@ -58,6 +61,7 @@ public abstract class BoItemFragment extends Fragment
             mImageLoader.resumeLoadingImages();
         }
         mProgressBar = (ProgressBar) v.findViewById(R.id.progress);
+        //TODO do not map to ListView
         mListView = (ListView) v.findViewById(R.id.itemsList);
         mListView.setOnItemClickListener(this);
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -118,6 +122,7 @@ public abstract class BoItemFragment extends Fragment
     @Override
     public void onStop() {
         super.onStop();
+        //TODO stop image loader, remove this logic from adapter
         getAdapter().onStop();
     }
 
@@ -139,6 +144,7 @@ public abstract class BoItemFragment extends Fragment
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         getAdapter().swapCursor(null);
+        //TODO this method call when fragment destroyed
         loadDone();
     }
 
@@ -173,6 +179,7 @@ public abstract class BoItemFragment extends Fragment
     private void loadData(int offset, String id) {
         if (mDataState == DataState.BROWSING
                 ) {
+            //TODO REMOVE this magic (top request)
             getProcessor().setIsTopRequest(offset == 0);
             String url = getDataUrl(offset, id); //getItemFragmentType().getDataUrl(getActivity(), offset, id);
             if (mDataSource == null) {
@@ -218,14 +225,16 @@ public abstract class BoItemFragment extends Fragment
     }
 
     private void setFooterVisible(boolean isVisible) {
-        if (mListView != null && mFooterView != null) {
+        //TODO change to local variable
+        ListView listView = mListView;
+        if (listView != null && mFooterView != null) {
             if (isVisible) {
                 mFooterView.setVisibility(View.VISIBLE);
-                mListView.setFooterDividersEnabled(true);
+                listView.setFooterDividersEnabled(true);
             } else {
-                if (mListView.getFooterViewsCount() > 0) {
+                if (listView.getFooterViewsCount() > 0) {
                     mFooterView.setVisibility(View.GONE);
-                    mListView.setFooterDividersEnabled(false);
+                    listView.setFooterDividersEnabled(false);
                 }
             }
         }

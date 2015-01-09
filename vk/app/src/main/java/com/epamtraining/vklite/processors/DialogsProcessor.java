@@ -1,6 +1,7 @@
 package com.epamtraining.vklite.processors;
 
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 
@@ -70,8 +71,10 @@ public class DialogsProcessor extends Processor{
             value.put(VKContentProvider.USERS_COLUMN_IMAGE, userItem.getImageUrl());
             contentValues[i] = value;
         }
-        mContext.getContentResolver().delete(VKContentProvider.USERS_CONTENT_URI, null, null);
-        mContext.getContentResolver().bulkInsert(VKContentProvider.USERS_CONTENT_URI, contentValues);
+        //TODO
+        ContentResolver contentResolver = mContext.getContentResolver();
+        contentResolver.delete(VKContentProvider.USERS_CONTENT_URI, null, null);
+        contentResolver.bulkInsert(VKContentProvider.USERS_CONTENT_URI, contentValues);
     }
 
 
