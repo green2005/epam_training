@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Attachments extends BoItem {
@@ -34,10 +35,15 @@ public class Attachments extends BoItem {
     }
 
     public List<Attachment> getAttachments(){
+        //TODO maybe can use?
+        if (mAttachments == null) {
+            return Collections.emptyList();
+        }
         return mAttachments;
     }
 
     private Attachment getAttachment(JSONObject jo) throws JSONException{
+        //TODO check for NPE
         switch (jo.optString(TYPE)){
             case(ATTACHMENT_PHOTO):{
                 return new PhotoAttachment(jo.optJSONObject(ATTACHMENT_PHOTO));

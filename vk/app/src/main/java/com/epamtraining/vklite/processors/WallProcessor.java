@@ -50,7 +50,7 @@ public class WallProcessor extends Processor {
             }
             wallContentValues.add(mWallHelper.getContentValue(wallItem));
         }
-        if (getIsTopRequest()) {
+        if (isTopRequest()) {
             mContext.getContentResolver().delete(WallDBHelper.CONTENT_URI,
                     null,
                     null);

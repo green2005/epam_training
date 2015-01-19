@@ -128,6 +128,8 @@ public class AttachmentAudioHelper extends AttachmentHelper implements MediaPlay
     }
 
     private void seekBarNotification() {
+        //TODO performance
+        //Custom view with drawing on canvas
         mProgress.setProgress((int) (((float) mMediaPlayer.getCurrentPosition() / mMediaLength) * 100));
         if (mMediaPlayer.isPlaying()) {
             Runnable notification = new Runnable() {

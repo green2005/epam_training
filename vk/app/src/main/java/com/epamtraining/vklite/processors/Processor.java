@@ -66,7 +66,7 @@ public  abstract class Processor  {
     //we need it because should clear cache when retrieving data for the first time
     //and not to clear it in the case of pagination
     // it's used in NewsProcessor, WallProcessor, MessagesProcessor etc..
-    public boolean getIsTopRequest()
+    public boolean isTopRequest()
     {
         return mIsTopRequest;
     }

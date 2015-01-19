@@ -3,12 +3,10 @@ package com.epamtraining.vklite.processors;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.db.MessagesDBHelper;
 import com.epamtraining.vklite.db.UsersDBHelper;
-import com.epamtraining.vklite.db.VKContentProvider;
 import com.epamtraining.vklite.bo.Friend;
 import com.epamtraining.vklite.bo.Message;
 
@@ -47,7 +45,7 @@ public class MessagesProcessor extends Processor {
         mRecordsFetched = items.length();
         ContentResolver resolver =  mContext.getContentResolver();
         updateUserInfos(userIds, dataSource, resolver);
-        if (getIsTopRequest()) {
+        if (isTopRequest()) {
            resolver.delete(MessagesDBHelper.CONTENT_URI, null, null);
         }
 

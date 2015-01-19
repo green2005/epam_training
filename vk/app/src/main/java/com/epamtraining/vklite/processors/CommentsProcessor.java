@@ -6,7 +6,6 @@ import android.content.Context;
 
 import com.epamtraining.vklite.bo.Comment;
 import com.epamtraining.vklite.db.CommentsDBHelper;
-import com.epamtraining.vklite.db.NewsDBHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,7 +45,7 @@ public class CommentsProcessor extends Processor{
             value.put(CommentsDBHelper.POST_ID, mPostId);
             contentValues.add(value);
         }
-        if (getIsTopRequest()) {
+        if (isTopRequest()) {
             mContext.getContentResolver().delete(CommentsDBHelper.CONTENT_URI,
                     null,
                     null);

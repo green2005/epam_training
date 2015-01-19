@@ -10,6 +10,8 @@ import com.epamtraining.vklite.bo.BoItem;
 import java.util.List;
 
 public abstract class BODBHelper {
+
+    //TODO for note, Authority does not related to db helper, its related to ContentProvider
     public static final String AUTHORITY = "com.epamtraining.vk";
     public  static final String CONTENT_TYPE_PREFIX = "vnd.android.cursor.dir/vnd.";
     public final String CONTENT_ITEM_TYPE_PREFIX = "vnd.android.cursor.item/vnd.";

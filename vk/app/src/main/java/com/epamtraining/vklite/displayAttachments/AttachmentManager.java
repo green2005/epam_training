@@ -14,6 +14,9 @@ public class AttachmentManager {
     public static final int PHOTO = 0;
     public static final int VIDEO = 1;
     public static final int AUDIO = 2;
+    //TODO maps
+    //TODO post
+    //TODO repost
 
     private LayoutInflater mLayoutInflater;
     private Context mContext;
@@ -26,6 +29,7 @@ public class AttachmentManager {
     private int getAttachmentType(Cursor attachmentsCursor){
         String attachmentType = CursorHelper.getString(attachmentsCursor, AttachmentsDBHelper.ATTACHMENT_TYPE);
         switch (attachmentType) {
+            //TODO remove {}
             case (Attachments.ATTACHMENT_PHOTO): {
                 return AttachmentManager.PHOTO;
             }

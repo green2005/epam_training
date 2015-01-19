@@ -8,7 +8,6 @@ import android.content.Context;
 import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.db.DialogDBHelper;
 import com.epamtraining.vklite.db.UsersDBHelper;
-import com.epamtraining.vklite.db.VKContentProvider;
 import com.epamtraining.vklite.bo.Dialog;
 import com.epamtraining.vklite.bo.Friend;
 
@@ -46,7 +45,7 @@ public class DialogsProcessor extends Processor {
         }
         mRecordsFetched = dialogsItems.length();
         updateUserInfos(userIds, source);
-        if (getIsTopRequest()) {
+        if (isTopRequest()) {
             mContext.getContentResolver().delete(DialogDBHelper.CONTENT_URI, null, null);
         }
         if (contentValues.length > 0) {
@@ -73,7 +72,7 @@ public class DialogsProcessor extends Processor {
             contentValues[i] = value;
         }
         ContentResolver resolver = mContext.getContentResolver();
-        if (getIsTopRequest()) {
+        if (isTopRequest()) {
             resolver.delete(UsersDBHelper.CONTENT_URI, null, null);
         }
         if (contentValues.length > 0) {

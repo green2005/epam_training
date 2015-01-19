@@ -18,6 +18,10 @@ import java.util.List;
 
 public class VKContentProvider extends ContentProvider {
 
+    //TODO change to enum and use *.ordinal()
+    /*enum URI_TYPE {
+        NEWS(0);
+    }*/
     private static final int URI_NEWS = 1;
     private static final int URI_NEWS_ID = 2;
     private static final int URI_FRIENDS = 3;
@@ -49,6 +53,7 @@ public class VKContentProvider extends ContentProvider {
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        //TODO change to Thread safe - ConcurrentHashMap for example
         sBoDbHelpers = new HashMap();
         addUri(new DialogDBHelper(), URI_DIALOGS, URI_DIALOGS_ID);
         addUri(new NewsDBHelper(), URI_NEWS, URI_NEWS_ID);
@@ -207,7 +212,10 @@ public class VKContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
+        //TODO remove this magic
         HashSet<BODBHelper> helpers = new HashSet<>(sBoDbHelpers.values());
+
+        //TODO move to singleTon, bug on 9 or 10 api
         mDbManager = new DBManager(getContext(), helpers);
         return true;
     }

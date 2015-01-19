@@ -3,6 +3,7 @@ package com.epamtraining.vklite.processors;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 
 import com.epamtraining.vklite.bo.News;
 import com.epamtraining.vklite.db.AttachmentsDBHelper;
@@ -38,8 +39,8 @@ public class NewsProcessor extends Processor {
         PostersProcessor posters = new PostersProcessor(response);
         posters.process();
         JSONArray newsItems = response.getJSONArray(ITEMS);
-
         List<ContentValues> contentValues = new ArrayList<>();
+        //TODO organize imports
         java.text.DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(mContext);
         String nextNewsId = response.getString(NEXT_FROM);
         List<ContentValues> attachContentValues = new ArrayList<>();
@@ -59,7 +60,7 @@ public class NewsProcessor extends Processor {
             }
             contentValues.add(value);
         }
-        if (getIsTopRequest()) {
+        if (isTopRequest()) {
             mContext.getContentResolver().delete(NewsDBHelper.CONTENT_URI,
                     null,
                     null);
