@@ -1,12 +1,12 @@
 package com.epamtraining.vklite.processors;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.text.TextUtils;
 
-import com.epamtraining.vklite.VKContentProvider;
 import com.epamtraining.vklite.bo.News;
+import com.epamtraining.vklite.db.AttachmentsDBHelper;
+import com.epamtraining.vklite.db.NewsDBHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,109 +22,65 @@ public class NewsProcessor extends Processor {
 
     private Context mContext;
     private int mRecordsFetched;
+    private AttachmentsDBHelper mAttachmentDBHelper;
+    private NewsDBHelper mNewsDBHelper;
 
     public NewsProcessor(Context context) {
         super(context);
         mContext = context;
-    }
-
-    private String getPostIDByRawDate(String rawDate) {
-        Cursor cursor = mContext.getContentResolver().query(
-                VKContentProvider.NEWS_CONTENT_URI,
-                new String[]{VKContentProvider.NEWS_COLUMN_POST_ID}, VKContentProvider.NEWS_COLUMN_RAW_DATE + " = ?",
-                new String[]{rawDate}, null);
-        try {
-            if (cursor.getCount() > 0) {
-                cursor.moveToFirst();
-                return cursor.getString(0);
-            } else
-            {return null;}
-        } finally {
-            cursor.close();
-        }
+        mAttachmentDBHelper = new AttachmentsDBHelper();
+        mNewsDBHelper = new NewsDBHelper();
     }
 
     @Override
     public void process(InputStream stream, AdditionalInfoSource source) throws Exception {
-        String maxDate = null;
-        String postIDWithMaxDate = null;
-
-        if (getIsTopRequest()) {
-            //TODO create helper to work with cursors
-            Cursor cursor = mContext.getContentResolver().query(
-                    VKContentProvider.NEWS_CONTENT_URI,
-                    new String[]{"MAX(" + VKContentProvider.NEWS_COLUMN_RAW_DATE + ") AS max_date"}, null,
-                    null, null);
-            cursor.moveToFirst();
-            maxDate = cursor.getString(0);
-            cursor.close();
-        }
-
-        String next_from = "";
         JSONObject response = getVKResponseObject(stream);
         PostersProcessor posters = new PostersProcessor(response);
-        next_from = response.getString(NEXT_FROM);
+        posters.process();
         JSONArray newsItems = response.getJSONArray(ITEMS);
-        List<ContentValues> contentValues = new ArrayList<ContentValues>();
-        boolean delCache = !(TextUtils.isEmpty(maxDate));
+
+        List<ContentValues> contentValues = new ArrayList<>();
         java.text.DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(mContext);
+        String nextNewsId = response.getString(NEXT_FROM);
+        List<ContentValues> attachContentValues = new ArrayList<>();
 
         for (int i = 0; i < newsItems.length(); i++) {
             JSONObject jsonObject = newsItems.getJSONObject(i);
             News newsItem = new News(jsonObject, dateFormat);
-            if (!TextUtils.isEmpty(maxDate)) {
-                int compareDates = maxDate.compareTo(newsItem.getRawDate());
-                if (compareDates > 0) {
-                    delCache = false;
-                    break;
-                } else if (compareDates == 0) {
-                    if (TextUtils.isEmpty(postIDWithMaxDate)) {
-                        postIDWithMaxDate = getPostIDByRawDate(maxDate);
-                    }
-                    if (!TextUtils.isEmpty(postIDWithMaxDate)) {
-                        if (postIDWithMaxDate.equals(newsItem.getPostId())) {
-                            delCache = false;
-                            break;
-                        }
-                    }
-                }
-            }
 
-            if (i == 0) {
-                posters.process();
+            List<ContentValues> attaches = mAttachmentDBHelper.getContentValues(newsItem.getAttaches(), newsItem);
+            if (attaches != null) {
+                attachContentValues.addAll(attaches);
             }
-            PostersProcessor.Poster poster = posters.getPoster(newsItem.getPosterId());
-            ContentValues value = new ContentValues();
-            value.put(VKContentProvider.NEWS_COLUMN_TEXT, newsItem.getText());
-            value.put(VKContentProvider.NEWS_COLUMN_IMAGE_URL, newsItem.getImageUrl());
-            value.put(VKContentProvider.NEWS_COLUMN_DATE, newsItem.getDate());
-            value.put(VKContentProvider.NEWS_COLUMN_RAW_DATE, newsItem.getRawDate());
-            value.put(VKContentProvider.NEWS_COLUMN_POST_ID, newsItem.getPostId());
-            if (poster != null) {
-                value.put(VKContentProvider.NEWS_COLUMN_OWNER_ID, newsItem.getPosterId());
-                value.put(VKContentProvider.NEWS_COLUMN_USERNAME, poster.getName());
-                value.put(VKContentProvider.NEWS_COLUMN_USERIMAGE, poster.getmImageUrl());
-            }
+            newsItem.setUserInfo(posters.getPoster(Math.abs(newsItem.getPosterId())));
+            ContentValues value = mNewsDBHelper.getContentValue(newsItem);
             if (i == newsItems.length() - 1) {
-                value.put(VKContentProvider.NEWS_COLUMN_NEXT_FROM, next_from);
+                value.put(NewsDBHelper.NEXT_FROM, nextNewsId);
             }
             contentValues.add(value);
         }
-
-        if ((delCache) && (getIsTopRequest())) {
-            mContext.getContentResolver().delete(VKContentProvider.NEWS_CONTENT_URI,
-                    VKContentProvider.NEWS_COLUMN_RAW_DATE + " <= ?",
-                    new String[]{maxDate}); //delete old records from cache
+        if (getIsTopRequest()) {
+            mContext.getContentResolver().delete(NewsDBHelper.CONTENT_URI,
+                    null,
+                    null);
         }
-
         int i = 0;
+
         ContentValues vals[] = new ContentValues[contentValues.size()];
         contentValues.toArray(vals);
+
         mRecordsFetched = newsItems.length();
+        ContentResolver resolver = mContext.getContentResolver();
         if (vals.length > 0) {
-            mContext.getContentResolver().bulkInsert(VKContentProvider.NEWS_CONTENT_URI, vals);
+            resolver.bulkInsert(NewsDBHelper.CONTENT_URI, vals);
         }
-        mContext.getContentResolver().notifyChange(VKContentProvider.NEWS_CONTENT_URI, null);
+
+        ContentValues attaches[] = new ContentValues[attachContentValues.size()];
+        attachContentValues.toArray(attaches);
+        if (attaches.length > 0) {
+            resolver.bulkInsert(AttachmentsDBHelper.CONTENT_URI, attaches);
+        }
+        resolver.notifyChange(NewsDBHelper.CONTENT_URI, null);
     }
 
     @Override

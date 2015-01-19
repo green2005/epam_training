@@ -1,19 +1,12 @@
 package com.epamtraining.vklite.activities;
 
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
-import android.widget.Toast;
 
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.VKContentProvider;
 import com.epamtraining.vklite.fragments.BoItemFragment;
 import com.epamtraining.vklite.fragments.MessagesFragment;
 

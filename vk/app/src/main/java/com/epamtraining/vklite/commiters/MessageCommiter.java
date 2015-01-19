@@ -5,11 +5,14 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Message;
+import android.provider.BaseColumns;
 import android.text.TextUtils;
 
 import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.VKContentProvider;
+import com.epamtraining.vklite.db.MessagesDBHelper;
+import com.epamtraining.vklite.db.VKContentProvider;
 
 import org.json.JSONObject;
 
@@ -36,11 +39,11 @@ public class MessageCommiter extends Commiter {
                 new String[]{rawDate}, null);
          */
         Cursor cursor = mResolver.query(
-                VKContentProvider.MESSAGES_CONTENT_URI,
-                new String[]{VKContentProvider.MESSAGES_ID, VKContentProvider.MESSAGES_PENDING,
-                        VKContentProvider.MESSAGES_COLUMN_BODY, VKContentProvider.MESSAGES_USER_FROM_ID,
-                        VKContentProvider.MESSAGES_USER_ID
-                }, VKContentProvider.MESSAGES_PENDING + " = ?",
+                MessagesDBHelper.CONTENT_URI,
+                new String[]{BaseColumns._ID, MessagesDBHelper.PENDING,
+                        MessagesDBHelper.BODY, MessagesDBHelper.FROM_ID,
+                        MessagesDBHelper.USER_ID
+                }, MessagesDBHelper.PENDING + " = ?",
                 new String[]{"1"}, null
         );
         return cursor;
@@ -67,21 +70,21 @@ public class MessageCommiter extends Commiter {
     }
 
     protected String getUrl(Cursor cr) throws Exception{
-        String userId = cr.getString(cr.getColumnIndex(VKContentProvider.MESSAGES_USER_ID));
-        String message = cr.getString(cr.getColumnIndex(VKContentProvider.MESSAGES_COLUMN_BODY));
+        String userId = cr.getString(cr.getColumnIndex(MessagesDBHelper.USER_ID));
+        String message = cr.getString(cr.getColumnIndex(MessagesDBHelper.BODY));
         return Api.getMessagesCommitUrl(mContext, userId, message);
     }
 
     protected void setRecordAffected(Cursor cursor){
-        int id = cursor.getInt(cursor.getColumnIndex(VKContentProvider.MESSAGES_ID));
+        int id = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
         ContentValues contentValues = new ContentValues();
-        contentValues.put(VKContentProvider.MESSAGES_PENDING, 0);
+        contentValues.put(MessagesDBHelper.PENDING, 0);
 //        mResolver.update(VKContentProvider.MESSAGES_CONTENT_URI,
 //                VKContentProvider.MESSAGES_ID + " = ?",
 //                new String[]{id+""});
 
-        mResolver.update(VKContentProvider.MESSAGES_CONTENT_URI,
-                contentValues,VKContentProvider.MESSAGES_ID + " = ?",
+        mResolver.update(MessagesDBHelper.CONTENT_URI,
+                contentValues,BaseColumns._ID + " = ?",
                 new String[]{id+""});
 
     }

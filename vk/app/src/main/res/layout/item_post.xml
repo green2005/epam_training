@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:text="newsItemText"
         android:paddingTop="4dp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/primary_text"
         />
     <com.epamtraining.vklite.ResizableImageView
         android:id="@+id/image"

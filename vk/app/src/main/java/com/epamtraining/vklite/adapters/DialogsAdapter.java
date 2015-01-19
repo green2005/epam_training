@@ -3,15 +3,17 @@ package com.epamtraining.vklite.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.epamtraining.vklite.CursorHelper;
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.VKContentProvider;
+import com.epamtraining.vklite.db.DialogDBHelper;
+import com.epamtraining.vklite.db.UsersDBHelper;
+import com.epamtraining.vklite.db.VKContentProvider;
 
 public class DialogsAdapter extends BoItemAdapter {
     private LayoutInflater mInflater;
@@ -23,43 +25,29 @@ public class DialogsAdapter extends BoItemAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        //TODO replace with local variable
-        if (getCursor() == null) return null;
-        getCursor().moveToPosition(position);
-        if (position == getCursor().getCount() - 1) {
-            loadMoreData(position+1, null);
+        Cursor cursor = (Cursor) getItem(position);
+        if (cursor == null){ return null;}
+        if (position == cursor.getCount() - 1) {
+            loadMoreData(position + 1, null);
         }
-
         View v = convertView;
-        ViewHolder holder = null;
-        if (v == null){
+        ViewHolder holder;
+        if (v == null) {
             v = mInflater.inflate(R.layout.item_dialogs, null);
             holder = new ViewHolder();
-            holder.date = (TextView)v.findViewById(R.id.date);
-            holder.message = (TextView)v.findViewById(R.id.message);
-            holder.userImage = (ImageView)v.findViewById(R.id.userImage);
-            holder.userName = (TextView)v.findViewById(R.id.usernametextview);
+            holder.date = (TextView) v.findViewById(R.id.date);
+            holder.message = (TextView) v.findViewById(R.id.message);
+            holder.userImage = (ImageView) v.findViewById(R.id.userImage);
+            holder.userName = (TextView) v.findViewById(R.id.usernametextview);
             v.setTag(holder);
-        } else
-        {
+        } else {
             holder = (ViewHolder) v.getTag();
         }
-        holder.date.setText(getCursor().getString(getCursor().getColumnIndex(VKContentProvider.DIALOGS_COLUMN_DATE)));
-        loadImage(getCursor().getColumnIndex(VKContentProvider.USERS_COLUMN_IMAGE), holder.userImage);
-        holder.userName.setText(getCursor().getString(getCursor().getColumnIndex(VKContentProvider.USERS_COLUMN_NAME)));
-        holder.message.setText(getCursor().getString(getCursor().getColumnIndex(VKContentProvider.DIALOGS_COLUMN_BODY)));
+        holder.date.setText(CursorHelper.getString(cursor, DialogDBHelper.DATE));
+        populateImageView(holder.userImage, CursorHelper.getString(cursor, UsersDBHelper.IMAGE));
+        holder.userName.setText(CursorHelper.getString(cursor, UsersDBHelper.NAME));
+        holder.message.setText(CursorHelper.getString(cursor, DialogDBHelper.BODY));
         return v;
-    }
-
-    private void loadImage(int imageColumnIndex, ImageView imageView){
-        if (TextUtils.isEmpty(getCursor().getString(imageColumnIndex))) {
-            imageView.setVisibility(View.GONE);
-        } else {
-            if (getImageLoader() != null) {
-                imageView.setVisibility(View.VISIBLE);
-                getImageLoader().loadImage(imageView, getCursor().getString(imageColumnIndex));
-            }
-        }
     }
 
     private class ViewHolder{

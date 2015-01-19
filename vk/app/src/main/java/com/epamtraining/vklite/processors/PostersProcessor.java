@@ -2,8 +2,7 @@ package com.epamtraining.vklite.processors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.HashMap;
+import com.epamtraining.vklite.bo.Poster;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,30 +18,11 @@ public class PostersProcessor {
     private static final String USER_IMAGEURL = "photo_100";
     private static final String USER_ID = "id";
 
-     class Poster {
-        private String mName;
-        private String mImageUrl;
-
-        Poster(String name, String imageUrl) {
-            mName = name;
-            mImageUrl = imageUrl;
-        }
-
-        public String getName() {
-            return mName;
-        }
-
-         //TODO
-        public String getmImageUrl() {
-            return mImageUrl;
-        }
-    }
-
     private JSONObject mJo;
     private Map<Long, Poster> mPostersMap;
     public PostersProcessor(JSONObject jo) {
         mJo = jo;
-        mPostersMap = new ConcurrentHashMap<Long, Poster>();
+        mPostersMap = new ConcurrentHashMap<>();
     }
 
     public void process() throws Exception {

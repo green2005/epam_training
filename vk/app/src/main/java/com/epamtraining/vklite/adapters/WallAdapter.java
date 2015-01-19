@@ -1,11 +1,7 @@
 package com.epamtraining.vklite.adapters;
 
-
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +10,10 @@ import android.widget.TextView;
 
 import com.epamtraining.vklite.CursorHelper;
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.VKContentProvider;
+import com.epamtraining.vklite.db.VKContentProvider;
+import com.epamtraining.vklite.db.WallDBHelper;
 
 public class WallAdapter extends BoItemAdapter {
-    private Context mContext;
     private LayoutInflater mInflater;
 
     public WallAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
@@ -27,28 +23,9 @@ public class WallAdapter extends BoItemAdapter {
     }
 
     @Override
-    public int getCount() {
-        if (getCursor() != null)
-            return getCursor().getCount();
-        else
-            return 0;
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return getCursor();
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (getCursor() == null) return null;
-
-        getCursor().moveToPosition(position);
+        Cursor cursor = (Cursor)getItem(position);
+        if (cursor == null){return null;}
         if (position == getCursor().getCount() - 1) {
             loadMoreData(position + 1, null);
         }
@@ -66,19 +43,12 @@ public class WallAdapter extends BoItemAdapter {
         } else {
             holder = (ViewHolder) v.getTag();
         }
-        CursorHelper.setText(holder.date, getCursor(), VKContentProvider.WALL_COLUMN_DATE);
-        CursorHelper.setText(holder.text, getCursor(), VKContentProvider.WALL_COLUMN_TEXT);
-        CursorHelper.setText(holder.userName, getCursor(), VKContentProvider.WALL_COLUMN_USERNAME);
-        populateImageView(holder.image, CursorHelper.getString(getCursor(), VKContentProvider.WALL_COLUMN_IMAGE_URL));
-        populateImageView(holder.userImage, CursorHelper.getString(getCursor(), VKContentProvider.WALL_COLUMN_USERIMAGE));
+        holder.date.setText(CursorHelper.getString(cursor, WallDBHelper.DATE));
+        holder.text.setText(CursorHelper.getString(cursor, WallDBHelper.TEXT));
+        holder.userName.setText(CursorHelper.getString(cursor, WallDBHelper.USERNAME));
+        populateImageView(holder.image, CursorHelper.getString(getCursor(), WallDBHelper.IMAGE_URL));
+        populateImageView(holder.userImage, CursorHelper.getString(getCursor(), WallDBHelper.USERIMAGE));
         return v;
-    }
-
-
-
-    public void onStop() {
-        if (getImageLoader() != null)
-            getImageLoader().stopLoadingImages();
     }
 
     class ViewHolder {

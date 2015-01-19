@@ -4,33 +4,31 @@ package com.epamtraining.vklite.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.view.View;
 import android.widget.AdapterView;
 
 import com.epamtraining.vklite.Api;
-import com.epamtraining.vklite.MainActivity;
+import com.epamtraining.vklite.CursorHelper;
+import com.epamtraining.vklite.activities.MainActivity;
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.VKContentProvider;
+import com.epamtraining.vklite.db.FriendDBHelper;
+import com.epamtraining.vklite.db.VKContentProvider;
 import com.epamtraining.vklite.adapters.BoItemAdapter;
 import com.epamtraining.vklite.adapters.DataAdapterCallback;
 import com.epamtraining.vklite.adapters.FriendsAdapter;
 import com.epamtraining.vklite.processors.FriendsProcessor;
 import com.epamtraining.vklite.processors.Processor;
 
-import java.nio.charset.MalformedInputException;
-
-public class FriendsFragment extends BoItemFragment implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback {
+public class FriendsFragment extends BoItemFragment implements LoaderManager.LoaderCallbacks<Cursor>,
+        DataAdapterCallback  {
     private BoItemAdapter mAdapter;
     private Processor mProcessor;
     private int requestCode = -1;
 
-    private static final String[] fields = new String[]{
-            VKContentProvider.NEWS_COULMN_ID,
-            VKContentProvider.FRIEND_COLUMN_ID, VKContentProvider.FRIEND_COLUMN_FIRST_NAME
-            , VKContentProvider.FRIEND_COLUMN_IMAGE_URL, VKContentProvider.FRIEND_COLUMN_LAST_NAME,
-            VKContentProvider.FRIEND_COLUMN_NICK_NAME};
+    private static final String[] fields =  FriendDBHelper.fields;
 
 
     public static FriendsFragment getNewFragment(Bundle bundle) {
@@ -52,11 +50,6 @@ public class FriendsFragment extends BoItemFragment implements LoaderManager.Loa
         }
         mAdapter = new FriendsAdapter(getActivity(), R.layout.item_post, null, getDataFields(), null, 0);
         mProcessor = new FriendsProcessor(getActivity());
-    }
-
-    @Override
-    public FragmentType getItemFragmentType() {
-        return FragmentType.FRIENDFRAGMENT;
     }
 
 
@@ -81,18 +74,28 @@ public class FriendsFragment extends BoItemFragment implements LoaderManager.Loa
     }
 
     @Override
+    public Uri getContentsUri() {
+        return FriendDBHelper.CONTENT_URI;
+    }
+
+    @Override
+    public int getLoaderId() {
+        return LoaderManagerIds.FRIENDS.getId();
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (mAdapter.getCursor() != null) {
+        Cursor cursor = mAdapter.getCursor();
+        if (cursor != null) {
             if (requestCode == MainActivity.REQUEST_CODE_CHOOSE_FRIEND) {
-                mAdapter.getCursor().moveToPosition(position);
-                String userId = mAdapter.getCursor().getString(mAdapter.getCursor().getColumnIndex(VKContentProvider.FRIEND_COLUMN_ID));
-                String firstName = mAdapter.getCursor().getString(mAdapter.getCursor().getColumnIndex(VKContentProvider.FRIEND_COLUMN_FIRST_NAME));
-                String lastName = mAdapter.getCursor().getString(mAdapter.getCursor().getColumnIndex(VKContentProvider.FRIEND_COLUMN_LAST_NAME));
-                //String userName = (firstName + " " +lastName).trim();
+                cursor.moveToPosition(position);
+                String userId = CursorHelper.getString(cursor, FriendDBHelper.ID);
+                String firstName =  CursorHelper.getString(cursor, FriendDBHelper.FIRST_NAME);
+                String lastName =  CursorHelper.getString(cursor, FriendDBHelper.LAST_NAME);
                 Intent intent = new Intent();
-                intent.putExtra(VKContentProvider.FRIEND_COLUMN_ID, userId);
-                intent.putExtra(VKContentProvider.FRIEND_COLUMN_FIRST_NAME, firstName);
-                intent.putExtra(VKContentProvider.FRIEND_COLUMN_LAST_NAME, lastName);
+                intent.putExtra(FriendDBHelper.ID, userId);
+                intent.putExtra(FriendDBHelper.FIRST_NAME, firstName);
+                intent.putExtra(FriendDBHelper.LAST_NAME, lastName);
                 getActivity().setResult(Activity.RESULT_OK, intent);
                 getActivity().finish();
             }

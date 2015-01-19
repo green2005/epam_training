@@ -8,6 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import java.io.IOException;
+
 public class ErrorHelper {
     public static void showError(Context context, String errorMessage) {
         if (context != null) {
@@ -17,6 +19,7 @@ public class ErrorHelper {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                 }
+
             });
             builder.setTitle(context.getResources().getString(R.string.error));
             builder.setCancelable(false);
@@ -32,17 +35,17 @@ public class ErrorHelper {
         }
     }
 
-    //TODO code format
     public static void showError(Context context, Exception e) {
         if (context != null) {
             String errorMessage;
-            //TODO check other types of error
-            if (e.getClass().equals(java.net.UnknownHostException.class)) {
+            if (e instanceof  VKException) {
+                errorMessage = context.getResources().getString(R.string.vkError) + "/" + e.getMessage();
+            } else if (e instanceof IOException) {
                 errorMessage = context.getResources().getString(R.string.checkInetConnection);
-            } else
-            {
+            } else {
                 errorMessage = e.getMessage();
-            };
+            }
+            ;
             if (TextUtils.isEmpty(errorMessage))
                 errorMessage = e.toString();
             showError(context, errorMessage);

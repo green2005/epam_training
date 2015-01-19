@@ -1,11 +1,14 @@
 package com.epamtraining.vklite.processors;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.text.TextUtils;
 
 import com.epamtraining.vklite.Api;
-import com.epamtraining.vklite.VKContentProvider;
+import com.epamtraining.vklite.db.MessagesDBHelper;
+import com.epamtraining.vklite.db.UsersDBHelper;
+import com.epamtraining.vklite.db.VKContentProvider;
 import com.epamtraining.vklite.bo.Friend;
 import com.epamtraining.vklite.bo.Message;
 
@@ -34,32 +37,25 @@ public class MessagesProcessor extends Processor {
         ContentValues contentValues[] = new ContentValues[items.length()];
         java.text.DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(mContext);
         HashSet<String> userIds = new HashSet<>();
+        MessagesDBHelper helper = new MessagesDBHelper();
         for (int i = 0; i < items.length(); i++){
             Message msg = new Message(items.getJSONObject(i), dateFormat);
-            ContentValues value = new ContentValues();
-            value.put(VKContentProvider.MESSAGES_COLUMN_BODY, msg.getBody());
-            value.put(VKContentProvider.MESSAGES_DATE, msg.getDate());
-            value.put(VKContentProvider.MESSAGES_RAW_DATE, msg.getRawDate());
-            value.put(VKContentProvider.MESSAGES_MESSAGE_ID, msg.getId());
-            value.put(VKContentProvider.MESSAGES_USER_FROM_ID, msg.getFromId());
-            value.put(VKContentProvider.MESSAGES_MESSAGE_ID, msg.getId());
-            value.put(VKContentProvider.MESSAGES_OUT, msg.getOut());
-            if (!TextUtils.isEmpty(msg.getmImageUrl())) {
-                value.put(VKContentProvider.MESSAGES_IMAGE_URL, msg.getmImageUrl());
-            }
+            ContentValues value =  helper.getContentValue(msg);
             userIds.add(msg.getFromId());
             contentValues[i] = value;
         }
         mRecordsFetched = items.length();
-        updateUserInfos(userIds, dataSource);
+        ContentResolver resolver =  mContext.getContentResolver();
+        updateUserInfos(userIds, dataSource, resolver);
         if (getIsTopRequest()) {
-            mContext.getContentResolver().delete(VKContentProvider.MESSAGES_CONTENT_URI, null, null);
+           resolver.delete(MessagesDBHelper.CONTENT_URI, null, null);
         }
-        mContext.getContentResolver().bulkInsert(VKContentProvider.MESSAGES_CONTENT_URI, contentValues);
-        mContext.getContentResolver().notifyChange(VKContentProvider.MESSAGES_CONTENT_URI, null);
+
+        resolver.bulkInsert(MessagesDBHelper.CONTENT_URI, contentValues);
+        resolver.notifyChange(MessagesDBHelper.CONTENT_URI, null);
     }
 
-    private void updateUserInfos(Set<String> userIds, AdditionalInfoSource source) throws  Exception{
+    private void updateUserInfos(Set<String> userIds, AdditionalInfoSource source, ContentResolver resolver) throws  Exception{
         StringBuilder stringBuilder = new StringBuilder();
         for (String user:userIds){
             stringBuilder.append(user);
@@ -70,16 +66,13 @@ public class MessagesProcessor extends Processor {
         InputStream stream = source.getAdditionalInfo(uri);
         JSONArray userItems = getVKResponseArray(stream);
         ContentValues[] contentValues = new ContentValues[userItems.length()];
+        UsersDBHelper helper = new UsersDBHelper();
         for (int i = 0 ; i < userItems.length(); i++){
             Friend userItem = new Friend(userItems.getJSONObject(i));
-            ContentValues value = new ContentValues();
-            value.put(VKContentProvider.USERS_COLUMN_ID, userItem.getId());
-            value.put(VKContentProvider.USERS_COLUMN_NAME, userItem.getName());
-            value.put(VKContentProvider.USERS_COLUMN_IMAGE, userItem.getImageUrl());
+            ContentValues value =helper.getContentValue(userItem);
             contentValues[i] = value;
         }
-        //mContext.getContentResolver().delete(VKContentProvider.USERS_CONTENT_URI, null, null);
-        mContext.getContentResolver().bulkInsert(VKContentProvider.USERS_CONTENT_URI, contentValues);
+         resolver.bulkInsert(UsersDBHelper.CONTENT_URI, contentValues);
     }
     @Override
     public int getRecordsFetched() {

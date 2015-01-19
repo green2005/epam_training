@@ -8,69 +8,52 @@ public class Friend extends BoItem {
     private static final String LAST_NAME = "last_name";
     private static final String NICKNAME = "nickname";
     private static final String PHOTO = "photo_100";
-    private static final String ONLINE = "online";
     private static final String ID = "id";
 
+    private String mName;
+    private String mFirstName;
+    private String mLastName;
+    private String mId;
+    private String mNickName;
+    private String mPhoto;
 
-    public Friend(JSONObject jo) {
+    public Friend(JSONObject jo) throws Exception {
         mJO = jo;
+        mFirstName = mJO.optString(FIRST_NAME);
+        mLastName = mJO.optString(LAST_NAME);
+        mName = (mFirstName + " " + mLastName).trim();
+        mId =  mJO.getString(ID);
+        mNickName = mJO.optString(NICKNAME);
+        mPhoto = mJO.getString(PHOTO);
     }
 
-    public String getName() throws Exception {
-        try {
-            return mJO.getString(FIRST_NAME)+" "+mJO.getString(LAST_NAME);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+    public String getName() {
+        return mName;
+
     }
 
-    public String getFirstName() throws Exception {
-        try {
-            return mJO.getString(FIRST_NAME);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+    public String getFirstName() {
+        return mFirstName;
     }
 
-    public String getLastName() throws Exception {
-        try {
-            return mJO.getString(LAST_NAME);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+    public String getLastName()  {
+       return mLastName;
     }
 
 
-    public String getId()throws Exception{
-        try {
-            return mJO.getString(ID);
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+    public String getId() {
+        return mId;
+
     }
 
-    public String getNick() throws Exception {
-        try {
-            //TODO
-            return mJO.optString(NICKNAME);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+    public String getNick() {
+        return mNickName;
+
     }
 
-    public String getImageUrl() throws Exception {
-        try {
-            return mJO.getString(PHOTO);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+    public String getImageUrl()   {
+        return mPhoto;
+
     }
 
-    public boolean getIsOnline() throws Exception {
-        try {
-            return mJO.getBoolean(ONLINE);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
-    }
 }

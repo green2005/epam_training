@@ -1,11 +1,9 @@
 package com.epamtraining.vklite.commiters;
 
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Handler;
-import android.text.TextUtils;
 
 import java.net.HttpURLConnection;
 import java.net.URL;

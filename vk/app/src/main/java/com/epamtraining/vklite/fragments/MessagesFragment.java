@@ -4,7 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.text.TextUtils;
@@ -18,7 +20,9 @@ import android.widget.ListView;
 import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.ErrorHelper;
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.VKContentProvider;
+import com.epamtraining.vklite.db.MessagesDBHelper;
+import com.epamtraining.vklite.db.UsersDBHelper;
+import com.epamtraining.vklite.db.VKContentProvider;
 import com.epamtraining.vklite.adapters.BoItemAdapter;
 import com.epamtraining.vklite.adapters.DataAdapterCallback;
 import com.epamtraining.vklite.adapters.MessagesAdapter;
@@ -30,18 +34,18 @@ import com.epamtraining.vklite.processors.Processor;
 
 import java.util.Date;
 
-public class MessagesFragment extends BoItemFragment
+public class MessagesFragment extends BaseVKListViewFragment
         implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback {
     private static final String[] fields = new String[]{
-            VKContentProvider.MESSAGES_USER_FROM_ID,
-            VKContentProvider.MESSAGES_COLUMN_BODY,
-            VKContentProvider.MESSAGES_DATE,
-            VKContentProvider.MESSAGES_MESSAGE_ID,
-            VKContentProvider.MESSAGES_ID,
-            VKContentProvider.MESSAGES_IMAGE_URL,
-            VKContentProvider.USERS_COLUMN_NAME,
-            VKContentProvider.USERS_COLUMN_IMAGE,
-            VKContentProvider.MESSAGES_OUT
+            MessagesDBHelper.FROM_ID,
+            MessagesDBHelper.BODY,
+            MessagesDBHelper.DATE,
+            MessagesDBHelper.ID,
+            BaseColumns._ID,
+            MessagesDBHelper.IMAGE_URL,
+            UsersDBHelper.NAME,
+            UsersDBHelper.IMAGE,
+            MessagesDBHelper.OUT
     };
 
     private static final String MESSAGE_EDIT = "msgEdit";
@@ -66,20 +70,15 @@ public class MessagesFragment extends BoItemFragment
         mProcessor = new MessagesProcessor(getActivity());
         Bundle b = getArguments();
         if (b != null){
-            if (b.containsKey(VKContentProvider.USERS_COLUMN_ID)) {
-                mUserId = b.getString(VKContentProvider.USERS_COLUMN_ID);
+            if (b.containsKey(UsersDBHelper.ID)) {
+                mUserId = b.getString(UsersDBHelper.ID);
             }
-            if (b.containsKey(VKContentProvider.USERS_COLUMN_NAME)){
-                String userName = b.getString(VKContentProvider.USERS_COLUMN_NAME);
+            if (b.containsKey(UsersDBHelper.NAME)){
+                String userName = b.getString(UsersDBHelper.NAME);
                 String title = getResources().getString(R.string.messages)+" "+userName;
                 getActivity().setTitle(title);
             }
         }
-    }
-
-    @Override
-    public FragmentType getItemFragmentType() {
-        return FragmentType.MESSAGESFRAGMENT;
     }
 
     @Override
@@ -100,6 +99,16 @@ public class MessagesFragment extends BoItemFragment
     @Override
     public String getDataUrl(int offset, String next_id) {
         return Api.getMessagesUrl(getActivity(), offset+"", mUserId);
+    }
+
+    @Override
+    public Uri getContentsUri() {
+        return MessagesDBHelper.CONTENT_URI;
+    }
+
+    @Override
+    public int getLoaderId() {
+        return LoaderManagerIds.MESSAGES.getId();
     }
 
     protected void onAfterCreateView(View view) {
@@ -147,20 +156,20 @@ public class MessagesFragment extends BoItemFragment
 
     private void sendMessage(String message){
         ContentValues values = new ContentValues();
-        String currentUserId = Api.getUserId(getActivity());
-        values.put(VKContentProvider.MESSAGES_USER_FROM_ID, currentUserId);
-        values.put(VKContentProvider.MESSAGES_USER_ID, mUserId);
-        values.put(VKContentProvider.MESSAGES_OUT, "1");
+        String currentUserId = Api.getUserId(getActivity().getApplication());
+        values.put(MessagesDBHelper.FROM_ID, currentUserId);
+        values.put(MessagesDBHelper.USER_ID, mUserId);
+        values.put(MessagesDBHelper.OUT, "1");
         Date date = new Date();
         long rawDate = date.getTime()/1000;
-        values.put(VKContentProvider.MESSAGES_RAW_DATE, rawDate);
+        values.put(MessagesDBHelper.RAW_DATE, rawDate);
         java.text.DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getActivity());
         String cDate = dateFormat.format(date);
-        values.put(VKContentProvider.MESSAGES_DATE, cDate);
-        values.put(VKContentProvider.MESSAGES_PENDING,"1");
-        values.put(VKContentProvider.MESSAGES_COLUMN_BODY, message);
-        getActivity().getContentResolver().insert(VKContentProvider.MESSAGES_CONTENT_URI, values);
-        getActivity().getContentResolver().notifyChange(VKContentProvider.MESSAGES_CONTENT_URI, null);
+        values.put(MessagesDBHelper.DATE, cDate);
+        values.put(MessagesDBHelper.PENDING,"1");
+        values.put(MessagesDBHelper.BODY, message);
+        getActivity().getContentResolver().insert(MessagesDBHelper.CONTENT_URI, values);
+        getActivity().getContentResolver().notifyChange(MessagesDBHelper.CONTENT_URI, null);
         commitPendingMessages();
     }
 
@@ -168,13 +177,13 @@ public class MessagesFragment extends BoItemFragment
         CommiterCallback commiterCallback = new CommiterCallback() {
             @Override
             public void onAfterExecute() {
-                getActivity().getContentResolver().notifyChange(VKContentProvider.MESSAGES_CONTENT_URI, null);
+                getActivity().getContentResolver().notifyChange(MessagesDBHelper.CONTENT_URI, null);
             }
 
             @Override
             public void onException(Exception e) {
                 ErrorHelper.showError(getActivity(), e);
-                getActivity().getContentResolver().notifyChange(VKContentProvider.MESSAGES_CONTENT_URI, null);
+                getActivity().getContentResolver().notifyChange(MessagesDBHelper.CONTENT_URI, null);
             }
         };
         Commiter messageCommiter = new MessageCommiter(commiterCallback, getActivity());

@@ -4,6 +4,7 @@ package com.epamtraining.vklite.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.text.TextUtils;
@@ -12,12 +13,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import com.epamtraining.vklite.Api;
-import com.epamtraining.vklite.MainActivity;
+import com.epamtraining.vklite.CursorHelper;
+import com.epamtraining.vklite.activities.MainActivity;
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.VKContentProvider;
+import com.epamtraining.vklite.db.DialogDBHelper;
+import com.epamtraining.vklite.db.FriendDBHelper;
+import com.epamtraining.vklite.db.NewsDBHelper;
+import com.epamtraining.vklite.db.UsersDBHelper;
+import com.epamtraining.vklite.db.VKContentProvider;
 import com.epamtraining.vklite.activities.ChooseFriendActivity;
 import com.epamtraining.vklite.activities.MessagesActivity;
 import com.epamtraining.vklite.adapters.BoItemAdapter;
@@ -27,24 +32,18 @@ import com.epamtraining.vklite.processors.DialogsProcessor;
 import com.epamtraining.vklite.processors.Processor;
 
 public class DialogsFragment extends BoItemFragment
-        implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback {
+        implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback  {
 
     private static final String[] fields = new String[]{
-            VKContentProvider.DIALOGS_COLUMN_USER_ID, VKContentProvider.DIALOGS_COLUMN_BODY,
-            VKContentProvider.DIALOGS_COLUMN_DATE, VKContentProvider.DIALOGS_COLUMN_MESSAGE_ID,
-            VKContentProvider.DIALOGS_COLUMN_TITLE, VKContentProvider.USERS_COLUMN_NAME,
-            VKContentProvider.USERS_COLUMN_IMAGE,
-            VKContentProvider.DIALOGS_COLUMN_ID
+            DialogDBHelper.USER_ID, DialogDBHelper.BODY,
+            DialogDBHelper.DATE, DialogDBHelper.ID,
+            DialogDBHelper.TITLE, UsersDBHelper.NAME,
+            UsersDBHelper.IMAGE,
+            UsersDBHelper.ID
     };
 
     private BoItemAdapter mAdapter;
     private Processor mProcessor;
-
-
-    @Override
-    public FragmentType getItemFragmentType() {
-        return FragmentType.DIALOGSFRAGMENT;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,10 +76,10 @@ public class DialogsFragment extends BoItemFragment
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case (MainActivity.REQUEST_CODE_CHOOSE_FRIEND): {
-                    String userId = data.getStringExtra(VKContentProvider.FRIEND_COLUMN_ID);
-                    String firstName = data.getStringExtra(VKContentProvider.FRIEND_COLUMN_FIRST_NAME);
-                    String lastName = data.getStringExtra(VKContentProvider.FRIEND_COLUMN_LAST_NAME);
-                    String userName = (firstName +" " +lastName).trim();
+                    String userId = data.getStringExtra(FriendDBHelper.ID);
+                    String firstName = data.getStringExtra(FriendDBHelper.FIRST_NAME);
+                    String lastName = data.getStringExtra(FriendDBHelper.LAST_NAME);
+                    String userName = (firstName + " " + lastName).trim();
                     if (!TextUtils.isEmpty(userId)) {
                         startMessagesActivity(userId, userName);
                     }
@@ -110,6 +109,16 @@ public class DialogsFragment extends BoItemFragment
         return Api.getDialogsUrl(getActivity(), offset + "");
     }
 
+    @Override
+    public Uri getContentsUri() {
+        return DialogDBHelper.CONTENT_URI;
+    }
+
+    @Override
+    public int getLoaderId() {
+        return LoaderManagerIds.DIALOGS.getId();
+    }
+
     public static DialogsFragment getNewFragment() {
         DialogsFragment dialogsFragment = new DialogsFragment();
         return dialogsFragment;
@@ -118,19 +127,20 @@ public class DialogsFragment extends BoItemFragment
     private void startMessagesActivity(String userId, String userName) {
         Intent intent = new Intent(this.getActivity(), MessagesActivity.class);
         //intent.putExtra(VKContentProvider.DIALOGS_COLUMN_MESSAGE_ID, messageId);
-        intent.putExtra(VKContentProvider.USERS_COLUMN_ID, userId);
-        intent.putExtra(VKContentProvider.USERS_COLUMN_NAME, userName);
+        intent.putExtra(UsersDBHelper.ID, userId);
+        intent.putExtra(UsersDBHelper.NAME, userName);
         startActivity(intent);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (mAdapter.getCursor() != null) {
-            mAdapter.getCursor().moveToPosition(position);
-            //String messageId = mAdapter.getCursor().getString(mAdapter.getCursor().getColumnIndex(VKContentProvider.DIALOGS_COLUMN_MESSAGE_ID));
-            String userId = mAdapter.getCursor().getString(mAdapter.getCursor().getColumnIndex(VKContentProvider.USERS_COLUMN_ID));
-            String userName = mAdapter.getCursor().getString(mAdapter.getCursor().getColumnIndex(VKContentProvider.USERS_COLUMN_NAME));
-            startMessagesActivity(userId, userName);
+        Cursor cursor = mAdapter.getCursor();
+        if (cursor != null) {
+                cursor.moveToPosition(position);
+                //String messageId = mAdapter.getCursor().getString(mAdapter.getCursor().getColumnIndex(VKContentProvider.DIALOGS_COLUMN_MESSAGE_ID));
+                String userId = CursorHelper.getString(cursor, DialogDBHelper.USER_ID);
+                String userName = CursorHelper.getString(cursor, UsersDBHelper.NAME);
+                startMessagesActivity(userId, userName);
         }
     }
 }

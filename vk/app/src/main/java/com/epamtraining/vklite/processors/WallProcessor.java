@@ -1,13 +1,13 @@
 package com.epamtraining.vklite.processors;
 
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.text.TextUtils;
 
-import com.epamtraining.vklite.VKContentProvider;
 import com.epamtraining.vklite.bo.Wall;
+import com.epamtraining.vklite.db.AttachmentsDBHelper;
+import com.epamtraining.vklite.db.WallDBHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,110 +19,56 @@ import java.util.List;
 public class WallProcessor extends Processor {
     private static final String ITEMS = "items";
     private int mRecordsFeched;
-
     private Context mContext;
+    private AttachmentsDBHelper mAttachmentsHelper;
+    private WallDBHelper mWallHelper;
 
     public WallProcessor(Context context) {
         super(context);
         mContext = context;
-    }
-
-    private String getPostIDByRawDate(String rawDate) {
-        Cursor cursor = mContext.getContentResolver().query(
-                VKContentProvider.WALL_CONTENT_URI,
-                new String[]{VKContentProvider.WALL_COLUMN_ITEM_ID}, VKContentProvider.WALL_COLUMN_RAW_DATE + " = ?",
-                new String[]{rawDate}, null);
-        try {
-            cursor.moveToFirst();
-            return cursor.getString(0);
-        } finally {
-            cursor.close();
-        }
+        mAttachmentsHelper = new AttachmentsDBHelper();
+        mWallHelper = new WallDBHelper();
     }
 
     @Override
     public void process(InputStream stream, AdditionalInfoSource dataSource) throws Exception {
-        String maxDate = null;
-        String postIDWithMaxDate = null;
-        if (getIsTopRequest()) {
-            Cursor cursor = mContext.getContentResolver().query(
-                    VKContentProvider.WALL_CONTENT_URI,
-                    new String[]{"MAX(" + VKContentProvider.WALL_COLUMN_RAW_DATE + ") AS max_date"}, null,
-                    null, null);
-            cursor.moveToFirst();
-            maxDate = cursor.getString(0);
-            cursor.close();
-        }
-
+        Wall wallItem;
         JSONObject response = getVKResponseObject(stream);
         PostersProcessor posters = new PostersProcessor(response);
         posters.process();
         JSONArray wallItems = response.getJSONArray(ITEMS);
-        List<ContentValues> contentValues = new ArrayList<ContentValues>();
-        boolean delCache = !(TextUtils.isEmpty(maxDate));
+        List<ContentValues> attachContentValues = new ArrayList<>();
+        List<ContentValues> wallContentValues = new ArrayList<>();
         java.text.DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(mContext);
-
         for (int i = 0; i < wallItems.length(); i++) {
             JSONObject jsonObject = wallItems.getJSONObject(i);
-            Wall wallItem = new Wall(jsonObject, dateFormat);
-
-            if (!TextUtils.isEmpty(maxDate)) {
-                int compareDates = maxDate.compareTo(wallItem.getRawDate());
-                if (compareDates > 0) {
-                    delCache = false;
-                    break;
-                } else if (compareDates == 0) {
-                    if (TextUtils.isEmpty(postIDWithMaxDate)) {
-                        postIDWithMaxDate = getPostIDByRawDate(maxDate);
-                    }
-                    if (!TextUtils.isEmpty(postIDWithMaxDate)) {
-                        if (postIDWithMaxDate.equals(wallItem.getID())) {
-                            delCache = false;
-                            break;
-                        }
-                    }
-                }
+            wallItem = new Wall(jsonObject, dateFormat);
+            wallItem.setUserInfo(posters.getPoster(Math.abs(wallItem.getPosterId())));
+            List<ContentValues> attaches = mAttachmentsHelper.getContentValues(wallItem.getAttaches(), wallItem);
+            if (attaches != null) {
+                attachContentValues.addAll(attaches);
             }
-            if (i == 0) {
-                posters.process();
-            }
-            ContentValues value = new ContentValues();
-            value.put(VKContentProvider.WALL_COLUMN_TEXT, wallItem.getText());
-            value.put(VKContentProvider.WALL_COLUMN_IMAGE_URL, wallItem.getImageUrl());
-            value.put(VKContentProvider.WALL_COLUMN_DATE, wallItem.getDate());
-            value.put(VKContentProvider.WALL_COLUMN_RAW_DATE, wallItem.getRawDate());
-            value.put(VKContentProvider.WALL_COLUMN_ITEM_ID, wallItem.getID());
-            PostersProcessor.Poster poster = posters.getPoster(wallItem.getPosterId());
-            if (poster != null) {
-                value.put(VKContentProvider.WALL_COLUMN_USERNAME, poster.getName());
-                value.put(VKContentProvider.WALL_COLUMN_USERIMAGE, poster.getmImageUrl());
-            }
-            contentValues.add(value);
+            wallContentValues.add(mWallHelper.getContentValue(wallItem));
         }
-
-        ////TODO !!!debug!!!! убрать нафик
-       // if (getIsTopRequest()) {
-     //       mContext.getContentResolver().delete(VKContentProvider.WALL_CONTENT_URI, null, null);
-     //   }
-
-        if ((delCache) && (getIsTopRequest())) {
-            mContext.getContentResolver().delete(VKContentProvider.WALL_CONTENT_URI,
-                    VKContentProvider.WALL_COLUMN_RAW_DATE + " <= ?",
-                    new String[]{maxDate}); // delete old records
+        if (getIsTopRequest()) {
+            mContext.getContentResolver().delete(WallDBHelper.CONTENT_URI,
+                    null,
+                    null);
         }
         mRecordsFeched = wallItems.length();
-        int i = 0;
-        ContentValues vals[] = new ContentValues[contentValues.size()];//friendItems.length()];
-        for (ContentValues value : contentValues) {
-            vals[i++] = value;
-        }
+        ContentValues vals[] = new ContentValues[wallContentValues.size()];
+        wallContentValues.toArray(vals);
+        ContentResolver resolver = mContext.getContentResolver();
         if (vals.length > 0) {
-            mContext.getContentResolver().bulkInsert(VKContentProvider.WALL_CONTENT_URI, vals);
+            resolver.bulkInsert(WallDBHelper.CONTENT_URI, vals);
         }
-        mContext.getContentResolver().notifyChange(VKContentProvider.WALL_CONTENT_URI, null);
+        ContentValues attaches[] = new ContentValues[attachContentValues.size()];
+        attachContentValues.toArray(attaches);
+        if (attaches.length > 0) {
+            resolver.bulkInsert(AttachmentsDBHelper.CONTENT_URI, attaches);
+        }
+        resolver.notifyChange(WallDBHelper.CONTENT_URI, null);
     }
-
-
 
     @Override
     public int getRecordsFetched() {

@@ -3,10 +3,11 @@ package com.epamtraining.vklite.processors;
 
 import android.content.Context;
 
-import com.epamtraining.vklite.DataSource;
 import com.epamtraining.vklite.R;
+import com.epamtraining.vklite.VKException;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
@@ -28,10 +29,9 @@ public  abstract class Processor  {
         mContext = context;
     }
 
-    //TODO create VKException that will extends from Exception and catch in Error handler
     private JSONObject getResponse(InputStream stream) throws Exception{
         if (stream == null){
-            throw new Exception(mContext.getResources().getString(R.string.response_is_empty));
+            throw new IllegalArgumentException(mContext.getResources().getString(R.string.response_is_empty));
         }
         String s = new StringReader().readFromStream(stream);
         JSONObject serverResponse = new JSONObject(s);
@@ -51,18 +51,21 @@ public  abstract class Processor  {
         return serverResponse.optJSONArray(RESPONSE);
     }
 
-    private void generateVKServerError(JSONObject serverResponse) throws Exception{
-        String errorMsg = null;
+    private void generateVKServerError(JSONObject serverResponse) throws VKException, JSONException{
+        String errorMsg;
         if (serverResponse.has(VK_ERROR_RESPONSE)){
             errorMsg = serverResponse.getJSONObject(VK_ERROR_RESPONSE).optString(VK_ERROR_MSG);
         } else
         {
             errorMsg = mContext.getResources().getString(R.string.unknown_server_error);
         };
-        throw new Exception(errorMsg);
+        throw new VKException(errorMsg);
     }
 
     //TODO move to news related class
+    //we need it because should clear cache when retrieving data for the first time
+    //and not to clear it in the case of pagination
+    // it's used in NewsProcessor, WallProcessor, MessagesProcessor etc..
     public boolean getIsTopRequest()
     {
         return mIsTopRequest;

@@ -1,30 +1,18 @@
 package com.epamtraining.vklite.imageLoader;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
 
 import com.epamtraining.vklite.ErrorHelper;
 import com.epamtraining.vklite.VKApplication;
+import com.epamtraining.vklite.VKLocalService;
 import com.epamtraining.vklite.os.VKExecutor;
 
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.net.URL;
-import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -32,11 +20,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
-public class ImageLoader {
+public class ImageLoader implements VKLocalService{
     private class LoadingImages {
         private Map<String, CopyOnWriteArraySet<ImageView>> mLoadingImagesList;
         private Map<String, Runnable> mRunningRunnables;
@@ -44,10 +31,6 @@ public class ImageLoader {
         LoadingImages() {
             mLoadingImagesList = new ConcurrentHashMap<String, CopyOnWriteArraySet<ImageView>>();
             mRunningRunnables = new ConcurrentHashMap<String, Runnable>();
-        }
-
-        Set<ImageView> getImageViewsByUrl(String url) {
-            return mLoadingImagesList.get(url);
         }
 
         void addImage(String url, ImageView imageView) {
@@ -106,19 +89,17 @@ public class ImageLoader {
         mPausedImages = new LinkedList<>();
     }
 
-    public static ImageLoader getImageLoader(Context context) {
+    public static ImageLoader get(Context context) {
         try {
-            return VKApplication.get(context, ImageLoader.KEY);
+            ImageLoader imageLoader = VKApplication.get(context, ImageLoader.KEY);
+            if (imageLoader.getIsPaused()){
+                imageLoader.resumeLoadingImages();
+            }
+            return imageLoader;
         } catch (Exception e) {
             ErrorHelper.showError(context, e);
         }
         return null;
-    }
-
-    private Bitmap scaleToFitWidth(Bitmap b, int width)
-    {
-        float factor = width / (float) b.getWidth();
-        return Bitmap.createScaledBitmap(b, width, (int) (b.getHeight() * factor), true);
     }
 
     public void loadImage(final ImageView imageView, final String url) {

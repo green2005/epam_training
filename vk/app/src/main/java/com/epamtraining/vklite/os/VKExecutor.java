@@ -5,13 +5,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 
 import com.epamtraining.vklite.VKApplication;
+import com.epamtraining.vklite.VKLocalService;
 
-import java.util.HashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class VKExecutor {
+public class VKExecutor implements VKLocalService{
 
 
     private ThreadPoolExecutor mExecutor;

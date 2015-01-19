@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+ <TextView
+     android:id="@+id/tv_title"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:text="title"
+     />
+
+    <TextView android:id="@+id/centerPoint"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerHorizontal="true"
+
+        />
+    <ImageButton
+        android:id="@+id/stopbtn"
+        android:src="@drawable/ic_stop"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/tv_title"
+        android:layout_toRightOf="@+id/centerPoint"
+        />
+    <ImageButton
+        android:id="@+id/playbtn"
+        android:src="@drawable/ic_play"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/tv_title"
+        android:layout_toLeftOf="@+id/centerPoint"
+        />
+
+
+
+    <SeekBar
+        android:id="@+id/progress"
+
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/playbtn"
+        android:paddingTop="4dp"
+        />
+
+
+</RelativeLayout>
+    </LinearLayout>

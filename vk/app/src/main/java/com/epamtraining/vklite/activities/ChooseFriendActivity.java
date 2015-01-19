@@ -1,13 +1,11 @@
 package com.epamtraining.vklite.activities;
 
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.epamtraining.vklite.MainActivity;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.fragments.FriendsFragment;
 

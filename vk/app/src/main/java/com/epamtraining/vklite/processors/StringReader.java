@@ -1,43 +1,32 @@
 package com.epamtraining.vklite.processors;
 
-
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class StringReader {
-    public String readFromStream(InputStream stream){
+    public String readFromStream(InputStream stream) throws Exception {
         BufferedReader br = null;
-        InputStreamReader  reader = null;
-        String result = null;
-        try{
+        InputStreamReader reader = null;
+        try {
             reader = new InputStreamReader(stream);
             br = new BufferedReader(reader);
             StringBuilder builder = new StringBuilder();
-            String s = "";
-            try {
-                while ((s = br.readLine())!= null ){
-                    builder.append(s);
-                }
-            } catch (IOException e) {
-                //TODO throws IOExciption and show dialog without result
-                e.printStackTrace();
+            String s;
+            while ((s = br.readLine()) != null) {
+                builder.append(s);
             }
             return builder.toString();
-        }
-        finally {
-            try{
+        } finally {
+            try {
                 if (br != null)
-                br.close();
-                if (reader != null){
+                    br.close();
+                if (reader != null) {
                     reader.close();
-                }                
-            }catch (Exception e){
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
-
-    };
+    } ;
 }

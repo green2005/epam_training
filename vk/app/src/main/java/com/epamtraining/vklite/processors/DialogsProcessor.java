@@ -6,7 +6,9 @@ import android.content.ContentValues;
 import android.content.Context;
 
 import com.epamtraining.vklite.Api;
-import com.epamtraining.vklite.VKContentProvider;
+import com.epamtraining.vklite.db.DialogDBHelper;
+import com.epamtraining.vklite.db.UsersDBHelper;
+import com.epamtraining.vklite.db.VKContentProvider;
 import com.epamtraining.vklite.bo.Dialog;
 import com.epamtraining.vklite.bo.Friend;
 
@@ -18,9 +20,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class DialogsProcessor extends Processor{
+public class DialogsProcessor extends Processor {
     private Context mContext;
     private static final String ITEMS = "items";
+    private int mRecordsFetched;
 
     public DialogsProcessor(Context context) {
         super(context);
@@ -31,30 +34,30 @@ public class DialogsProcessor extends Processor{
     public void process(InputStream stream, AdditionalInfoSource source) throws Exception {
         JSONObject response = getVKResponseObject(stream);
         JSONArray dialogsItems = response.getJSONArray(ITEMS);
+        DialogDBHelper helper = new DialogDBHelper();
         ContentValues contentValues[] = new ContentValues[dialogsItems.length()];
         java.text.DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(mContext);
         HashSet<String> userIds = new HashSet<>();
-        for (int i = 0; i < dialogsItems.length(); i++){
+        for (int i = 0; i < dialogsItems.length(); i++) {
             Dialog msg = new Dialog(dialogsItems.getJSONObject(i), dateFormat);
-            ContentValues value = new ContentValues();
-            value.put(VKContentProvider.DIALOGS_COLUMN_BODY, msg.getBody());
-            value.put(VKContentProvider.DIALOGS_COLUMN_DATE, msg.getDate());
-            value.put(VKContentProvider.DIALOGS_COLUMN_RAW_DATE, msg.getRawDate());
-            value.put(VKContentProvider.DIALOGS_COLUMN_MESSAGE_ID, msg.getId());
-            value.put(VKContentProvider.DIALOGS_COLUMN_TITLE, msg.getTitle());
-            value.put(VKContentProvider.DIALOGS_COLUMN_USER_ID, msg.getUserId());
+            ContentValues value = helper.getContentValue(msg);
             userIds.add(msg.getUserId());
             contentValues[i] = value;
         }
+        mRecordsFetched = dialogsItems.length();
         updateUserInfos(userIds, source);
-        mContext.getContentResolver().delete(VKContentProvider.DIALOGS_CONTENT_URI, null, null);
-        mContext.getContentResolver().bulkInsert(VKContentProvider.DIALOGS_CONTENT_URI, contentValues);
-        mContext.getContentResolver().notifyChange(VKContentProvider.DIALOGS_CONTENT_URI, null);
+        if (getIsTopRequest()) {
+            mContext.getContentResolver().delete(DialogDBHelper.CONTENT_URI, null, null);
+        }
+        if (contentValues.length > 0) {
+            mContext.getContentResolver().bulkInsert(DialogDBHelper.CONTENT_URI, contentValues);
+        }
+        mContext.getContentResolver().notifyChange(DialogDBHelper.CONTENT_URI, null);
     }
 
-    private void updateUserInfos(Set<String> userIds, AdditionalInfoSource source) throws  Exception{
+    private void updateUserInfos(Set<String> userIds, AdditionalInfoSource source) throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
-        for (String user:userIds){
+        for (String user : userIds) {
             stringBuilder.append(user);
             stringBuilder.append(",");
         }
@@ -63,23 +66,24 @@ public class DialogsProcessor extends Processor{
         InputStream stream = source.getAdditionalInfo(uri);
         JSONArray userItems = getVKResponseArray(stream);
         ContentValues[] contentValues = new ContentValues[userItems.length()];
-        for (int i = 0 ; i < userItems.length(); i++){
+        UsersDBHelper helper = new UsersDBHelper();
+        for (int i = 0; i < userItems.length(); i++) {
             Friend userItem = new Friend(userItems.getJSONObject(i));
-            ContentValues value = new ContentValues();
-            value.put(VKContentProvider.USERS_COLUMN_ID, userItem.getId());
-            value.put(VKContentProvider.USERS_COLUMN_NAME, userItem.getName());
-            value.put(VKContentProvider.USERS_COLUMN_IMAGE, userItem.getImageUrl());
+            ContentValues value = helper.getContentValue(userItem);
             contentValues[i] = value;
         }
-        //TODO
-        ContentResolver contentResolver = mContext.getContentResolver();
-        contentResolver.delete(VKContentProvider.USERS_CONTENT_URI, null, null);
-        contentResolver.bulkInsert(VKContentProvider.USERS_CONTENT_URI, contentValues);
+        ContentResolver resolver = mContext.getContentResolver();
+        if (getIsTopRequest()) {
+            resolver.delete(UsersDBHelper.CONTENT_URI, null, null);
+        }
+        if (contentValues.length > 0) {
+            resolver.bulkInsert(UsersDBHelper.CONTENT_URI, contentValues);
+        }
     }
 
 
     @Override
     public int getRecordsFetched() {
-        return 0;
+        return mRecordsFetched;
     }
 }

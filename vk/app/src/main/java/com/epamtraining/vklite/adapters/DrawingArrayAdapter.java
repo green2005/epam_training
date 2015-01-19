@@ -9,13 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.fragments.FragmentType;
+import com.epamtraining.vklite.fragments.FragmentMenuItem;
 
- public class DrawingArrayAdapter extends BaseAdapter {
+public class DrawingArrayAdapter extends BaseAdapter {
     LayoutInflater mInflater;
-    FragmentType[] mItems;
+    FragmentMenuItem[] mItems;
 
-    public DrawingArrayAdapter(Context context, FragmentType[] objects) {
+    public DrawingArrayAdapter(Context context, FragmentMenuItem[] objects) {
         super();
         if (context == null){
             throw new IllegalArgumentException("Context parameter is null");
@@ -57,7 +57,6 @@ import com.epamtraining.vklite.fragments.FragmentType;
         }
         holder.textView.setText(mItems[position].getNameResourceId());
         holder.imageView.setImageResource(mItems[position].getImageResourceId());
-        //holder.textView.setCompoundDrawablesWithIntrinsicBounds(mItems[position].imageResId, 0, 0, 0);
         return cnView;
     }
 

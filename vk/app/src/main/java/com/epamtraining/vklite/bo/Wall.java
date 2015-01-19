@@ -1,22 +1,19 @@
 package com.epamtraining.vklite.bo;
 
-import android.content.Context;
+import com.epamtraining.vklite.bo.attachment.Attachment;
+import com.epamtraining.vklite.bo.attachment.PhotoAttachment;
+import com.epamtraining.vklite.db.PostSourceId;
 
-import com.epamtraining.vklite.processors.WallProcessor;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
-public class Wall extends BoItem {
+public class Wall extends BoItem implements PostSourceId {
     /*
     CREATE TABLE Wall(_id Integer not null PRIMARY KEY AUTOINCREMENT, postid text, from_id text,"+
             " owner_id text, rawDate text, date text, itemText text, post_type text, image_Url text, level int)";
      */
-     private static String FROM_ID = "from_id";
+    private static String FROM_ID = "from_id";
     private static String DATE = "date";
     private static String TEXT = "text";
     private static String ID = "id";
@@ -41,40 +38,48 @@ public class Wall extends BoItem {
     private String mUrlTitle;
     private String mPostId;
     private long mPosterId;
+    private String mUserName;
+    private String mUserImage;
+    private String mOwnerId;
+    private Attachments mAttaches;
 
 
     public Wall(JSONObject jo, DateFormat ft) throws Exception {
-        try {
-            mJo = jo;
-            mRawDate = jo.optString(DATE);
-            mId = jo.optString(ID);
-            mPosterId = Math.abs(jo.optLong(POSTER_ID));
-            if (jo.has(COPY_HISTORY)) {
-                jo = jo.getJSONArray(COPY_HISTORY).getJSONObject(0);
-            };
-            mText = jo.optString(TEXT);
-            java.util.Date time = new java.util.Date((long) Long.parseLong(mRawDate) * 1000);
-            // DateFormat ft = new SimpleDateFormat("dd.MM.yyyy");
-            mDate =  ft.format(time);
-            if (jo.has(ATTACHMENTS)) {
-                JSONArray attachments = jo.getJSONArray(ATTACHMENTS);
-                for (int i = 0; i < attachments.length(); i++) {
-                    JSONObject attachment = attachments.getJSONObject(i);
-                    String type = attachment.getString(TYPE);
-                    if (type.equalsIgnoreCase(PHOTO)) {
-                        mImageUrl = attachment.getJSONObject(PHOTO).getString(PHOTO_604);
-                    } else if (type.equalsIgnoreCase(LINK)) {
-                        mUrlHref = attachment.getJSONObject(LINK).getString(URL);
-                        mUrlTitle = attachment.getJSONObject(LINK).getString(TITLE);
-                    }
+        mJo = jo;
+        mRawDate = jo.optString(DATE);
+        mId = jo.optString(ID);
+        mPosterId = jo.optLong(POSTER_ID); //Math.abs(jo.optLong(POSTER_ID));
+        if (jo.has(COPY_HISTORY)) {
+            jo = jo.getJSONArray(COPY_HISTORY).getJSONObject(0);
+        };
+        mText = jo.optString(TEXT);
+        java.util.Date time = new java.util.Date((long) Long.parseLong(mRawDate) * 1000);
+        mDate = ft.format(time);
+        if (jo.has(ATTACHMENTS)) {
+            mAttaches = new Attachments(jo.getJSONArray(ATTACHMENTS));
+            for (Attachment attach : mAttaches.getAttachments()){
+                if (attach instanceof PhotoAttachment){
+                    mImageUrl = attach.getUrl(); //first image is shown in wall feed
+                    break;
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
-    public String getText() throws Exception {
+    public void setUserInfo(Poster poster) {
+        mUserImage = poster.getImageUrl();
+        mUserName = poster.getName();
+    }
+
+    public String getUserName() {
+        return mUserName;
+    }
+
+    public String getUserImage() {
+        return mUserImage;
+    }
+
+    public String getText() {
         return mText;
     }
 
@@ -90,11 +95,13 @@ public class Wall extends BoItem {
         return mImageUrl;
     }
 
-    public String getID() {
-        return mJo.optString(ID);
+    public String getId() {
+        return mId;
     }
 
-    public String getOwner_Id() throws Exception {
+    public Attachments getAttaches(){ return mAttaches;};
+
+    public String getOwner_Id() {
         return mJo.optString(POSTER_ID);
     }
 
@@ -105,5 +112,6 @@ public class Wall extends BoItem {
     public String getFROM_ID() throws Exception {
         return mJo.getString(FROM_ID);
     }
+
 
 }

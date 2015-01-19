@@ -1,5 +1,6 @@
 package com.epamtraining.vklite;
 
+import android.app.Application;
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -11,14 +12,15 @@ public class Api {
     public static final String USERID_KEY = "userid";
 
     private static final String ENCODE_FORMAT = "UTF-8"; //used for url encoding
-    //TODO
     public static final String BASE_PATH = "https://api.vk.com/method";
     private static final String FRIENDS_URL = BASE_PATH + "/friends.get?fields=photo_100,nickname&order=name&access_token=%s&v=%s";
     // "https://api.vk.com/method/users.search?fields=photo_100,online,nickname&count=100&city=1&access_token=%s&v=%s";
     private static final String NEWS_URL =      BASE_PATH + "/newsfeed.get?filters=post&fields=photo_100" +
             "&count=10&access_token=%s&v=%s%s";
+
     private static final String WALL_URL = BASE_PATH + "/wall.get?filters=owner&fields=photo_100" +
             "&extended=1&access_token=%s&v=%s%s";
+
     private static  final String DIALOGS_URL = BASE_PATH + "/messages.getDialogs?" +
             "access_token=%s&v=%s%s";
 
@@ -31,24 +33,21 @@ public class Api {
     private static final String MESSAGES_COMMIT_URL = BASE_PATH + "/messages.send?" +
             "access_token=%s&user_id=%s&message=%s&v=%s";
 
+    private static final String COMMENTS_URL = BASE_PATH + "/wall.getComments?access_token=%s&" +
+            "owner_id=%s&post_id=%s&extended=1&v=%s%s";
+
+
 
     public static String getToken(Context context){
-        try {
             return VKApplication.get(context, TOKEN_KEY);
-        } catch (Exception e) {
-            //TODO remove
-            ErrorHelper.showError(context, e);
-        }
-        return null;
     }
 
     public static void setToken(VKApplication application, String token){
         application.setToken(token);
     }
 
-    public static String getUserId(Context context){
-        //TODO correct implementation
-            return VKApplication.get(context, USERID_KEY);
+    public static String getUserId(Application application){
+        return ((VKApplication)application).get(application, USERID_KEY);
     }
 
     public static void setUserId(VKApplication application, String userId){
@@ -62,9 +61,7 @@ public class Api {
     }
 
     public static String getFriendsUrl(Context context){
-        String token = getToken(context);
-        //TODO
-        return String.format(FRIENDS_URL, token, API_KEY).toString();
+        return String.format(FRIENDS_URL, getToken(context), API_KEY);
     }
 
     public static String getWallUrl(Context context, String offset){
@@ -104,6 +101,19 @@ public class Api {
     public static String getUsersUri(Context context, String userIds){
         String token = getToken(context);
         return String.format(USERS_URL, token, userIds, API_KEY);
+    }
+
+    public static String getCommentsUri(Context context, String owner_id, String post_id, String offset){
+        String token = getToken(context);
+        String sOffset = "";
+        if (!TextUtils.isEmpty(offset)){
+            sOffset = String.format("&offset=%s",offset);
+        }
+        /*
+        private static final String COMMENTS_URL = BASE_PATH + "/wall.getComments?access_token=%s&" +
+            "owner_id=%s&post_id=%s&v=%s%s";
+         */
+        return String.format(COMMENTS_URL, token, owner_id, post_id, API_KEY, sOffset);
     }
 
 }

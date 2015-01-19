@@ -5,10 +5,10 @@
     android:layout_width="fill_parent"
     android:orientation="vertical"
     android:gravity="right"
-    android:paddingBottom="16dip"
+    android:paddingBottom="8dip"
     android:paddingLeft="16dip"
     android:paddingRight="16dip"
-    android:paddingTop="16dip"
+    android:paddingTop="8dip"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
 <RelativeLayout

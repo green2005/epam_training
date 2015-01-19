@@ -3,6 +3,10 @@ package com.epamtraining.vklite.bo;
 
 import android.text.TextUtils;
 
+import com.epamtraining.vklite.bo.attachment.Attachment;
+import com.epamtraining.vklite.bo.attachment.PhotoAttachment;
+import com.epamtraining.vklite.db.PostSourceId;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -10,7 +14,7 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-public class News extends BoItem implements Serializable {
+public class News extends BoItem implements Serializable, PostSourceId {
     // private JSONObject mJO;
     private static final String DATE = "date";
     private static final String TEXT = "text";
@@ -32,11 +36,15 @@ public class News extends BoItem implements Serializable {
     private String mUrlHref;
     private String mPostID;
     private long mPosterID;
+    private String mUserName;
+    private String mUserImage;
+    private String nextId;
+    private Attachments mAttaches;
 
     public News(JSONObject jo, DateFormat ft) throws Exception{
             mRawDate = jo.optString(DATE);
             mPostID = jo.optString(POST_ID);
-            mPosterID = Math.abs(jo.optLong(SOURCE_ID));
+            mPosterID = jo.optLong(SOURCE_ID);// Math.abs(jo.optLong(SOURCE_ID));
 
             if (jo.has("copy_history")) {
                 jo = jo.getJSONArray("copy_history").getJSONObject(0);
@@ -45,20 +53,28 @@ public class News extends BoItem implements Serializable {
             java.util.Date time = new java.util.Date((long) Long.parseLong(mRawDate) * 1000);
            // DateFormat ft = new SimpleDateFormat("dd.MM.yyyy");
             mDate = ft.format(time);
-            if (jo.has(ATTACHMENTS)) {
-                JSONArray attachments = jo.getJSONArray(ATTACHMENTS);
-                for (int i = 0; i < attachments.length(); i++) {
-                    JSONObject attachment = attachments.getJSONObject(i);
-                    String type = attachment.getString(TYPE);
-                    if (type.equalsIgnoreCase(PHOTO)) {
-                        mImageUrl = attachment.getJSONObject(PHOTO).getString(PHOTO_604);
-                    } else if (type.equalsIgnoreCase(LINK)) {
-                        mUrlHref = attachment.getJSONObject(LINK).getString(URL);
-                        mUrlTitle = attachment.getJSONObject(LINK).getString(TITLE);
-                    }
+        if (jo.has(ATTACHMENTS)) {
+            mAttaches = new Attachments(jo.getJSONArray(ATTACHMENTS));
+            for (Attachment attach : mAttaches.getAttachments()){
+                if (attach instanceof PhotoAttachment){
+                    mImageUrl = attach.getUrl(); //first image is shown in wall feed
+                    break;
                 }
             }
+        }
 
+    }
+    public void setUserInfo(Poster poster){
+        mUserImage = poster.getImageUrl();
+        mUserName = poster.getName();
+    }
+
+    public String getUserName(){
+        return mUserName;
+    }
+
+    public String getUserImage(){
+        return mUserImage;
     }
 
     public String getRawDate() {
@@ -87,7 +103,14 @@ public class News extends BoItem implements Serializable {
 
     public Long getPosterId(){ return mPosterID; }
 
+    public Attachments getAttaches(){ return mAttaches;};
+
     public String getText() {
         return mText;
+    }
+
+    @Override
+    public String getId() {
+        return getPostId();
     }
 }

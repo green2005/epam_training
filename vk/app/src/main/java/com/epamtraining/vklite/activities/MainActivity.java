@@ -1,37 +1,35 @@
-package com.epamtraining.vklite;
+package com.epamtraining.vklite.activities;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.PersistableBundle;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.support.v7.widget.SearchView;
-import android.text.TextUtils;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import com.epamtraining.vklite.Api;
+import com.epamtraining.vklite.R;
+import com.epamtraining.vklite.VKApplication;
 import com.epamtraining.vklite.adapters.DrawingArrayAdapter;
-
-import com.epamtraining.vklite.fragments.FragmentType;
-import com.epamtraining.vklite.imageLoader.ImageLoader;
 import com.epamtraining.vklite.auth.AuthHelper;
 import com.epamtraining.vklite.fragments.BoItemFragment;
+import com.epamtraining.vklite.fragments.FragmentMenuItem;
+import com.epamtraining.vklite.fragments.Refreshable;
+import com.epamtraining.vklite.imageLoader.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO move to activities
 public class MainActivity extends ActionBarActivity {
     public static final int REQUEST_CODE_CHOOSE_FRIEND = 1;
     public static final String FRAGMENT_REQUEST = "request";
@@ -39,7 +37,7 @@ public class MainActivity extends ActionBarActivity {
     private CharSequence mTitle;
     private CharSequence mDrawerTitle;
 
-    private FragmentType[] mFragmentTypes;
+    private FragmentMenuItem[] mFragmentMenuItems;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -59,7 +57,7 @@ public class MainActivity extends ActionBarActivity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        mDrawerList.setAdapter(new DrawingArrayAdapter(this, mFragmentTypes));
+        mDrawerList.setAdapter(new DrawingArrayAdapter(this, mFragmentMenuItems));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -84,53 +82,43 @@ public class MainActivity extends ActionBarActivity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
-            //TODO change to enum
-            //FragmentType.values()[0] or
-            //FragmentType.NEWSFRAGMENT
-            selectItem(0);
+            selectItem(FragmentMenuItem.NEWS_ITEM);
         }
     }
 
-
     private void initNavigationDrawer() {
-        List<FragmentType> list = new ArrayList<>();
-        for (FragmentType ft : FragmentType.values()) {
+        List<FragmentMenuItem> list = new ArrayList<>();
+        for (FragmentMenuItem ft : FragmentMenuItem.values()) {
             if (ft.getIsMainActivityFragment()) {
                 list.add(ft);
             }
         }
-        mFragmentTypes = new FragmentType[list.size()];
-        list.toArray(mFragmentTypes);
+        mFragmentMenuItems = new FragmentMenuItem[list.size()];
+        list.toArray(mFragmentMenuItems);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
             super.onActivityResult(requestCode, resultCode, data);
-
         }
 
         private class DrawerItemClickListener implements ListView.OnItemClickListener {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //TODO
-                //FragmentType.values()[position]
-                selectItem(position);
+                if (position < mFragmentMenuItems.length){
+                    selectItem(mFragmentMenuItems[position]);
+                }
             }
         }
 
-    //TODO change to enum
-    private void selectItem(int position) {
-        if (position < mFragmentTypes.length) {
-            BoItemFragment fragment = mFragmentTypes[position].getNewFragment();
-            if ((fragment != null)) {
+    private void selectItem(FragmentMenuItem fragmentMenuItem) {
+            BoItemFragment fragment = fragmentMenuItem.getNewFragment();
+            if (fragment != null) {
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                //TODO remove unused code
-                ft.replace(R.id.container, fragment, position + "");
+                ft.replace(R.id.container, fragment, null);
                 ft.commit();
             }
-        }
-        mTitle = getResources().getString(mFragmentTypes[position].getNameResourceId());
+        mTitle = getResources().getString(fragmentMenuItem.getNameResourceId());
         getSupportActionBar().setTitle(mTitle);
         mDrawerLayout.closeDrawer(mDrawerList);
     }
@@ -138,8 +126,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //TODO rename static getImageLoader
-        ImageLoader imageLoader = ImageLoader.getImageLoader(getApplication());
+        ImageLoader imageLoader = ImageLoader.get(getApplication());
         if (imageLoader != null) {
             imageLoader.clear();
         }
@@ -165,12 +152,11 @@ public class MainActivity extends ActionBarActivity {
         renew.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                //TODO refactoring, move to variable
-                if (getSupportFragmentManager() != null){
-                    for (Fragment ft: getSupportFragmentManager().getFragments()){
-                        //TODO change to interface
-                        if (ft instanceof BoItemFragment){
-                            ((BoItemFragment)ft).refreshData();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                if (fragmentManager != null){
+                    for (Fragment ft: fragmentManager.getFragments()){
+                        if (ft instanceof Refreshable){
+                            ((Refreshable)ft).refreshData();
                         }
                     }
                 }
@@ -185,8 +171,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public boolean onQueryTextSubmit(String s) {
 
-                //TODO поиск
-                Toast.makeText(MainActivity.this, "Здесь будет поиск", Toast.LENGTH_SHORT).show();
+                 Toast.makeText(MainActivity.this, "Здесь будет поиск", Toast.LENGTH_SHORT).show();
 
 
                 return true;
@@ -200,7 +185,6 @@ public class MainActivity extends ActionBarActivity {
             }
         });
         */
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -223,5 +207,4 @@ public class MainActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

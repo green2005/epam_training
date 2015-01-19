@@ -3,7 +3,6 @@ package com.epamtraining.vklite;
 
 import android.app.Application;
 import android.content.Context;
-import android.media.Image;
 import android.text.TextUtils;
 
 import com.epamtraining.vklite.imageLoader.ImageLoader;
@@ -13,11 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class VKApplication extends Application {
-    //TODO remove
-    private ImageLoader mImageLoader;
-    private VKExecutor mExecutor;
-    private Map<String, Object> mSystemServices;
-    private String mToken;
+    private Map<String, VKLocalService> mSystemServices;
 
     @Override
     public void onCreate() {
@@ -32,7 +27,10 @@ public class VKApplication extends Application {
         }
         Object systemServiceResult = mSystemServices.get(name);
         if (systemServiceResult != null) {
-            return systemServiceResult;
+            if (systemServiceResult instanceof StringHolder){
+              return ((StringHolder) systemServiceResult).getString();
+            } else
+            {return systemServiceResult;}
         } else {
             return super.getSystemService(name);
         }
@@ -42,23 +40,22 @@ public class VKApplication extends Application {
         if (mSystemServices == null){
             initLocalServices();
         }
-        mSystemServices.put(Api.TOKEN_KEY, token);
+        mSystemServices.put(Api.TOKEN_KEY, new StringHolder(token));
     }
 
     public void setUserId(String userId){
         if (mSystemServices == null){
             initLocalServices();
         }
-        mSystemServices.put(Api.USERID_KEY, userId);
+        mSystemServices.put(Api.USERID_KEY, new StringHolder(userId));
     }
 
     private void initLocalServices(){
-        //TODO create common interface for all local services
-        mSystemServices = new HashMap<String, Object>();
-        mImageLoader = new ImageLoader(this);
-        mExecutor = new VKExecutor();
-        mSystemServices.put(ImageLoader.KEY, mImageLoader);
-        mSystemServices.put(VKExecutor.KEY, mExecutor);
+        mSystemServices = new HashMap<>();
+        ImageLoader imageLoader = new ImageLoader(this);
+        VKExecutor executor = new VKExecutor();
+        mSystemServices.put(ImageLoader.KEY, imageLoader);
+        mSystemServices.put(VKExecutor.KEY, executor);
     }
 
     public static <T> T get(Context context, String key) {

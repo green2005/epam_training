@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
-import com.epamtraining.vklite.MainActivity;
+import com.epamtraining.vklite.activities.MainActivity;
 
 import java.util.HashMap;
 import java.util.Map;

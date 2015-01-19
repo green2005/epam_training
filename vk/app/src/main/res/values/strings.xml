@@ -19,6 +19,7 @@
     <string name="error">Ошибка</string>
     <string name="ok">OK</string>
     <string name="checkInetConnection">Ошибка получения данных. Проверьте подключение к сети Интернет.</string>
+    <string name="vkError">Ошибка сервера ВКонтакте</string>
     <string name="noFriends">Нет друзей? </string>
     <string name="noNews">Нет новостей? </string>
     <string name="drawer_open">Open navigation drawer</string>
@@ -29,7 +30,7 @@
     <string name="enter_your_message">Введите текст сообщения</string>
     <string name="new_message">Написать сообщение</string>
     <string name="title_activity_choose_friend">Друзья</string>
-    <string name="title_activity_post_detail">PostDetailActivity</string>
+    <string name="title_activity_post_detail">Запись на стене</string>
     <string name="db_empty">Набор данных пуст</string>
-
+    <string name="comments_title">Комментарии</string>
 </resources>

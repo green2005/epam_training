@@ -1,13 +1,9 @@
 package com.epamtraining.vklite.adapters;
 
-
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
-import android.provider.BaseColumns;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -27,29 +23,6 @@ public abstract class BoItemAdapter extends SimpleCursorAdapter {
         mGetDataCallBack = callback;
     }
 
-    //TODO remove
-    @Override
-    public int getCount() {
-        if (getCursor() != null)
-            return getCursor().getCount();
-        else
-            return 0;
-    }
-
-    //TODO remove
-    @Override
-    public Object getItem(int position) {
-        return getCursor();
-    }
-
-    //TODO remove
-    //by default uses BaseColumns._ID
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-
     protected ImageLoader getImageLoader(){
         return mImageLoader;
     }
@@ -64,13 +37,10 @@ public abstract class BoItemAdapter extends SimpleCursorAdapter {
         } else {
             if (getImageLoader() != null) {
                 imageView.setVisibility(View.VISIBLE);
-                getImageLoader().loadImage(imageView, imageUrl);
+                mImageLoader.loadImage(imageView, imageUrl);
             }
         }
     }
 
-    //TODO remove, move to Fragment or activities
-    public void onStop(){
-        mImageLoader.stopLoadingImages();
-    };
+
 }
