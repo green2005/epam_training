@@ -14,17 +14,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import com.epamtraining.vklite.DataSource;
 import com.epamtraining.vklite.ErrorHelper;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.adapters.BoItemAdapter;
 import com.epamtraining.vklite.adapters.DataAdapterCallback;
-import com.epamtraining.vklite.fragments.itemsWidgetHolder.ViewItemsWidgetHolder;
+import com.epamtraining.vklite.fragments.itemsWidgetHolder.CollectionViewWrapper;
 import com.epamtraining.vklite.imageLoader.ImageLoader;
 import com.epamtraining.vklite.processors.Processor;
 
+//TODO create one more level BaseFragment without collectionview wrapper
+//+Fragment with CollectionViewWrapper
+//  - ListView fragment
+//  - RecyclerView fragment
+//  etc.
 public abstract class BaseVKFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback,
         Refreshable {
@@ -36,7 +40,7 @@ public abstract class BaseVKFragment extends Fragment
     private ImageLoader mImageLoader;
     private DataState mDataState = DataState.BROWSING;
     private DataSource mDataSource;
-    private ViewItemsWidgetHolder mItemsWidgetHolder;
+    private CollectionViewWrapper mItemsWidgetHolder;
 
     public abstract String[] getDataFields();
 
@@ -50,7 +54,7 @@ public abstract class BaseVKFragment extends Fragment
 
     public abstract int getLoaderId();
 
-    public abstract ViewItemsWidgetHolder getItemsWidgetHolder(View parentView, ImageLoader imageLoader);
+    public abstract CollectionViewWrapper getItemsWidgetHolder(View parentView, ImageLoader imageLoader);
 
 
     @Override
@@ -63,6 +67,7 @@ public abstract class BaseVKFragment extends Fragment
         initSwipeLayout(view);
         showProgress(View.VISIBLE);
         getLoaderManager().initLoader(getLoaderId(), null, this);
+        //TODO wrap in refresh() method
         loadData(0, null);
         BoItemAdapter mAdapter = getAdapter();
         mAdapter.initAdapter(this, mImageLoader);
@@ -83,6 +88,7 @@ public abstract class BaseVKFragment extends Fragment
 
     //could be overriden in child classes
     protected View getFooterProgressView() {
+        //TODO getActivity can return null
         return getActivity().getLayoutInflater().inflate(R.layout.footer_progress_layout, null);
     }
 
@@ -122,6 +128,7 @@ public abstract class BaseVKFragment extends Fragment
     @Override
     public void onStop() {
         super.onStop();
+        //TODO looks ok why commented? remove
         // mImageLoader.stopLoadingImages();
     }
 
@@ -142,6 +149,7 @@ public abstract class BaseVKFragment extends Fragment
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         getAdapter().swapCursor(null);
+        //TODO some magic, check
         if ((!isDetached()) && (!isRemoving())) {
             loadDone();
         }
@@ -158,6 +166,9 @@ public abstract class BaseVKFragment extends Fragment
 
     private void onError(Exception e) {
         loadDone();
+        //TODO create wrapper for log
+
+        //TODO remove instance of and move this logic up
         if (e instanceof RuntimeException) {
             Log.e("Exception", e.getMessage());
             e.printStackTrace();
@@ -170,6 +181,7 @@ public abstract class BaseVKFragment extends Fragment
         if (mSwipeRefreshLayout != null) {
             mSwipeRefreshLayout.setRefreshing(true);
         }
+        //TODO move
         loadData(0, null);
     }
 

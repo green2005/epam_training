@@ -9,17 +9,20 @@ import android.widget.ListView;
 import com.epamtraining.vklite.adapters.BoItemAdapter;
 import com.epamtraining.vklite.imageLoader.ImageLoader;
 
-public class ListViewWidgetHolder implements ViewItemsWidgetHolder {
+//TODO rename
+public class ListViewWidgetHolder implements CollectionViewWrapper {
     private ImageLoader mImageLoader;
     private ListView mListView;
     private View mFooterView;
 
+    //TODO move to abstract class
     public ListViewWidgetHolder(int widgetResourceId, @Nullable View parentView, ImageLoader imageLoader) {
         mImageLoader = imageLoader;
         mListView = (ListView) parentView.findViewById(widgetResourceId);
         if (mListView == null) {
             throw new IllegalArgumentException(String.format("Could not find resource with id %d ", widgetResourceId));
         }
+        //TODO move to abstract template class
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -39,12 +42,17 @@ public class ListViewWidgetHolder implements ViewItemsWidgetHolder {
 
     @Override
     public void setOnItemClickListener(AdapterView.OnItemClickListener onItemClickListener) {
+        //TODO getCollectionView()
         mListView.setOnItemClickListener(onItemClickListener);
     }
 
+    //TODO change to setFooter or change logic with footer member
     @Override
     public void addFooterView(View view) {
         if (view != null) {
+            //OR if (mFooterView != null) {
+            // throw new IlleagalStateException("footer already added")
+            //}
             mFooterView = view;
             mListView.addFooterView(view);
         }
@@ -56,6 +64,7 @@ public class ListViewWidgetHolder implements ViewItemsWidgetHolder {
                 (visibility != View.GONE)) {
             throw new IllegalArgumentException("Unknown visibility parameter");
         }
+        //TODO move to common class
         mListView.setVisibility(visibility);
     }
 

@@ -34,6 +34,7 @@ import com.epamtraining.vklite.processors.Processor;
 public class DialogsFragment extends BaseVKListViewFragment
         implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback  {
 
+    //TODO UPPERCASE
     private static final String[] fields = new String[]{
             DialogDBHelper.USER_ID, DialogDBHelper.BODY,
             DialogDBHelper.DATE, DialogDBHelper.ID,
@@ -48,6 +49,7 @@ public class DialogsFragment extends BaseVKListViewFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //TODO maybe create abstract method createAdapter()?
         mAdapter = new DialogsAdapter(getActivity(), R.layout.item_post, null, getDataFields(), null, 0);
         mProcessor = new DialogsProcessor(getActivity());
         setHasOptionsMenu(true);
@@ -105,7 +107,8 @@ public class DialogsFragment extends BaseVKListViewFragment
     }
 
     @Override
-    public String getDataUrl(int offset, String next_id) {
+    public String getDataUrl(int offset, String /*TODO rename*/next_id) {
+        //TODO String.valueOf()
         return Api.getDialogsUrl(getActivity(), offset + "");
     }
 
@@ -120,6 +123,7 @@ public class DialogsFragment extends BaseVKListViewFragment
     }
 
     public static DialogsFragment getNewFragment() {
+        //TODO check idea warnings
         DialogsFragment dialogsFragment = new DialogsFragment();
         return dialogsFragment;
     }

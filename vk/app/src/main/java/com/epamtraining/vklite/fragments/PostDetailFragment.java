@@ -148,6 +148,7 @@ public class PostDetailFragment extends BaseVKListViewFragment {
             userNameView.setText(CursorHelper.getString(cursor, NewsDBHelper.USERNAME));
             dateView.setText(CursorHelper.getString(cursor, NewsDBHelper.DATE));
             textView.setText(Html.fromHtml(CursorHelper.getString(cursor, NewsDBHelper.TEXT)));
+            //TODO do not use in adapter getView
             Linkify.addLinks(textView, Linkify.ALL);
             mImageLoader.loadImage(userImageView, CursorHelper.getString(cursor, NewsDBHelper.USERIMAGE));
             return v;
@@ -165,6 +166,7 @@ public class PostDetailFragment extends BaseVKListViewFragment {
     }
 
     private View getWallHeader() {
+        //TODO database call in the UI thread!!! critical!
         Cursor cursor = getActivity().getContentResolver().query(
                 WallDBHelper.CONTENT_URI,
                 WallDBHelper.fields
@@ -176,6 +178,7 @@ public class PostDetailFragment extends BaseVKListViewFragment {
 
         try {
             if (cursor.getCount() == 0) {
+                //TODO change to some valid message
                 ErrorHelper.showError(getActivity(), R.string.db_empty);
                 return null;
             }

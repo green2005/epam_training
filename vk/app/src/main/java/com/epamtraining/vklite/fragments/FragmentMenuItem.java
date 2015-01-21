@@ -35,6 +35,7 @@ public enum FragmentMenuItem {
         Fragment fragment = null;
         switch (this) {
             case DIALOG_ITEM: {
+                //TODO newInstance
                 fragment = DialogsFragment.getNewFragment();
                 break;
             }
