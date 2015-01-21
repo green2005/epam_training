@@ -22,7 +22,6 @@ import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.VKApplication;
 import com.epamtraining.vklite.adapters.DrawingArrayAdapter;
 import com.epamtraining.vklite.auth.AuthHelper;
-import com.epamtraining.vklite.fragments.BoItemFragment;
 import com.epamtraining.vklite.fragments.FragmentMenuItem;
 import com.epamtraining.vklite.fragments.Refreshable;
 import com.epamtraining.vklite.imageLoader.ImageLoader;
@@ -112,7 +111,7 @@ public class MainActivity extends ActionBarActivity {
         }
 
     private void selectItem(FragmentMenuItem fragmentMenuItem) {
-            BoItemFragment fragment = fragmentMenuItem.getNewFragment();
+            Fragment fragment = fragmentMenuItem.getNewFragment();
             if (fragment != null) {
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.container, fragment, null);

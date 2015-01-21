@@ -21,7 +21,7 @@ import com.epamtraining.vklite.processors.NewsProcessor;
 import com.epamtraining.vklite.processors.Processor;
 
 
-public class NewsFragment extends BoItemFragment implements
+public class NewsFragment extends BaseVKListViewFragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         DataAdapterCallback  {
 

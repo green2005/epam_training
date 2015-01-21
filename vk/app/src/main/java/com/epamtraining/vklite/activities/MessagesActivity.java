@@ -1,14 +1,14 @@
 package com.epamtraining.vklite.activities;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.fragments.BoItemFragment;
 import com.epamtraining.vklite.fragments.MessagesFragment;
+import com.epamtraining.vklite.fragments.Refreshable;
 
 public class MessagesActivity extends ActionBarActivity {
 
@@ -42,8 +42,8 @@ public class MessagesActivity extends ActionBarActivity {
     private void refreshMessages(){
         if (getSupportFragmentManager() != null){
             for (Fragment ft: getSupportFragmentManager().getFragments()){
-                if (ft instanceof BoItemFragment){
-                    ((BoItemFragment) ft).refreshData();
+                if (ft instanceof Refreshable){
+                    ((Refreshable) ft).refreshData();
                 }
             }
         }

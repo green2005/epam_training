@@ -22,7 +22,6 @@ import com.epamtraining.vklite.ErrorHelper;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.db.MessagesDBHelper;
 import com.epamtraining.vklite.db.UsersDBHelper;
-import com.epamtraining.vklite.db.VKContentProvider;
 import com.epamtraining.vklite.adapters.BoItemAdapter;
 import com.epamtraining.vklite.adapters.DataAdapterCallback;
 import com.epamtraining.vklite.adapters.MessagesAdapter;

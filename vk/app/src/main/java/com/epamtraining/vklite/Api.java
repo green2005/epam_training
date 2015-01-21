@@ -11,8 +11,11 @@ public class Api {
     public static final String TOKEN_KEY = "token";
     public static final String USERID_KEY = "userid";
 
+    public static final String OFFSET = "offset";
+    public static final String NEWS_START_FROM = "start_from";
+
     private static final String ENCODE_FORMAT = "UTF-8"; //used for url encoding
-    public static final String BASE_PATH = "https://api.vk.com/method";
+    private static final String BASE_PATH = "https://api.vk.com/method";
     private static final String FRIENDS_URL = BASE_PATH + "/friends.get?fields=photo_100,nickname&order=name&access_token=%s&v=%s";
     // "https://api.vk.com/method/users.search?fields=photo_100,online,nickname&count=100&city=1&access_token=%s&v=%s";
     private static final String NEWS_URL =      BASE_PATH + "/newsfeed.get?filters=post&fields=photo_100" +
@@ -68,7 +71,7 @@ public class Api {
         String token = getToken(context);
         String sOffset = "";
         if (!TextUtils.isEmpty(offset)){
-            sOffset = String.format("&offset=%s",offset);
+            sOffset = String.format("&%s=%s", OFFSET, offset);
         }
         return String.format(WALL_URL, token, API_KEY, sOffset);
     }
@@ -84,7 +87,7 @@ public class Api {
         String token = getToken(context);
         String sOffset = "";
         if (!TextUtils.isEmpty(offset)){
-            sOffset = String.format("&offset=%s",offset);
+            sOffset = String.format("&%s=%s", OFFSET, offset);
         }
         return String.format(DIALOGS_URL, token, API_KEY, sOffset);
     }
@@ -93,7 +96,7 @@ public class Api {
         String token = getToken(context);
         String sEndId = "";
         if (!TextUtils.isEmpty(endId)){
-            sEndId =  String.format("&start_from=%s",endId);
+            sEndId =  String.format("&%s=%s", NEWS_START_FROM, endId);
         }
         return String.format(NEWS_URL, token, API_KEY, sEndId);
     }
@@ -107,7 +110,7 @@ public class Api {
         String token = getToken(context);
         String sOffset = "";
         if (!TextUtils.isEmpty(offset)){
-            sOffset = String.format("&offset=%s",offset);
+            sOffset = String.format("&%s=%s", OFFSET, offset);
         }
         /*
         private static final String COMMENTS_URL = BASE_PATH + "/wall.getComments?access_token=%s&" +

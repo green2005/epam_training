@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 
+import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.bo.News;
 import com.epamtraining.vklite.db.AttachmentsDBHelper;
 import com.epamtraining.vklite.db.NewsDBHelper;
@@ -13,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,14 +36,13 @@ public class NewsProcessor extends Processor {
     }
 
     @Override
-    public void process(InputStream stream, AdditionalInfoSource source) throws Exception {
+    public void process(InputStream stream, String url, AdditionalInfoSource source) throws Exception {
         JSONObject response = getVKResponseObject(stream);
         PostersProcessor posters = new PostersProcessor(response);
         posters.process();
         JSONArray newsItems = response.getJSONArray(ITEMS);
         List<ContentValues> contentValues = new ArrayList<>();
-        //TODO organize imports
-        java.text.DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(mContext);
+        DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(mContext);
         String nextNewsId = response.getString(NEXT_FROM);
         List<ContentValues> attachContentValues = new ArrayList<>();
 
@@ -60,13 +61,11 @@ public class NewsProcessor extends Processor {
             }
             contentValues.add(value);
         }
-        if (isTopRequest()) {
+        if (isTopRequest(url, Api.NEWS_START_FROM)) {
             mContext.getContentResolver().delete(NewsDBHelper.CONTENT_URI,
                     null,
                     null);
         }
-        int i = 0;
-
         ContentValues vals[] = new ContentValues[contentValues.size()];
         contentValues.toArray(vals);
 

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-//TODO need to be implemented with transaction
+
 class DBManager extends SQLiteOpenHelper {
     private static final String DB_NAME = "VKLite";
     private static final int DB_VERSION = 19;

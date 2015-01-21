@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 
+import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.bo.Comment;
 import com.epamtraining.vklite.db.CommentsDBHelper;
 
@@ -28,7 +29,7 @@ public class CommentsProcessor extends Processor{
     }
 
     @Override
-    public void process(InputStream stream, AdditionalInfoSource dataSource) throws Exception {
+    public void process(InputStream stream, String url, AdditionalInfoSource dataSource) throws Exception {
         JSONObject response = getVKResponseObject(stream);
         PostersProcessor posters = new PostersProcessor(response);
         posters.process();
@@ -45,7 +46,7 @@ public class CommentsProcessor extends Processor{
             value.put(CommentsDBHelper.POST_ID, mPostId);
             contentValues.add(value);
         }
-        if (isTopRequest()) {
+        if (isTopRequest(url, Api.OFFSET)) {
             mContext.getContentResolver().delete(CommentsDBHelper.CONTENT_URI,
                     null,
                     null);

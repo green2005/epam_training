@@ -11,8 +11,6 @@ import android.widget.AdapterView;
 import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.CursorHelper;
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.bo.BoItem;
-import com.epamtraining.vklite.db.VKContentProvider;
 import com.epamtraining.vklite.activities.PostDetailActivity;
 import com.epamtraining.vklite.adapters.BoItemAdapter;
 import com.epamtraining.vklite.adapters.DataAdapterCallback;
@@ -21,7 +19,7 @@ import com.epamtraining.vklite.db.WallDBHelper;
 import com.epamtraining.vklite.processors.Processor;
 import com.epamtraining.vklite.processors.WallProcessor;
 
-public class WallFragment extends BoItemFragment implements
+public class WallFragment extends BaseVKListViewFragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         DataAdapterCallback {
 

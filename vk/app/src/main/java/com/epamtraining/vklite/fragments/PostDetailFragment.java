@@ -25,7 +25,7 @@ import com.epamtraining.vklite.db.AttachmentsDBHelper;
 import com.epamtraining.vklite.db.CommentsDBHelper;
 import com.epamtraining.vklite.db.NewsDBHelper;
 import com.epamtraining.vklite.db.WallDBHelper;
-import com.epamtraining.vklite.displayAttachments.AttachmentManager;
+import com.epamtraining.vklite.attachmentUI.AttachmentManager;
 import com.epamtraining.vklite.imageLoader.ImageLoader;
 import com.epamtraining.vklite.processors.CommentsProcessor;
 import com.epamtraining.vklite.processors.Processor;
@@ -101,7 +101,7 @@ public class PostDetailFragment extends BaseVKListViewFragment {
         attachmentsCursor.moveToFirst();
         AttachmentManager manager = new AttachmentManager(getActivity());
         while (!attachmentsCursor.isAfterLast()) {
-            View attachmentView = manager.getView(null,
+            View attachmentView = manager.getView(
                     attachmentsCursor,
                     mImageLoader
             );
@@ -199,11 +199,11 @@ public class PostDetailFragment extends BaseVKListViewFragment {
         }
     }
 
-    public String getSelection(){
+    public String getCursorLoaderSelection(){
         return CommentsDBHelper.POST_ID + " = ?";//,
     }
 
-    public String[] getSelectionArgs(){
+    public String[] getCursorLoaderSelectionArgs(){
         return new String[]{mPostId};
     }
 
@@ -239,6 +239,7 @@ public class PostDetailFragment extends BaseVKListViewFragment {
         return LoaderManagerIds.COMMENTS.getId();
     }
 
+    @Override
     protected int getLayoutResourceId() {
         return R.layout.fragment_post_detail;
     }

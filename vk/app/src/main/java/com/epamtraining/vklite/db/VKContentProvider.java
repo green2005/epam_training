@@ -122,9 +122,9 @@ public class VKContentProvider extends ContentProvider {
             }
             case URI_MESSAGES: {
                 if (TextUtils.isEmpty(selection)) {
-                        selection = " ifnull(" + MessagesDBHelper.PENDING + ",0)" + " <> 1";
+                    selection = " ifnull(" + MessagesDBHelper.PENDING + ",0)" + " <> 1";
                 } else {
-                       selection = selection + " AND " + " ifnull(" + MessagesDBHelper.PENDING + ",0)" + " <> 1 ";
+                    selection = selection + " AND " + " ifnull(" + MessagesDBHelper.PENDING + ",0)" + " <> 1 ";
                 }
                 break;
             }
@@ -185,10 +185,10 @@ public class VKContentProvider extends ContentProvider {
             case URI_ATTACHMENTS_ID: {
                 return helper.getContentItemType();
             }
-            case URI_COMMENTS :{
+            case URI_COMMENTS: {
                 return helper.getContentType();
             }
-            case URI_COMMENTS_ID:{
+            case URI_COMMENTS_ID: {
                 return helper.getContentItemType();
             }
         }
@@ -199,12 +199,19 @@ public class VKContentProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues values) {
         SQLiteDatabase db = mDbManager.getWritableDatabase();
         Uri resultUri;
+        long rowID;
         int helperUriId = uriMatcher.match(uri);
         BODBHelper helper = getDBHelper(helperUriId);
         if (helper == null) {
             throw new IllegalArgumentException("Wrong URI: " + uri);
         }
-        long rowID = db.insert(helper.getTableName(), null, values);
+        db.beginTransaction();
+        try {
+            rowID = db.insert(helper.getTableName(), null, values);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
         resultUri = ContentUris.withAppendedId(helper.getContentUri(), rowID);
         getContext().getContentResolver().notifyChange(resultUri, null);
         return resultUri;
@@ -226,7 +233,7 @@ public class VKContentProvider extends ContentProvider {
         String tableName = null;
         Uri contentUri = null;
         int uriHelperId = uriMatcher.match(uri);
-         BODBHelper helper = getDBHelper(uriHelperId);
+        BODBHelper helper = getDBHelper(uriHelperId);
         if (helper == null) {
             throw new IllegalArgumentException("Wrong URI: " + uri);
         }
@@ -240,7 +247,7 @@ public class VKContentProvider extends ContentProvider {
                     sortOrder = NewsDBHelper.RAW_DATE + " DESC";
                 break;
             }
-            case URI_COMMENTS:{
+            case URI_COMMENTS: {
                 if (TextUtils.isEmpty(sortOrder))
                     sortOrder = CommentsDBHelper.RAW_DATE + " DESC";
                 break;

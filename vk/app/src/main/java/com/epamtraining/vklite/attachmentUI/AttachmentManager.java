@@ -1,4 +1,4 @@
-package com.epamtraining.vklite.displayAttachments;
+package com.epamtraining.vklite.attachmentUI;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -22,61 +22,43 @@ public class AttachmentManager {
     private Context mContext;
 
     public AttachmentManager(Context context) {
-       mLayoutInflater = LayoutInflater.from(context);
-       mContext = context;
+        mLayoutInflater = LayoutInflater.from(context);
+        mContext = context;
     }
 
-    private int getAttachmentType(Cursor attachmentsCursor){
+    private int getAttachmentType(Cursor attachmentsCursor) {
         String attachmentType = CursorHelper.getString(attachmentsCursor, AttachmentsDBHelper.ATTACHMENT_TYPE);
         switch (attachmentType) {
-            //TODO remove {}
-            case (Attachments.ATTACHMENT_PHOTO): {
+            case (Attachments.ATTACHMENT_PHOTO):
                 return AttachmentManager.PHOTO;
-            }
-            case (Attachments.ATTACHMENT_AUDIO): {
+            case (Attachments.ATTACHMENT_AUDIO):
                 return AttachmentManager.AUDIO;
-            }
-            case (Attachments.ATTACHMENT_VIDEO):{
+            case (Attachments.ATTACHMENT_VIDEO):
                 return AttachmentManager.VIDEO;
-            }
-            default:{
+            default:
                 throw new IllegalArgumentException("Unknown attachment type");
-            }
         }
     }
 
-    public View getView(View convertView, Cursor cursor, ImageLoader imageLoader) {
+    public View getView(Cursor cursor, ImageLoader imageLoader) {
         AttachmentHelper helper = null;
         int attachmentType = getAttachmentType(cursor);
         switch (attachmentType) {
             case PHOTO: {
-                if (convertView == null) {
-                    helper = new AttachmentPhotoHelper(imageLoader);
-                } else {
-                    helper = (AttachmentPhotoHelper) convertView.getTag();
-                }
+                helper = new AttachmentPhotoHelper(imageLoader);
                 break;
             }
             case VIDEO: {
-                if (convertView == null) {
-                    helper = new AttachmentVideoHelper(mContext, imageLoader);
-                } else {
-                    helper = (AttachmentVideoHelper) convertView.getTag();
-                }
+                helper = new AttachmentVideoHelper(mContext, imageLoader);
                 break;
             }
             case AUDIO: {
-                if (convertView == null) {
-                    helper = new AttachmentAudioHelper(mContext);
-                } else {
-                    helper = (AttachmentAudioHelper) convertView.getTag();
-                }
+                helper = new AttachmentAudioHelper(mContext);
                 break;
             }
         }
         if (helper != null) {
-            View v = helper.getView(convertView, cursor, mLayoutInflater);
-            v.setTag(helper);
+            View v = helper.getView(cursor, mLayoutInflater);
             return v;
         } else {
             return null;

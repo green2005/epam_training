@@ -30,7 +30,7 @@ public class DialogsProcessor extends Processor {
     }
 
     @Override
-    public void process(InputStream stream, AdditionalInfoSource source) throws Exception {
+    public void process(InputStream stream, String url, AdditionalInfoSource source) throws Exception {
         JSONObject response = getVKResponseObject(stream);
         JSONArray dialogsItems = response.getJSONArray(ITEMS);
         DialogDBHelper helper = new DialogDBHelper();
@@ -44,8 +44,8 @@ public class DialogsProcessor extends Processor {
             contentValues[i] = value;
         }
         mRecordsFetched = dialogsItems.length();
-        updateUserInfos(userIds, source);
-        if (isTopRequest()) {
+        updateUserInfos(userIds, source, url);
+        if (isTopRequest(url, Api.OFFSET)) {
             mContext.getContentResolver().delete(DialogDBHelper.CONTENT_URI, null, null);
         }
         if (contentValues.length > 0) {
@@ -54,7 +54,7 @@ public class DialogsProcessor extends Processor {
         mContext.getContentResolver().notifyChange(DialogDBHelper.CONTENT_URI, null);
     }
 
-    private void updateUserInfos(Set<String> userIds, AdditionalInfoSource source) throws Exception {
+    private void updateUserInfos(Set<String> userIds, AdditionalInfoSource source, String url) throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
         for (String user : userIds) {
             stringBuilder.append(user);
@@ -72,7 +72,7 @@ public class DialogsProcessor extends Processor {
             contentValues[i] = value;
         }
         ContentResolver resolver = mContext.getContentResolver();
-        if (isTopRequest()) {
+        if (isTopRequest(url, Api.OFFSET)) {
             resolver.delete(UsersDBHelper.CONTENT_URI, null, null);
         }
         if (contentValues.length > 0) {

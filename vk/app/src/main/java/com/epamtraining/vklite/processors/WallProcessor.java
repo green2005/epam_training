@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 
+import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.bo.Wall;
 import com.epamtraining.vklite.db.AttachmentsDBHelper;
 import com.epamtraining.vklite.db.WallDBHelper;
@@ -31,7 +32,7 @@ public class WallProcessor extends Processor {
     }
 
     @Override
-    public void process(InputStream stream, AdditionalInfoSource dataSource) throws Exception {
+    public void process(InputStream stream, String url, AdditionalInfoSource dataSource) throws Exception {
         Wall wallItem;
         JSONObject response = getVKResponseObject(stream);
         PostersProcessor posters = new PostersProcessor(response);
@@ -50,7 +51,7 @@ public class WallProcessor extends Processor {
             }
             wallContentValues.add(mWallHelper.getContentValue(wallItem));
         }
-        if (isTopRequest()) {
+        if (isTopRequest(url, Api.OFFSET)) {
             mContext.getContentResolver().delete(WallDBHelper.CONTENT_URI,
                     null,
                     null);
@@ -74,5 +75,4 @@ public class WallProcessor extends Processor {
     public int getRecordsFetched() {
         return mRecordsFeched;
     }
-
 }

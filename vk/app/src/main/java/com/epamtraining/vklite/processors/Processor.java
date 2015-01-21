@@ -2,6 +2,8 @@ package com.epamtraining.vklite.processors;
 
 
 import android.content.Context;
+import android.net.Uri;
+import android.text.TextUtils;
 
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.VKException;
@@ -18,9 +20,8 @@ public  abstract class Processor  {
     private static final String RESPONSE = "response";
 
     private Context mContext;
-    private boolean mIsTopRequest;
 
-    public abstract void process (InputStream stream, AdditionalInfoSource dataSource)  throws Exception;
+    public abstract void process (InputStream stream, String url, AdditionalInfoSource dataSource)  throws Exception;
     public abstract  int getRecordsFetched();
     public Processor(Context context){
         if (context == null){
@@ -58,21 +59,17 @@ public  abstract class Processor  {
         } else
         {
             errorMsg = mContext.getResources().getString(R.string.unknown_server_error);
-        };
+        }
         throw new VKException(errorMsg);
     }
 
-    //TODO move to news related class
-    //we need it because should clear cache when retrieving data for the first time
-    //and not to clear it in the case of pagination
-    // it's used in NewsProcessor, WallProcessor, MessagesProcessor etc..
-    public boolean isTopRequest()
-    {
-        return mIsTopRequest;
+    protected boolean isTopRequest(String url, String  offsetName) {
+        Uri parsedFragment = Uri.parse(url);
+        String offset = parsedFragment.getQueryParameter(offsetName);
+        if ((TextUtils.isEmpty(offset)) || ("0".equals(offset))) {
+            return true;
+        } else {
+            return false;
+        }
     }
-
-    public void setIsTopRequest(Boolean isTop){
-        mIsTopRequest = isTop;
-    }
-
 }

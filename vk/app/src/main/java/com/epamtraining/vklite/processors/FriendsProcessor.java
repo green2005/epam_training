@@ -25,7 +25,7 @@ public class FriendsProcessor extends Processor {
     }
 
     @Override
-    public void process(InputStream stream, AdditionalInfoSource dataSource) throws Exception {
+    public void process(InputStream stream, String url, AdditionalInfoSource dataSource) throws Exception {
         JSONObject response = getVKResponseObject(stream);
         JSONArray friendItems = response.getJSONArray(ITEMS);
         FriendDBHelper helper = new FriendDBHelper();

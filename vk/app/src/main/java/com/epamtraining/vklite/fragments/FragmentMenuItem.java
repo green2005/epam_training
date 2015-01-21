@@ -1,5 +1,7 @@
 package com.epamtraining.vklite.fragments;
 
+import android.support.v4.app.Fragment;
+
 import com.epamtraining.vklite.R;
 
 public enum FragmentMenuItem {
@@ -29,8 +31,8 @@ public enum FragmentMenuItem {
         return mImageResourceId;
     }
 
-    public BoItemFragment getNewFragment() {
-        BoItemFragment fragment = null;
+    public Fragment getNewFragment() {
+        Fragment fragment = null;
         switch (this) {
             case DIALOG_ITEM: {
                 fragment = DialogsFragment.getNewFragment();

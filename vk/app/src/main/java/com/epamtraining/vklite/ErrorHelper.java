@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class ErrorHelper {
     public static void showError(Context context, String errorMessage) {
-        if (context != null) {
+       if (context != null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setNegativeButton(context.getResources().getString(R.string.ok), new AlertDialog.OnClickListener() {
                 @Override
@@ -45,7 +45,6 @@ public class ErrorHelper {
             } else {
                 errorMessage = e.getMessage();
             }
-            ;
             if (TextUtils.isEmpty(errorMessage))
                 errorMessage = e.toString();
             showError(context, errorMessage);

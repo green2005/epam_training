@@ -51,7 +51,7 @@ public class DataSource implements AdditionalInfoSource {
             public void run() {
                 try {
                     InputStream inputStream = getInputStream(url);
-                    mProcessor.process(inputStream, DataSource.this);
+                    mProcessor.process(inputStream, url, DataSource.this);
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {

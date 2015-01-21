@@ -29,7 +29,7 @@ public class MessagesProcessor extends Processor {
     }
 
     @Override
-    public void process(InputStream stream, AdditionalInfoSource dataSource) throws Exception {
+    public void process(InputStream stream, String url, AdditionalInfoSource dataSource) throws Exception {
         JSONObject response = getVKResponseObject(stream);
         JSONArray items = response.getJSONArray(ITEMS);
         ContentValues contentValues[] = new ContentValues[items.length()];
@@ -45,10 +45,9 @@ public class MessagesProcessor extends Processor {
         mRecordsFetched = items.length();
         ContentResolver resolver =  mContext.getContentResolver();
         updateUserInfos(userIds, dataSource, resolver);
-        if (isTopRequest()) {
+        if (isTopRequest(url, Api.OFFSET)) {
            resolver.delete(MessagesDBHelper.CONTENT_URI, null, null);
         }
-
         resolver.bulkInsert(MessagesDBHelper.CONTENT_URI, contentValues);
         resolver.notifyChange(MessagesDBHelper.CONTENT_URI, null);
     }

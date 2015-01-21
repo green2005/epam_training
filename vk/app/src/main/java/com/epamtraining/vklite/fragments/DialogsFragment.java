@@ -31,7 +31,7 @@ import com.epamtraining.vklite.adapters.DialogsAdapter;
 import com.epamtraining.vklite.processors.DialogsProcessor;
 import com.epamtraining.vklite.processors.Processor;
 
-public class DialogsFragment extends BoItemFragment
+public class DialogsFragment extends BaseVKListViewFragment
         implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback  {
 
     private static final String[] fields = new String[]{
@@ -126,7 +126,6 @@ public class DialogsFragment extends BoItemFragment
 
     private void startMessagesActivity(String userId, String userName) {
         Intent intent = new Intent(this.getActivity(), MessagesActivity.class);
-        //intent.putExtra(VKContentProvider.DIALOGS_COLUMN_MESSAGE_ID, messageId);
         intent.putExtra(UsersDBHelper.ID, userId);
         intent.putExtra(UsersDBHelper.NAME, userName);
         startActivity(intent);

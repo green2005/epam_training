@@ -22,7 +22,7 @@ import com.epamtraining.vklite.adapters.FriendsAdapter;
 import com.epamtraining.vklite.processors.FriendsProcessor;
 import com.epamtraining.vklite.processors.Processor;
 
-public class FriendsFragment extends BoItemFragment implements LoaderManager.LoaderCallbacks<Cursor>,
+public class FriendsFragment extends BaseVKListViewFragment implements LoaderManager.LoaderCallbacks<Cursor>,
         DataAdapterCallback  {
     private BoItemAdapter mAdapter;
     private Processor mProcessor;
