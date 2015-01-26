@@ -57,7 +57,7 @@ public abstract class BaseFragment extends Fragment
 
     public abstract CollectionViewWrapper newInstanceCollectionViewWrapper(View parentView, ImageLoader imageLoader);
 
-    protected abstract CollectionViewWrapper getCollectionViewWrapper();
+    public abstract CollectionViewWrapper getCollectionViewWrapper();
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
