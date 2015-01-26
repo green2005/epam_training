@@ -12,26 +12,25 @@ import android.widget.AdapterView;
 
 import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.CursorHelper;
-import com.epamtraining.vklite.activities.MainActivity;
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.db.FriendDBHelper;
-import com.epamtraining.vklite.db.VKContentProvider;
+import com.epamtraining.vklite.activities.MainActivity;
 import com.epamtraining.vklite.adapters.BoItemAdapter;
 import com.epamtraining.vklite.adapters.DataAdapterCallback;
 import com.epamtraining.vklite.adapters.FriendsAdapter;
+import com.epamtraining.vklite.db.FriendDBHelper;
 import com.epamtraining.vklite.processors.FriendsProcessor;
 import com.epamtraining.vklite.processors.Processor;
 
-public class FriendsFragment extends BaseVKListViewFragment implements LoaderManager.LoaderCallbacks<Cursor>,
+public class FriendsFragment extends BaseListViewFragment implements LoaderManager.LoaderCallbacks<Cursor>,
         DataAdapterCallback  {
     private BoItemAdapter mAdapter;
     private Processor mProcessor;
     private int requestCode = -1;
 
-    private static final String[] fields =  FriendDBHelper.fields;
+    private static final String[] FIELDS =  FriendDBHelper.FIELDS;
 
 
-    public static FriendsFragment getNewFragment(Bundle bundle) {
+    public static FriendsFragment newInstance(Bundle bundle) {
         FriendsFragment friendsFragment = new FriendsFragment();
         if (bundle != null) {
             friendsFragment.setArguments(bundle);
@@ -55,7 +54,7 @@ public class FriendsFragment extends BaseVKListViewFragment implements LoaderMan
 
     @Override
     public String[] getDataFields() {
-        return fields;
+        return FIELDS;
     }
 
     @Override
@@ -80,7 +79,7 @@ public class FriendsFragment extends BaseVKListViewFragment implements LoaderMan
 
     @Override
     public int getLoaderId() {
-        return LoaderManagerIds.FRIENDS.getId();
+        return LoaderManagerIds.FRIENDS.ordinal();
     }
 
     @Override

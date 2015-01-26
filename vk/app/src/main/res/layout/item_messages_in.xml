@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<RelativeLayout
     android:layout_height="wrap_content"
     android:layout_width="fill_parent"
     android:orientation="vertical"
-    android:gravity="left"
     android:paddingBottom="8dip"
     android:paddingLeft="16dip"
     android:paddingRight="16dip"
@@ -15,6 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/bubble_yellow"
+        android:layout_alignParentLeft="true"
         >
 
     <ImageView
@@ -58,5 +58,5 @@
         android:text="message"
         android:textColor="@android:color/black" />
 </RelativeLayout>
-    </LinearLayout>
+    </RelativeLayout>
  

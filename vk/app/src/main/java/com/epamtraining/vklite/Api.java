@@ -10,6 +10,9 @@ public class Api {
     public static final String API_KEY="5.26";
     public static final String TOKEN_KEY = "token";
     public static final String USERID_KEY = "userid";
+    public static final String USERID_NAME = "userName";
+    public static final String USERID_IMAGE = "userImage";
+
 
     public static final String OFFSET = "offset";
     public static final String NEWS_START_FROM = "start_from";
@@ -17,7 +20,7 @@ public class Api {
     private static final String ENCODE_FORMAT = "UTF-8"; //used for url encoding
     private static final String BASE_PATH = "https://api.vk.com/method";
     private static final String FRIENDS_URL = BASE_PATH + "/friends.get?fields=photo_100,nickname&order=name&access_token=%s&v=%s";
-    // "https://api.vk.com/method/users.search?fields=photo_100,online,nickname&count=100&city=1&access_token=%s&v=%s";
+    // "https://api.vk.com/method/users.search?FIELDS=photo_100,online,nickname&count=100&city=1&access_token=%s&v=%s";
     private static final String NEWS_URL =      BASE_PATH + "/newsfeed.get?filters=post&fields=photo_100" +
             "&count=10&access_token=%s&v=%s%s";
 
@@ -37,7 +40,12 @@ public class Api {
             "access_token=%s&user_id=%s&message=%s&v=%s";
 
     private static final String COMMENTS_URL = BASE_PATH + "/wall.getComments?access_token=%s&" +
-            "owner_id=%s&post_id=%s&extended=1&v=%s%s";
+            "owner_id=%s&sort=desc&post_id=%s&extended=1&v=%s%s";
+
+    private static final String COMMENTS_ADD_URL = BASE_PATH + "/wall.addComment?access_token=%s&" +
+            "owner_id=%s&post_id=%s&text=%s&v=%s";
+
+    private static final String USER_INFO = BASE_PATH +"/users.get?user_ids=%s&v=%s&fields=photo_100";
 
 
 
@@ -57,10 +65,30 @@ public class Api {
         application.setUserId(userId);
     }
 
-    public static String getMessagesCommitUrl(Context context, String userId, String message) throws Exception{
+    public static void setUserInfo(VKApplication application, String userName, String image){
+        application.setUserInfo(userName, image);
+    }
+
+    public static String getUserName(Application application){
+        return ((VKApplication)application).get(application, USERID_NAME);
+    }
+
+    public static String getUserImage(Application application){
+        return ((VKApplication)application).get(application, USERID_IMAGE);
+    }
+
+   public static String getMessagesCommitUrl(Context context, String userId, String message) throws Exception{
         String token = getToken(context);
         String msg = URLEncoder.encode(message, ENCODE_FORMAT);
         return String.format(MESSAGES_COMMIT_URL, token, userId, msg, API_KEY);
+    }
+
+    public static String getCommentsCommitUrl(Context context, String ownerId, String postId, String message) throws Exception{
+        String token = getToken(context);
+        String msg = URLEncoder.encode(message, ENCODE_FORMAT);
+      //  "/wall.addComment?access_token=%s&" +
+      //          "owner_id=%s&post_id=%s&text=%s&v=%s";
+        return String.format(COMMENTS_ADD_URL, token, ownerId, postId, msg, API_KEY);
     }
 
     public static String getFriendsUrl(Context context){
@@ -117,6 +145,11 @@ public class Api {
             "owner_id=%s&post_id=%s&v=%s%s";
          */
         return String.format(COMMENTS_URL, token, owner_id, post_id, API_KEY, sOffset);
+    }
+
+    public static String getUserInfo(String userId){
+        //"/users.get?user_ids=%s&v=%s";
+        return String.format(USER_INFO, userId, API_KEY);
     }
 
 }

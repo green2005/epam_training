@@ -20,9 +20,7 @@ import com.epamtraining.vklite.activities.MainActivity;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.db.DialogDBHelper;
 import com.epamtraining.vklite.db.FriendDBHelper;
-import com.epamtraining.vklite.db.NewsDBHelper;
 import com.epamtraining.vklite.db.UsersDBHelper;
-import com.epamtraining.vklite.db.VKContentProvider;
 import com.epamtraining.vklite.activities.ChooseFriendActivity;
 import com.epamtraining.vklite.activities.MessagesActivity;
 import com.epamtraining.vklite.adapters.BoItemAdapter;
@@ -31,11 +29,10 @@ import com.epamtraining.vklite.adapters.DialogsAdapter;
 import com.epamtraining.vklite.processors.DialogsProcessor;
 import com.epamtraining.vklite.processors.Processor;
 
-public class DialogsFragment extends BaseVKListViewFragment
+public class DialogsFragment extends BaseListViewFragment
         implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback  {
 
-    //TODO UPPERCASE
-    private static final String[] fields = new String[]{
+    private static final String[] FIELDS = new String[]{
             DialogDBHelper.USER_ID, DialogDBHelper.BODY,
             DialogDBHelper.DATE, DialogDBHelper.ID,
             DialogDBHelper.TITLE, UsersDBHelper.NAME,
@@ -93,7 +90,7 @@ public class DialogsFragment extends BaseVKListViewFragment
 
     @Override
     public String[] getDataFields() {
-        return fields;
+        return FIELDS;
     }
 
     @Override
@@ -107,9 +104,8 @@ public class DialogsFragment extends BaseVKListViewFragment
     }
 
     @Override
-    public String getDataUrl(int offset, String /*TODO rename*/next_id) {
-        //TODO String.valueOf()
-        return Api.getDialogsUrl(getActivity(), offset + "");
+    public String getDataUrl(int offset, String nextId) {
+        return Api.getDialogsUrl(getActivity(), String.valueOf(offset));
     }
 
     @Override
@@ -119,13 +115,11 @@ public class DialogsFragment extends BaseVKListViewFragment
 
     @Override
     public int getLoaderId() {
-        return LoaderManagerIds.DIALOGS.getId();
+        return LoaderManagerIds.DIALOGS.ordinal();
     }
 
-    public static DialogsFragment getNewFragment() {
-        //TODO check idea warnings
-        DialogsFragment dialogsFragment = new DialogsFragment();
-        return dialogsFragment;
+    public static DialogsFragment newInstance() {
+        return new DialogsFragment();
     }
 
     private void startMessagesActivity(String userId, String userName) {
@@ -140,7 +134,6 @@ public class DialogsFragment extends BaseVKListViewFragment
         Cursor cursor = mAdapter.getCursor();
         if (cursor != null) {
                 cursor.moveToPosition(position);
-                //String messageId = mAdapter.getCursor().getString(mAdapter.getCursor().getColumnIndex(VKContentProvider.DIALOGS_COLUMN_MESSAGE_ID));
                 String userId = CursorHelper.getString(cursor, DialogDBHelper.USER_ID);
                 String userName = CursorHelper.getString(cursor, UsersDBHelper.NAME);
                 startMessagesActivity(userId, userName);

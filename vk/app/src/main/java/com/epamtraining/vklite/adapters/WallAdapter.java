@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.epamtraining.vklite.CursorHelper;
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.db.VKContentProvider;
+import com.epamtraining.vklite.ResizableImageView;
 import com.epamtraining.vklite.db.WallDBHelper;
 
 public class WallAdapter extends BoItemAdapter {
@@ -38,7 +38,7 @@ public class WallAdapter extends BoItemAdapter {
             holder.text = (TextView) v.findViewById(R.id.text);
             holder.userName = (TextView) v.findViewById(R.id.usernametextview);
             holder.userImage = (ImageView) v.findViewById(R.id.profileimageview);
-            holder.image = (ImageView) v.findViewById(R.id.image);
+            holder.image = (ResizableImageView) v.findViewById(R.id.image);
             v.setTag(holder);
         } else {
             holder = (ViewHolder) v.getTag();
@@ -46,6 +46,8 @@ public class WallAdapter extends BoItemAdapter {
         holder.date.setText(CursorHelper.getString(cursor, WallDBHelper.DATE));
         holder.text.setText(CursorHelper.getString(cursor, WallDBHelper.TEXT));
         holder.userName.setText(CursorHelper.getString(cursor, WallDBHelper.USERNAME));
+        holder.image.setOriginalImageSize(CursorHelper.getInt(cursor, WallDBHelper.IMAGE_WIDTH),
+                                          CursorHelper.getInt(cursor, WallDBHelper.IMAGE_HEIGHT));
         populateImageView(holder.image, CursorHelper.getString(getCursor(), WallDBHelper.IMAGE_URL));
         populateImageView(holder.userImage, CursorHelper.getString(getCursor(), WallDBHelper.USERIMAGE));
         return v;
@@ -54,8 +56,7 @@ public class WallAdapter extends BoItemAdapter {
     class ViewHolder {
         private TextView date;
         private TextView text;
-        private ImageView image;
-        private TextView url;
+        private ResizableImageView image;
         private TextView userName;
         private ImageView userImage;
     }

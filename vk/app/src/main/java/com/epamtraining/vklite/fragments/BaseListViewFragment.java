@@ -3,12 +3,11 @@ package com.epamtraining.vklite.fragments;
 import android.view.View;
 import android.widget.AdapterView;
 
-
 import com.epamtraining.vklite.fragments.wrappers.CollectionViewWrapper;
 import com.epamtraining.vklite.fragments.wrappers.ListViewWrapper;
 import com.epamtraining.vklite.imageloader.ImageLoader;
 
-public abstract class BaseVKListViewFragment extends BaseVKFragment implements AdapterView.OnItemClickListener{
+public abstract class BaseListViewFragment extends BaseFragment implements AdapterView.OnItemClickListener{
     private ListViewWrapper mWrapper;
 
     public CollectionViewWrapper newInstanceCollectionViewWrapper(View parentView, ImageLoader imageLoader){

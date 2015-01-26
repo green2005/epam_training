@@ -13,9 +13,8 @@ import java.util.List;
 
 public class AttachmentsDBHelper extends BODBHelper {
 
-    private static final String TABLENAME = "Attachments";
-    public static Uri CONTENT_URI = Uri.parse(CONTENT_URI_PREFIX
-            + AUTHORITY + "/" + TABLENAME);
+    public static final String TABLENAME = "Attachments";
+
 
     public static final String ATTACHMENT_ID = "attach_id";
     public static final String URL = "url";
@@ -27,7 +26,12 @@ public class AttachmentsDBHelper extends BODBHelper {
     public static final String PHOTO = "photo";
     public static final String POST_ID = "post_id";
     public static final String ATTACHMENT_TYPE = "attach_type";
-    public static String [] fields = {BaseColumns._ID, ATTACHMENT_ID, URL, ALBUM_ID, TEXT, DATE, OWNER_ID, TITLE, PHOTO, POST_ID, ATTACHMENT_TYPE};
+    public static String [] FIELDS = {BaseColumns._ID, ATTACHMENT_ID, URL, ALBUM_ID, TEXT, DATE, OWNER_ID, TITLE, PHOTO, POST_ID, ATTACHMENT_TYPE};
+
+    public static final Uri CONTENT_URI = Uri.parse(VKContentProvider.CONTENT_URI_PREFIX
+            + VKContentProvider.AUTHORITY + "/" + TABLENAME);
+    public static Uri CONTENT_URI_ID = Uri.parse(VKContentProvider.CONTENT_URI_PREFIX
+            + VKContentProvider.AUTHORITY + "/" + TABLENAME+"/#");
 
     public AttachmentsDBHelper() {
     }
@@ -39,12 +43,7 @@ public class AttachmentsDBHelper extends BODBHelper {
 
     @Override
     public String[] fieldNames() {
-        return fields;
-    }
-
-    @Override
-    public Uri getContentUri() {
-        return CONTENT_URI;
+        return FIELDS;
     }
 
     @Override
@@ -81,12 +80,13 @@ public class AttachmentsDBHelper extends BODBHelper {
         return contentValues;
     }
 
+    @Override
     public List<String> getAdditionalSQL() {
         List<String> sql = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         sql.add("drop trigger if exists delete_wall");
         sb.append(" CREATE TRIGGER delete_wall ");
-        sb.append(String.format(" AFTER DELETE ON %s ",new WallDBHelper().getTableName()));
+        sb.append(String.format(" AFTER DELETE ON %s ", WallDBHelper.TABLENAME));
         sb.append(" FOR EACH ROW ");
         sb.append(" BEGIN ");
         sb.append(String.format(" DELETE FROM %s WHERE %s = OLD.%s;", getTableName(), POST_ID, WallDBHelper.POST_ID));
@@ -96,7 +96,7 @@ public class AttachmentsDBHelper extends BODBHelper {
 
         sql.add(" drop trigger if exists delete_news ");
         sb.append(" CREATE TRIGGER delete_news ");
-        sb.append(String.format(" AFTER DELETE ON %s ",new NewsDBHelper().getTableName()));
+        sb.append(String.format(" AFTER DELETE ON %s ", NewsDBHelper.TABLENAME));
         sb.append(" FOR EACH ROW ");
         sb.append(" BEGIN ");
         sb.append(String.format(" DELETE FROM %s WHERE %s = OLD.%s;", getTableName(), POST_ID, NewsDBHelper.POST_ID));

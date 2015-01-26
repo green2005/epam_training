@@ -5,14 +5,12 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Message;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
 
 import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.db.MessagesDBHelper;
-import com.epamtraining.vklite.db.VKContentProvider;
 
 import org.json.JSONObject;
 
@@ -32,13 +30,7 @@ public class MessageCommiter extends Commiter {
 
     @Override
     protected Cursor getPendingChanges() {
-        /*
-         mContext.getContentResolver().query(
-                VKContentProvider.NEWS_CONTENT_URI,
-                new String[]{VKContentProvider.NEWS_COLUMN_POST_ID}, VKContentProvider.NEWS_COLUMN_RAW_DATE + " = ?",
-                new String[]{rawDate}, null);
-         */
-        Cursor cursor = mResolver.query(
+      return mResolver.query(
                 MessagesDBHelper.CONTENT_URI,
                 new String[]{BaseColumns._ID, MessagesDBHelper.PENDING,
                         MessagesDBHelper.BODY, MessagesDBHelper.FROM_ID,
@@ -46,7 +38,6 @@ public class MessageCommiter extends Commiter {
                 }, MessagesDBHelper.PENDING + " = ?",
                 new String[]{"1"}, null
         );
-        return cursor;
     }
 
 
@@ -63,7 +54,7 @@ public class MessageCommiter extends Commiter {
             } else
             {
                 errorMsg = mContext.getResources().getString(R.string.unknown_server_error);
-            };
+            }
             throw new Exception(errorMsg);
         }
         return true;
@@ -79,13 +70,10 @@ public class MessageCommiter extends Commiter {
         int id = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
         ContentValues contentValues = new ContentValues();
         contentValues.put(MessagesDBHelper.PENDING, 0);
-//        mResolver.update(VKContentProvider.MESSAGES_CONTENT_URI,
-//                VKContentProvider.MESSAGES_ID + " = ?",
-//                new String[]{id+""});
 
         mResolver.update(MessagesDBHelper.CONTENT_URI,
                 contentValues,BaseColumns._ID + " = ?",
-                new String[]{id+""});
+                new String[]{String.valueOf(id)});
 
     }
 }

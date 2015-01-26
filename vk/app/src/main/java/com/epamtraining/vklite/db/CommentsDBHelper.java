@@ -10,7 +10,7 @@ import com.epamtraining.vklite.bo.Comment;
 import java.util.List;
 
 public class CommentsDBHelper extends  BODBHelper{
-    private static String TABLENAME = "Comments";
+    public static String TABLENAME = "Comments";
     public static final String DATE = "Date";
     public static final String TEXT = "Text";
     public static final String COMMENT_ID = "comment_id";
@@ -19,11 +19,14 @@ public class CommentsDBHelper extends  BODBHelper{
     public static final String USERNAME = "username";
     public static final String USERIMAGE = "userimage";
     public static final String POST_ID = "post_id";
+    public static final String PENDING = "pending";
+    public static final Uri CONTENT_URI = Uri.parse(VKContentProvider.CONTENT_URI_PREFIX
+            + VKContentProvider.AUTHORITY + "/" + TABLENAME);
+    public static Uri CONTENT_URI_ID = Uri.parse(VKContentProvider.CONTENT_URI_PREFIX
+            + VKContentProvider.AUTHORITY + "/" + TABLENAME+"/#");
 
-    public static final String[] fields = {BaseColumns._ID, COMMENT_ID, RAW_DATE, DATE, OWNER_ID,  TEXT,  USERIMAGE, USERNAME, POST_ID};
-
-    public static final Uri CONTENT_URI = Uri.parse(CONTENT_URI_PREFIX
-            + AUTHORITY + "/" + TABLENAME);
+    public static final String[] FIELDS = {BaseColumns._ID, COMMENT_ID, RAW_DATE, DATE, OWNER_ID,
+                                            TEXT,  USERIMAGE, USERNAME, POST_ID, PENDING};
 
     @Override
     public String getTableName() {
@@ -32,12 +35,7 @@ public class CommentsDBHelper extends  BODBHelper{
 
     @Override
     public String[] fieldNames() {
-        return fields;
-    }
-
-    @Override
-    public Uri getContentUri() {
-        return CONTENT_URI;
+        return FIELDS;
     }
 
     @Override

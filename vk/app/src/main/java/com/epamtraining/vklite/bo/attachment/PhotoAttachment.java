@@ -43,6 +43,8 @@ public class PhotoAttachment implements Attachment {
     private static final String DATE = "date";
     private static final String URL_604 = "photo_604";
     private static final String OWNER_ID = "owner_id";
+    private static final String WIDTH = "width";
+    private static final String HEIGHT = "height";
 
     private long mId;
     private long mAlbumId;
@@ -50,6 +52,8 @@ public class PhotoAttachment implements Attachment {
     private String mDate;
     private long mOwnerId;
     private String mUrl;
+    private int mWidth;
+    private int mHeight;
 
     public PhotoAttachment(JSONObject jo) throws JSONException {
         mId = jo.optLong(ID);
@@ -58,6 +62,8 @@ public class PhotoAttachment implements Attachment {
         mDate = jo.optString(DATE);
         mUrl = jo.optString(URL_604);
         mOwnerId = jo.optLong(OWNER_ID);
+        mWidth = jo.optInt(WIDTH);
+        mHeight = jo.optInt(HEIGHT);
     }
 
     @Override
@@ -103,5 +109,15 @@ public class PhotoAttachment implements Attachment {
     @Override
     public String getAttachmentType() {
         return Attachments.ATTACHMENT_PHOTO;
+    }
+
+    @Override
+    public int getWidth() {
+        return mWidth;
+    }
+
+    @Override
+    public int getHeight() {
+        return mHeight;
     }
 }

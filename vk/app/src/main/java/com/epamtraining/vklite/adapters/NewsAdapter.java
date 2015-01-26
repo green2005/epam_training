@@ -9,9 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.epamtraining.vklite.CursorHelper;
-import com.epamtraining.vklite.db.NewsDBHelper;
-import com.epamtraining.vklite.db.VKContentProvider;
 import com.epamtraining.vklite.R;
+import com.epamtraining.vklite.ResizableImageView;
+import com.epamtraining.vklite.db.NewsDBHelper;
 
 public class NewsAdapter extends BoItemAdapter {
     private LayoutInflater mInflater;
@@ -38,7 +38,7 @@ public class NewsAdapter extends BoItemAdapter {
             holder.text = (TextView) v.findViewById(R.id.text);
             holder.userName = (TextView) v.findViewById(R.id.usernametextview);
             holder.userImage = (ImageView) v.findViewById(R.id.profileimageview);
-            holder.image = (ImageView) v.findViewById(R.id.image);
+            holder.image = (ResizableImageView) v.findViewById(R.id.image);
             v.setTag(holder);
         } else {
             holder = (ViewHolder) v.getTag();
@@ -46,6 +46,12 @@ public class NewsAdapter extends BoItemAdapter {
         holder.date.setText(CursorHelper.getString(cursor, NewsDBHelper.DATE));
         holder.text.setText(CursorHelper.getString(cursor, NewsDBHelper.TEXT));
         holder.userName.setText(CursorHelper.getString(cursor, NewsDBHelper.USERNAME));
+
+        holder.image.setOriginalImageSize(
+                CursorHelper.getInt(cursor, NewsDBHelper.IMAGE_WIDTH),
+                CursorHelper.getInt(cursor, NewsDBHelper.IMAGE_HEIGHT)
+                );
+
         populateImageView(holder.image, CursorHelper.getString(cursor, NewsDBHelper.IMAGE_URL));
         populateImageView(holder.userImage, CursorHelper.getString(cursor, NewsDBHelper.USERIMAGE));
         return v;
@@ -54,8 +60,7 @@ public class NewsAdapter extends BoItemAdapter {
     class ViewHolder {
         private TextView date;
         private TextView text;
-        private ImageView image;
-        private TextView url;
+        private ResizableImageView image;
         private TextView userName;
         private ImageView userImage;
     }

@@ -34,7 +34,7 @@ public class AuthHelper {
             "scope=" + SCOPE + "&redirect_uri=" + REDIRECT_URL + "&display=touch&response_type=token";
 
     private static final String USERS_URL = "https://api.vk.com/method/users.get?" +
-            "access_token=%s&fields=photo_100&v=%s";
+            "access_token=%s&FIELDS=photo_100&v=%s";
     private static final String ID = "id";
     private static final String RESPONSE = "response";
 

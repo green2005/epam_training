@@ -35,7 +35,7 @@ import java.util.Date;
 
 public class MessagesFragment extends BaseVKListViewFragment
         implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback {
-    private static final String[] fields = new String[]{
+    private static final String[] FIELDS = new String[]{
             MessagesDBHelper.FROM_ID,
             MessagesDBHelper.BODY,
             MessagesDBHelper.DATE,
@@ -52,11 +52,9 @@ public class MessagesFragment extends BaseVKListViewFragment
     private BoItemAdapter mAdapter;
     private Processor mProcessor;
     private String mUserId;
-    private  ListView mMessagesListView;
     private EditText msgEdit;
-    private ImageButton mSendBtn;
 
-    public static MessagesFragment getNewFragment(Bundle bundle ){
+    public static MessagesFragment getNewFragment(Bundle bundle) {
         MessagesFragment messagesFragment = new MessagesFragment();
         messagesFragment.setArguments(bundle);
         return messagesFragment;
@@ -68,13 +66,13 @@ public class MessagesFragment extends BaseVKListViewFragment
         mAdapter = new MessagesAdapter(getActivity(), R.layout.item_post, null, getDataFields(), null, 0);
         mProcessor = new MessagesProcessor(getActivity());
         Bundle b = getArguments();
-        if (b != null){
+        if (b != null) {
             if (b.containsKey(UsersDBHelper.ID)) {
                 mUserId = b.getString(UsersDBHelper.ID);
             }
-            if (b.containsKey(UsersDBHelper.NAME)){
+            if (b.containsKey(UsersDBHelper.NAME)) {
                 String userName = b.getString(UsersDBHelper.NAME);
-                String title = getResources().getString(R.string.messages)+" "+userName;
+                String title = String.format("%s %s", getResources().getString(R.string.messages), userName);
                 getActivity().setTitle(title);
             }
         }
@@ -82,7 +80,7 @@ public class MessagesFragment extends BaseVKListViewFragment
 
     @Override
     public String[] getDataFields() {
-        return fields;
+        return FIELDS;
     }
 
     @Override
@@ -97,7 +95,7 @@ public class MessagesFragment extends BaseVKListViewFragment
 
     @Override
     public String getDataUrl(int offset, String next_id) {
-        return Api.getMessagesUrl(getActivity(), offset+"", mUserId);
+        return Api.getMessagesUrl(getActivity(), String.valueOf(offset), mUserId);
     }
 
     @Override
@@ -107,14 +105,15 @@ public class MessagesFragment extends BaseVKListViewFragment
 
     @Override
     public int getLoaderId() {
-        return LoaderManagerIds.MESSAGES.getId();
+        return LoaderManagerIds.MESSAGES.ordinal();
     }
 
+    @Override
     protected void onAfterCreateView(View view) {
-       super.onAfterCreateView(view);
-        mMessagesListView = (ListView)view.findViewById(R.id.itemsList);
-        msgEdit = (EditText)view.findViewById(R.id.messageedit);
-        mSendBtn = (ImageButton)view.findViewById(R.id.btnsend);
+        super.onAfterCreateView(view);
+        ListView mMessagesListView = getCollectionViewWrapper().getCollectionView(); //(ListView) view.findViewById(android.R.id.list);
+        msgEdit = (EditText) view.findViewById(R.id.messageedit);
+        ImageButton mSendBtn = (ImageButton) view.findViewById(R.id.btnsend);
         mSendBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,7 +124,7 @@ public class MessagesFragment extends BaseVKListViewFragment
                 }
             }
         });
-        if (mMessagesListView != null){
+        if (mMessagesListView != null) {
             mMessagesListView.setDividerHeight(0);
             mMessagesListView.setItemsCanFocus(false);
             mMessagesListView.setFocusable(false);
@@ -136,15 +135,14 @@ public class MessagesFragment extends BaseVKListViewFragment
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null){
-            if (savedInstanceState.containsKey(MESSAGE_EDIT)){
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(MESSAGE_EDIT)) {
                 msgEdit.setText(savedInstanceState.getString(MESSAGE_EDIT));
             }
-        } else
-        {
+        } else {
             SharedPreferences prefs = getActivity().getSharedPreferences(MESSAGE_EDIT, Context.MODE_PRIVATE);
-            String s = prefs.getString(mUserId,"");
-            if (!TextUtils.isEmpty(s)){
+            String s = prefs.getString(mUserId, "");
+            if (!TextUtils.isEmpty(s)) {
                 msgEdit.setText(s);
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.remove(mUserId);
@@ -153,26 +151,26 @@ public class MessagesFragment extends BaseVKListViewFragment
         }
     }
 
-    private void sendMessage(String message){
+    private void sendMessage(String message) {
         ContentValues values = new ContentValues();
         String currentUserId = Api.getUserId(getActivity().getApplication());
         values.put(MessagesDBHelper.FROM_ID, currentUserId);
         values.put(MessagesDBHelper.USER_ID, mUserId);
         values.put(MessagesDBHelper.OUT, "1");
         Date date = new Date();
-        long rawDate = date.getTime()/1000;
+        long rawDate = date.getTime() / 1000;
         values.put(MessagesDBHelper.RAW_DATE, rawDate);
         java.text.DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getActivity());
         String cDate = dateFormat.format(date);
         values.put(MessagesDBHelper.DATE, cDate);
-        values.put(MessagesDBHelper.PENDING,"1");
+        values.put(MessagesDBHelper.PENDING, "1");
         values.put(MessagesDBHelper.BODY, message);
         getActivity().getContentResolver().insert(MessagesDBHelper.CONTENT_URI, values);
         getActivity().getContentResolver().notifyChange(MessagesDBHelper.CONTENT_URI, null);
         commitPendingMessages();
     }
 
-    private void commitPendingMessages(){
+    private void commitPendingMessages() {
         CommiterCallback commiterCallback = new CommiterCallback() {
             @Override
             public void onAfterExecute() {
@@ -203,12 +201,12 @@ public class MessagesFragment extends BaseVKListViewFragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (!TextUtils.isEmpty(msgEdit.getText().toString())){
+        if (!TextUtils.isEmpty(msgEdit.getText().toString())) {
             outState.putString(MESSAGE_EDIT, msgEdit.getText().toString());
         }
     }
 
-    protected int getLayoutResourceId(){
+    protected int getLayoutResourceId() {
         return R.layout.fragment_messages;
     }
 

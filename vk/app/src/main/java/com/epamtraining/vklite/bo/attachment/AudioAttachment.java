@@ -68,4 +68,14 @@ public class AudioAttachment implements Attachment {
     public String getAttachmentType() {
         return Attachments.ATTACHMENT_AUDIO;
     }
+
+    @Override
+    public int getWidth() {
+        return 0;
+    }
+
+    @Override
+    public int getHeight() {
+        return 0;
+    }
 }

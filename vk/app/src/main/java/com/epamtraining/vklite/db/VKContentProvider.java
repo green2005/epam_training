@@ -9,20 +9,56 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class VKContentProvider extends ContentProvider {
 
-    //TODO change to enum and use *.ordinal()
-    /*enum URI_TYPE {
-        NEWS(0);
-    }*/
-    private static final int URI_NEWS = 1;
+    public static final String CONTENT_TYPE_PREFIX = "vnd.android.cursor.dir/vnd.";
+    public static final String CONTENT_ITEM_TYPE_PREFIX = "vnd.android.cursor.item/vnd.";
+    public static final String AUTHORITY = "com.epamtraining.vk";
+    public static final String CONTENT_URI_PREFIX = "content://";
+
+    private static enum URI_TYPE {
+        NEWS(NewsDBHelper.TABLENAME, NewsDBHelper.CONTENT_URI),
+        NEWS_ID(NewsDBHelper.TABLENAME, NewsDBHelper.CONTENT_URI_ID),
+        FRIENDS(FriendDBHelper.TABLENAME, FriendDBHelper.CONTENT_URI),
+        FRIENDS_ID(FriendDBHelper.TABLENAME, FriendDBHelper.CONTENT_URI_ID),
+        WALL(WallDBHelper.TABLENAME, WallDBHelper.CONTENT_URI),
+        WALL_ID(WallDBHelper.TABLENAME, WallDBHelper.CONTENT_URI_ID),
+        DIALOGS(DialogDBHelper.TABLENAME, DialogDBHelper.CONTENT_URI),
+        DIALOGS_ID(DialogDBHelper.TABLENAME, DialogDBHelper.CONTENT_URI_ID),
+        USERS(UsersDBHelper.TABLENAME, UsersDBHelper.CONTENT_URI),
+        USERS_ID(UsersDBHelper.TABLENAME, UsersDBHelper.CONTENT_URI_ID),
+        MESSAGES(MessagesDBHelper.TABLENAME, MessagesDBHelper.CONTENT_URI),
+        MESSAGES_ID(MessagesDBHelper.TABLENAME, MessagesDBHelper.CONTENT_URI_ID),
+        ATTACHMENTS(AttachmentsDBHelper.TABLENAME, AttachmentsDBHelper.CONTENT_URI),
+        ATTACHMENTS_ID(AttachmentsDBHelper.TABLENAME, AttachmentsDBHelper.CONTENT_URI_ID),
+        COMMENTS(CommentsDBHelper.TABLENAME, CommentsDBHelper.CONTENT_URI),
+        COMMENTS_ID(CommentsDBHelper.TABLENAME, CommentsDBHelper.CONTENT_URI_ID),;
+        private String mTableName;
+        private Uri mContentUri;
+
+        URI_TYPE(String tableName, Uri contentUri) {
+            mTableName = tableName;
+            mContentUri = contentUri;
+        }
+
+        public String getTableName() {
+            return mTableName;
+        }
+
+        public Uri getContentUri() {
+            return mContentUri;
+        }
+    }
+
+    /*private static final int URI_NEWS = 1;
     private static final int URI_NEWS_ID = 2;
     private static final int URI_FRIENDS = 3;
     private static final int URI_FRIENDS_ID = 4;
@@ -38,52 +74,50 @@ public class VKContentProvider extends ContentProvider {
     private static final int URI_ATTACHMENTS_ID = 14;
     private static final int URI_COMMENTS = 15;
     private static final int URI_COMMENTS_ID = 16;
-    private static HashMap<Integer, BODBHelper> sBoDbHelpers;
+  */
+    private static Map<Integer, URI_TYPE> sUriTypes;
 
 
-    private DBManager mDbManager;
+    private DBManager sDbManager;
     private static final UriMatcher uriMatcher;
 
-    private static void addUri(BODBHelper dbHelper, int itemUri, int itemIdUri) {
-        sBoDbHelpers.put(itemIdUri, dbHelper);
-        sBoDbHelpers.put(itemUri, dbHelper);
-        uriMatcher.addURI(BODBHelper.AUTHORITY, dbHelper.getTableName(), itemUri);
-        uriMatcher.addURI(BODBHelper.AUTHORITY, dbHelper.getTableName() + "/#", itemIdUri);
+    private static void addUri(URI_TYPE uri_item, URI_TYPE uri_item_id) {
+        uriMatcher.addURI(AUTHORITY, uri_item.getTableName(), uri_item.ordinal());
+        uriMatcher.addURI(AUTHORITY, uri_item_id.getTableName() + "/#", uri_item_id.ordinal());
+        sUriTypes.put(uri_item.ordinal(), uri_item);
+        sUriTypes.put(uri_item_id.ordinal(), uri_item_id);
     }
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        //TODO change to Thread safe - ConcurrentHashMap for example
-        sBoDbHelpers = new HashMap();
-        addUri(new DialogDBHelper(), URI_DIALOGS, URI_DIALOGS_ID);
-        addUri(new NewsDBHelper(), URI_NEWS, URI_NEWS_ID);
-        addUri(new FriendDBHelper(), URI_FRIENDS, URI_FRIENDS_ID);
-        addUri(new WallDBHelper(), URI_WALL, URI_WALL_ID);
-        addUri(new MessagesDBHelper(), URI_MESSAGES, URI_MESSAGES_ID);
-        addUri(new UsersDBHelper(), URI_USERS, URI_USERS_ID);
-        addUri(new AttachmentsDBHelper(), URI_ATTACHMENTS, URI_ATTACHMENTS_ID);
-        addUri(new CommentsDBHelper(), URI_COMMENTS, URI_COMMENTS_ID);
+        sUriTypes = new ConcurrentHashMap<>();
+        addUri(URI_TYPE.DIALOGS, URI_TYPE.DIALOGS_ID);
+        addUri(URI_TYPE.NEWS, URI_TYPE.NEWS_ID);
+        addUri(URI_TYPE.FRIENDS, URI_TYPE.FRIENDS_ID);
+        addUri(URI_TYPE.WALL, URI_TYPE.WALL_ID);
+        addUri(URI_TYPE.MESSAGES, URI_TYPE.MESSAGES_ID);
+        addUri(URI_TYPE.USERS, URI_TYPE.USERS_ID);
+        addUri(URI_TYPE.ATTACHMENTS, URI_TYPE.ATTACHMENTS_ID);
+        addUri(URI_TYPE.COMMENTS, URI_TYPE.COMMENTS_ID);
     }
 
-    private BODBHelper getDBHelper(int helperUri) {
-        BODBHelper helper = sBoDbHelpers.get(helperUri);
-        if (helper == null) {
-            throw new IllegalArgumentException("Unknown Uri");
+    private URI_TYPE getUriTypeByUri(Uri uri) {
+        int uriTypeId = uriMatcher.match(uri);
+        URI_TYPE uriType = sUriTypes.get(uriTypeId);
+        if (uriType == null) {
+            throw new IllegalArgumentException("Wrong URI: " + uri);
+        } else {
+            return uriType;
         }
-        return sBoDbHelpers.get(helperUri);
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         String tableName;
-        int helperId = uriMatcher.match(uri);
-        BODBHelper helper = getDBHelper(helperId);
-        if (helper == null) {
-            throw new IllegalArgumentException("Wrong URI: " + uri);
-        }
-        tableName = helper.getTableName();
-        switch (helperId) {
-            case URI_WALL_ID: {
+        URI_TYPE uriType = getUriTypeByUri(uri);
+        tableName = uriType.getTableName();
+        switch (uriType) {
+            case WALL_ID: {
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
                     selection = WallDBHelper.POST_ID + " = " + id;
@@ -93,7 +127,7 @@ public class VKContentProvider extends ContentProvider {
                 break;
             }
 
-            case URI_NEWS_ID: {
+            case NEWS_ID: {
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
                     selection = NewsDBHelper.POST_ID + " = " + id;
@@ -102,7 +136,7 @@ public class VKContentProvider extends ContentProvider {
                 }
                 break;
             }
-            case URI_FRIENDS_ID: {
+            case FRIENDS_ID: {
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
                     selection = FriendDBHelper.ID + " = " + id;
@@ -111,7 +145,7 @@ public class VKContentProvider extends ContentProvider {
                 }
                 break;
             }
-            case URI_DIALOGS_ID: {
+            case DIALOGS_ID: {
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
                     selection = FriendDBHelper.ID + " = " + id;
@@ -120,7 +154,15 @@ public class VKContentProvider extends ContentProvider {
                 }
                 break;
             }
-            case URI_MESSAGES: {
+            case COMMENTS:{
+                if (TextUtils.isEmpty(selection)) {
+                    selection = " ifnull(" + CommentsDBHelper.PENDING + ",0)" + " <> 1";
+                } else {
+                    selection = selection + " AND " + " ifnull(" + CommentsDBHelper.PENDING + ",0)" + " <> 1 ";
+                }
+                break;
+            }
+            case MESSAGES: {
                 if (TextUtils.isEmpty(selection)) {
                     selection = " ifnull(" + MessagesDBHelper.PENDING + ",0)" + " <> 1";
                 } else {
@@ -129,67 +171,66 @@ public class VKContentProvider extends ContentProvider {
                 break;
             }
         }
-        SQLiteDatabase mDb = mDbManager.getWritableDatabase();
-        int cnt = mDb.delete(tableName, selection, selectionArgs);
-        return cnt;
+        SQLiteDatabase mDb = sDbManager.getWritableDatabase();
+        return mDb.delete(tableName, selection, selectionArgs);
+    }
+
+    private String getContentType(URI_TYPE uriType, String prefix) {
+        return String.format("%s%s.%s", prefix, AUTHORITY, uriType.getTableName());
     }
 
 
     @Override
     public String getType(Uri uri) {
-        int helperId = uriMatcher.match(uri);
-        BODBHelper helper = getDBHelper(helperId);
-        if (helper == null) {
-            throw new IllegalArgumentException("Wrong URI: " + uri);
-        }
-        switch (helperId) {
-            case URI_WALL_ID: {
-                return helper.getContentItemType();
+        URI_TYPE uriType = getUriTypeByUri(uri);
+        switch (uriType) {
+            case WALL_ID: {
+                return getContentType(uriType, CONTENT_ITEM_TYPE_PREFIX);
             }
-            case URI_WALL: {
-                return helper.getContentType();
+            case WALL: {
+                return getContentType(uriType, CONTENT_TYPE_PREFIX);
             }
-            case URI_NEWS: {
-                return helper.getContentType();
+            case NEWS: {
+                return getContentType(uriType, CONTENT_TYPE_PREFIX);
             }
-            case URI_NEWS_ID: {
-                return helper.getContentItemType();
+            case NEWS_ID: {
+                return getContentType(uriType, CONTENT_ITEM_TYPE_PREFIX);
             }
-            case URI_FRIENDS: {
-                return helper.getContentType();
+            case FRIENDS: {
+                return getContentType(uriType, CONTENT_TYPE_PREFIX);
             }
-            case URI_FRIENDS_ID: {
-                return helper.getContentItemType();
+            case FRIENDS_ID: {
+                return getContentType(uriType, CONTENT_ITEM_TYPE_PREFIX);
             }
-            case URI_DIALOGS: {
-                return helper.getContentType();
+            case DIALOGS: {
+                return getContentType(uriType, CONTENT_TYPE_PREFIX);
             }
-            case URI_DIALOGS_ID: {
-                return helper.getContentItemType();
+            case DIALOGS_ID: {
+                return getContentType(uriType, CONTENT_ITEM_TYPE_PREFIX);
             }
-            case URI_USERS: {
-                return helper.getContentType();
+            case USERS: {
+                return getContentType(uriType, CONTENT_TYPE_PREFIX);
             }
-            case URI_USERS_ID: {
-                return helper.getContentItemType();
+            case USERS_ID: {
+                return getContentType(uriType, CONTENT_ITEM_TYPE_PREFIX);
             }
-            case URI_MESSAGES: {
-                return helper.getContentType();
+            case MESSAGES: {
+                return getContentType(uriType, CONTENT_TYPE_PREFIX);
             }
-            case URI_MESSAGES_ID: {
-                return helper.getContentItemType();
+            case MESSAGES_ID: {
+                return getContentType(uriType, CONTENT_ITEM_TYPE_PREFIX);
             }
-            case URI_ATTACHMENTS: {
-                return helper.getContentType();
+            case ATTACHMENTS: {
+                return getContentType(uriType, CONTENT_TYPE_PREFIX);
             }
-            case URI_ATTACHMENTS_ID: {
-                return helper.getContentItemType();
+            case ATTACHMENTS_ID: {
+                return getContentType(uriType, CONTENT_ITEM_TYPE_PREFIX);
             }
-            case URI_COMMENTS: {
-                return helper.getContentType();
+            case COMMENTS: {
+                return getContentType(uriType, CONTENT_TYPE_PREFIX);
             }
-            case URI_COMMENTS_ID: {
-                return helper.getContentItemType();
+            case COMMENTS_ID: {
+                return getContentType(uriType, CONTENT_ITEM_TYPE_PREFIX);
             }
         }
         return null;
@@ -197,67 +238,55 @@ public class VKContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        SQLiteDatabase db = mDbManager.getWritableDatabase();
+        SQLiteDatabase db = sDbManager.getWritableDatabase();
         Uri resultUri;
         long rowID;
-        int helperUriId = uriMatcher.match(uri);
-        BODBHelper helper = getDBHelper(helperUriId);
-        if (helper == null) {
-            throw new IllegalArgumentException("Wrong URI: " + uri);
-        }
+        URI_TYPE uriType = getUriTypeByUri(uri);
         db.beginTransaction();
         try {
-            rowID = db.insert(helper.getTableName(), null, values);
+            rowID = db.insert(uriType.getTableName(), null, values);
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
         }
-        resultUri = ContentUris.withAppendedId(helper.getContentUri(), rowID);
+        resultUri = ContentUris.withAppendedId(uriType.getContentUri(), rowID);
         getContext().getContentResolver().notifyChange(resultUri, null);
         return resultUri;
     }
 
     @Override
     public boolean onCreate() {
-        //TODO remove this magic
-        HashSet<BODBHelper> helpers = new HashSet<>(sBoDbHelpers.values());
-
-        //TODO move to singleTon, bug on 9 or 10 api
-        mDbManager = new DBManager(getContext(), helpers);
+         //moved to singleTon, bug on 9 or 10 api
+        if (sDbManager == null) {
+            sDbManager = new DBManager(getContext());
+        }
         return true;
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-        String tableName = null;
-        Uri contentUri = null;
-        int uriHelperId = uriMatcher.match(uri);
-        BODBHelper helper = getDBHelper(uriHelperId);
-        if (helper == null) {
-            throw new IllegalArgumentException("Wrong URI: " + uri);
-        }
-        tableName = helper.getTableName();
-        contentUri = helper.getContentUri();
-        SQLiteDatabase db = mDbManager.getReadableDatabase();
-
-        switch (uriMatcher.match(uri)) {
-            case URI_NEWS: {
+        URI_TYPE uriType = getUriTypeByUri(uri);
+        Uri contentUri = uriType.getContentUri();
+        String tableName  = uriType.getTableName();
+        SQLiteDatabase db = sDbManager.getReadableDatabase();
+        switch (uriType) {
+            case  NEWS: {
                 if (TextUtils.isEmpty(sortOrder))
                     sortOrder = NewsDBHelper.RAW_DATE + " DESC";
                 break;
             }
-            case URI_COMMENTS: {
+            case  COMMENTS: {
                 if (TextUtils.isEmpty(sortOrder))
                     sortOrder = CommentsDBHelper.RAW_DATE + " DESC";
                 break;
             }
-            case URI_FRIENDS: {
+            case  FRIENDS: {
                 if (TextUtils.isEmpty(sortOrder))
                     sortOrder = FriendDBHelper.LAST_NAME + " ASC";
                 break;
             }
-            case URI_NEWS_ID: {
+            case  NEWS_ID: {
                 String id = uri.getLastPathSegment();
                 if (!TextUtils.isEmpty(selection)) {
                     selection = selection + " AND " + NewsDBHelper.POST_ID + " = " + id;
@@ -266,7 +295,7 @@ public class VKContentProvider extends ContentProvider {
                 }
                 break;
             }
-            case URI_FRIENDS_ID: {
+            case  FRIENDS_ID: {
                 String id = uri.getLastPathSegment();
                 if (!TextUtils.isEmpty(selection)) {
                     selection = selection + " AND " + FriendDBHelper.ID + " = " + id;
@@ -275,12 +304,12 @@ public class VKContentProvider extends ContentProvider {
                 }
                 break;
             }
-            case URI_WALL: {
+            case  WALL: {
                 if (TextUtils.isEmpty(sortOrder))
                     sortOrder = WallDBHelper.RAW_DATE + " DESC";
                 break;
             }
-            case URI_DIALOGS: {
+            case  DIALOGS: {
                 SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
                 StringBuilder sb = new StringBuilder();
                 sb.append(DialogDBHelper.TABLENAME);
@@ -306,8 +335,7 @@ public class VKContentProvider extends ContentProvider {
                 mColumnMap.put(DialogDBHelper.TABLENAME + "." + DialogDBHelper.RAW_DATE, DialogDBHelper.TABLENAME + "." + DialogDBHelper.RAW_DATE + " as " + DialogDBHelper.RAW_DATE);
                 mColumnMap.put(DialogDBHelper.TABLENAME + "." + BaseColumns._ID, DialogDBHelper.TABLENAME + "." + BaseColumns._ID + " as " + BaseColumns._ID);
                 queryBuilder.setProjectionMap(mColumnMap);
-                contentUri = helper.getContentUri();
-                if (TextUtils.isEmpty(sortOrder)) {
+                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = DialogDBHelper.RAW_DATE + " DESC";
                 }
                 String[] projections = new String[mColumnMap.size()];
@@ -319,7 +347,7 @@ public class VKContentProvider extends ContentProvider {
                 return cr;
             }
 
-            case URI_MESSAGES: {
+            case  MESSAGES: {
                 SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
                 StringBuilder sb = new StringBuilder();
                 sb.append(MessagesDBHelper.TABLENAME);
@@ -337,6 +365,7 @@ public class VKContentProvider extends ContentProvider {
                 //"CREATE TABLE Messages(_id Integer NOT NULL PRIMARY KEY AUTOINCREMENT, message_id text, body text,
                 // Raw_Date text, Date text, user_id text, image_url text)";
                 mColumnMap.put(MessagesDBHelper.TABLENAME + "." + MessagesDBHelper.FROM_ID, MessagesDBHelper.TABLENAME + "." + MessagesDBHelper.FROM_ID + " as " + MessagesDBHelper.FROM_ID);
+                mColumnMap.put(MessagesDBHelper.TABLENAME + "." + MessagesDBHelper.USER_DIALOG_ID, MessagesDBHelper.TABLENAME + "." + MessagesDBHelper.USER_DIALOG_ID + " as " + MessagesDBHelper.USER_DIALOG_ID);
                 mColumnMap.put(UsersDBHelper.TABLENAME + "." + UsersDBHelper.NAME, UsersDBHelper.TABLENAME + "." + UsersDBHelper.NAME + " as " + UsersDBHelper.NAME);
                 mColumnMap.put(UsersDBHelper.TABLENAME + "." + UsersDBHelper.IMAGE, UsersDBHelper.TABLENAME + "." + UsersDBHelper.IMAGE + " as " + UsersDBHelper.IMAGE_FULL);
                 mColumnMap.put(MessagesDBHelper.TABLENAME + "." + BaseColumns._ID, MessagesDBHelper.TABLENAME + "." + BaseColumns._ID + " as " + BaseColumns._ID);
@@ -350,8 +379,7 @@ public class VKContentProvider extends ContentProvider {
                 mColumnMap.put(MessagesDBHelper.TABLENAME + "." + MessagesDBHelper.USER_ID, MessagesDBHelper.TABLENAME + "." + MessagesDBHelper.USER_ID + " as " + MessagesDBHelper.USER_ID);
 
                 queryBuilder.setProjectionMap(mColumnMap);
-                contentUri = helper.getContentUri();
-                if (TextUtils.isEmpty(sortOrder)) {
+                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = MessagesDBHelper.RAW_DATE + " DESC";
                 }
                 String[] projections = new String[mColumnMap.size()];
@@ -371,18 +399,12 @@ public class VKContentProvider extends ContentProvider {
 
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
-
-        int uriType = 0;
-        int insertCount = 0;
-        uriType = uriMatcher.match(uri);
-        BODBHelper helper = getDBHelper(uriType);
-        if (helper == null) {
-            throw new IllegalArgumentException("Wrong URI: " + uri);
-        }
-        SQLiteDatabase sqlDB = mDbManager.getWritableDatabase();
-        String tableName = helper.getTableName();
+ int insertCount = 0;
+        URI_TYPE uriType = getUriTypeByUri(uri);
+        SQLiteDatabase sqlDB = sDbManager.getWritableDatabase();
+        String tableName = uriType.getTableName();
         switch (uriType) {
-            case URI_USERS: {
+            case USERS: {
                 try {
                     sqlDB.beginTransaction();
                     for (ContentValues value : values) {
@@ -418,18 +440,41 @@ public class VKContentProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
-        int uriType = uriMatcher.match(uri);
-        SQLiteDatabase sqlDB = mDbManager.getWritableDatabase();
+        URI_TYPE uriType = getUriTypeByUri(uri);
+        SQLiteDatabase sqlDB = sDbManager.getWritableDatabase();
         int rowsUpdated = 0;
         switch (uriType) {
-            case URI_MESSAGES:
+            case COMMENTS:
+                rowsUpdated = sqlDB.update(CommentsDBHelper.TABLENAME,
+                        values,
+                        selection,
+                        selectionArgs);
+                break;
+            case COMMENTS_ID:
+                String id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rowsUpdated = sqlDB.update(CommentsDBHelper.TABLENAME,
+                            values,
+                            BaseColumns._ID + "=" + id,
+                            null);
+                } else {
+                    rowsUpdated = sqlDB.update(CommentsDBHelper.TABLENAME,
+                            values,
+                            BaseColumns._ID  + "=" + id
+                                    + " and "
+                                    + selection,
+                            selectionArgs);
+                    break;
+                }
+
+            case MESSAGES:
                 rowsUpdated = sqlDB.update(MessagesDBHelper.TABLENAME,
                         values,
                         selection,
                         selectionArgs);
                 break;
-            case URI_MESSAGES_ID:
-                String id = uri.getLastPathSegment();
+            case MESSAGES_ID:
+                id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
                     rowsUpdated = sqlDB.update(MessagesDBHelper.TABLENAME,
                             values,
@@ -445,7 +490,6 @@ public class VKContentProvider extends ContentProvider {
                     break;
                 }
         }
-        ;
         return rowsUpdated;
     }
 

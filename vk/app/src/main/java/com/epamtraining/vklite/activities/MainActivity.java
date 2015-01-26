@@ -1,6 +1,7 @@
 package com.epamtraining.vklite.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -18,15 +19,20 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.epamtraining.vklite.Api;
+import com.epamtraining.vklite.DataSource;
+import com.epamtraining.vklite.ErrorHelper;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.VKApplication;
 import com.epamtraining.vklite.adapters.DrawingArrayAdapter;
 import com.epamtraining.vklite.auth.AuthHelper;
 import com.epamtraining.vklite.fragments.FragmentMenuItem;
 import com.epamtraining.vklite.fragments.Refreshable;
-import com.epamtraining.vklite.imageLoader.ImageLoader;
+import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.processors.Processor;
+import com.epamtraining.vklite.processors.UserInfoProcessor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
@@ -52,6 +58,7 @@ public class MainActivity extends ActionBarActivity {
             String userId = getIntent().getStringExtra(AuthHelper.USER_ID);
             Api.setToken((VKApplication) (getApplication()), token);
             Api.setUserId((VKApplication) (getApplication()), userId);
+            updateUserInfo(userId);
         }
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -86,37 +93,52 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void initNavigationDrawer() {
-        List<FragmentMenuItem> list = new ArrayList<>();
-        for (FragmentMenuItem ft : FragmentMenuItem.values()) {
-            if (ft.getIsMainActivityFragment()) {
-                list.add(ft);
-            }
-        }
-        mFragmentMenuItems = new FragmentMenuItem[list.size()];
-        list.toArray(mFragmentMenuItems);
+           mFragmentMenuItems = FragmentMenuItem.values();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
 
-        private class DrawerItemClickListener implements ListView.OnItemClickListener {
+    private void updateUserInfo(final String userId ){
+        Processor processor = new UserInfoProcessor(this);
+        DataSource ds = new DataSource(processor, new DataSource.DataSourceCallbacks() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (position < mFragmentMenuItems.length){
-                    selectItem(mFragmentMenuItems[position]);
-                }
+            public void onError(Exception e) {
+                ErrorHelper.showError(MainActivity.this, e);
+            }
+
+            @Override
+            public void onLoadEnd(int recordsFetched) {
+                SharedPreferences preferences;
+                preferences = MainActivity.this.getSharedPreferences(UserInfoProcessor.USER_INFO,
+                        MODE_PRIVATE);
+                String userName = preferences.getString(UserInfoProcessor.USER_NAME, "");
+                String userImage = preferences.getString(UserInfoProcessor.USER_IMAGE, "");
+                Api.setUserInfo((VKApplication)getApplication() ,userName, userImage);
+            }
+
+            @Override
+            public void onBeforeStart() {
+
+            }
+        });
+        ds.fillData(Api.getUserInfo(userId), this);
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (position < mFragmentMenuItems.length) {
+                selectItem(mFragmentMenuItems[position]);
             }
         }
+    }
 
     private void selectItem(FragmentMenuItem fragmentMenuItem) {
-            Fragment fragment = fragmentMenuItem.getNewFragment();
-            if (fragment != null) {
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.container, fragment, null);
-                ft.commit();
-            }
+        Fragment fragment = fragmentMenuItem.getNewFragment();
+        if (fragment != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.container, fragment, null);
+            ft.commit();
+        }
         mTitle = getResources().getString(fragmentMenuItem.getNameResourceId());
         getSupportActionBar().setTitle(mTitle);
         mDrawerLayout.closeDrawer(mDrawerList);
@@ -152,10 +174,10 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                if (fragmentManager != null){
-                    for (Fragment ft: fragmentManager.getFragments()){
-                        if (ft instanceof Refreshable){
-                            ((Refreshable)ft).refreshData();
+                if (fragmentManager != null) {
+                    for (Fragment ft : fragmentManager.getFragments()) {
+                        if (ft instanceof Refreshable) {
+                            ((Refreshable) ft).refreshData();
                         }
                     }
                 }
@@ -190,7 +212,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-      //  menu.findItem(R.id.action_search).setVisible(!drawerOpen);
+        //  menu.findItem(R.id.action_search).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 

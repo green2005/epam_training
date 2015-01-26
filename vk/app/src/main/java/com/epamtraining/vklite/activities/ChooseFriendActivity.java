@@ -20,7 +20,7 @@ public class ChooseFriendActivity  extends ActionBarActivity {
         bundle.putInt(MainActivity.FRAGMENT_REQUEST, MainActivity.REQUEST_CODE_CHOOSE_FRIEND);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, FriendsFragment.getNewFragment(bundle))
+                    .add(R.id.container, FriendsFragment.newInstance(bundle))
                     .commit();
         }
     }

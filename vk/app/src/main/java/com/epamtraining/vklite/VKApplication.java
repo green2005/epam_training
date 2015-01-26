@@ -5,7 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.epamtraining.vklite.imageLoader.ImageLoader;
+import com.epamtraining.vklite.imageloader.ImageLoader;
 import com.epamtraining.vklite.os.VKExecutor;
 
 import java.util.HashMap;
@@ -48,6 +48,14 @@ public class VKApplication extends Application {
             initLocalServices();
         }
         mSystemServices.put(Api.USERID_KEY, new StringHolder(userId));
+    }
+
+    public void setUserInfo(String userName, String image) {
+        if (mSystemServices == null) {
+            initLocalServices();
+        }
+        mSystemServices.put(Api.USERID_NAME, new StringHolder(userName));
+        mSystemServices.put(Api.USERID_IMAGE, new StringHolder(image));
     }
 
     private void initLocalServices(){

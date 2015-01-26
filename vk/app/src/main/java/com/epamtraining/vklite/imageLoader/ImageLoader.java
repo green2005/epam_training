@@ -1,4 +1,4 @@
-package com.epamtraining.vklite.imageLoader;
+package com.epamtraining.vklite.imageloader;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -29,14 +29,14 @@ public class ImageLoader implements VKLocalService{
         private Map<String, Runnable> mRunningRunnables;
 
         LoadingImages() {
-            mLoadingImagesList = new ConcurrentHashMap<String, CopyOnWriteArraySet<ImageView>>();
-            mRunningRunnables = new ConcurrentHashMap<String, Runnable>();
+            mLoadingImagesList = new ConcurrentHashMap<>();
+            mRunningRunnables = new ConcurrentHashMap<>();
         }
 
         void addImage(String url, ImageView imageView) {
             CopyOnWriteArraySet<ImageView> imageViews = mLoadingImagesList.get(url);
             if (imageViews == null) {
-                imageViews = new CopyOnWriteArraySet<ImageView>();
+                imageViews = new CopyOnWriteArraySet<>();
                 imageViews.add(imageView);
                 mLoadingImagesList.put(url, imageViews);
             } else {
@@ -49,7 +49,7 @@ public class ImageLoader implements VKLocalService{
         }
 
         Set<Runnable> getThreads() {
-            return new HashSet<Runnable>(mRunningRunnables.values());
+            return new HashSet<>(mRunningRunnables.values());
         }
 
         void loadingDone(String url) {
@@ -185,12 +185,12 @@ public class ImageLoader implements VKLocalService{
             } catch (Exception e) {
                 mCache.removeImage(mUrl);
                 mLoadingList.loadingDone(mUrl);
-            };
+            }
         }
     }
 
     private void doLoadImage(final String imageUrl, final Handler mHandler) {
-        InputStream is = null;
+        InputStream is;
         try {
             URL url = new URL(imageUrl);
             is = url.openStream();

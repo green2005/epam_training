@@ -1,4 +1,4 @@
-package com.epamtraining.vklite.attachmentUI;
+package com.epamtraining.vklite.attachmentui;
 
 
 import android.content.Context;
@@ -14,7 +14,7 @@ import com.epamtraining.vklite.CursorHelper;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.ResizableImageView;
 import com.epamtraining.vklite.db.AttachmentsDBHelper;
-import com.epamtraining.vklite.imageLoader.ImageLoader;
+import com.epamtraining.vklite.imageloader.ImageLoader;
 
 public class AttachmentVideoHelper implements AttachmentHelper {
     private TextView mTitleView;

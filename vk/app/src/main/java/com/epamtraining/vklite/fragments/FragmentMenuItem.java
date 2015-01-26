@@ -19,10 +19,6 @@ public enum FragmentMenuItem {
         mNameResourceId = nameResourceId;
       }
 
-    public boolean getIsMainActivityFragment(){
-        return mNameResourceId != 0;
-    }
-
     public int getNameResourceId() {
         return mNameResourceId;
     }
@@ -35,20 +31,19 @@ public enum FragmentMenuItem {
         Fragment fragment = null;
         switch (this) {
             case DIALOG_ITEM: {
-                //TODO newInstance
-                fragment = DialogsFragment.getNewFragment();
+                fragment = DialogsFragment.newInstance();
                 break;
             }
             case NEWS_ITEM: {
-                fragment = NewsFragment.getNewFragment();
+                fragment = NewsFragment.newInstance();
                 break;
             }
             case FRIEND_ITEM: {
-                fragment = FriendsFragment.getNewFragment(null);
+                fragment = FriendsFragment.newInstance(null);
                 break;
             }
             case WALL_ITEM: {
-                fragment = WallFragment.getNewFragment();
+                fragment = WallFragment.newInstance();
                 break;
             }
         }

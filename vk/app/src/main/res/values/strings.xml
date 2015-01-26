@@ -28,6 +28,7 @@
     <string name="response_is_empty">Ответ пуст</string>
     <string name="title_activity_messages">Сообщения</string>
     <string name="enter_your_message">Введите текст сообщения</string>
+    <string name="enter_your_comment">Введите комментарий</string>
     <string name="new_message">Написать сообщение</string>
     <string name="title_activity_choose_friend">Друзья</string>
     <string name="title_activity_post_detail">Запись на стене</string>

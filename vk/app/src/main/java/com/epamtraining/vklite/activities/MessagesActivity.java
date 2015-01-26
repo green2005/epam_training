@@ -7,7 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.fragments.MessagesFragment;
+import com.epamtraining.vklite.fragments.MessagesRecyclerViewFragment;
 import com.epamtraining.vklite.fragments.Refreshable;
 
 public class MessagesActivity extends ActionBarActivity {
@@ -19,8 +19,9 @@ public class MessagesActivity extends ActionBarActivity {
         setContentView(R.layout.activity_messages);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, MessagesFragment.getNewFragment(getIntent().getExtras()))
-                    .commit();
+                    .add(R.id.container,
+                            MessagesRecyclerViewFragment.getNewFragment(getIntent().getExtras()))
+                                    .commit();
         }
     }
 
@@ -52,12 +53,7 @@ public class MessagesActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
 

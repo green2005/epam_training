@@ -10,7 +10,7 @@ public class Message extends BoItem {
     private static final String BODY = "body";
     private static final String TITLE = "title";
     private static final String DATE = "date";
-    private static final String USERID = "user_id";
+    public static final String USERID = "user_id";
     private static final String FROMID = "from_id";
     private static final String ATTACHMENTS = "attachments";
 

@@ -20,6 +20,7 @@ import com.epamtraining.vklite.ErrorHelper;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.adapters.BoItemAdapter;
 import com.epamtraining.vklite.adapters.DataAdapterCallback;
+import com.epamtraining.vklite.adapters.SwappableAdapter;
 import com.epamtraining.vklite.fragments.wrappers.CollectionViewWrapper;
 import com.epamtraining.vklite.imageloader.ImageLoader;
 import com.epamtraining.vklite.processors.Processor;
@@ -29,21 +30,22 @@ import com.epamtraining.vklite.processors.Processor;
 //  - ListView fragment
 //  - RecyclerView fragment
 //  etc.
-public abstract class BaseVKFragment extends Fragment
-        implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback,
+public abstract class BaseFragment extends Fragment
+        implements LoaderManager.LoaderCallbacks<Cursor>,
+        DataAdapterCallback,
         Refreshable {
     private enum DataState {LOADING, NO_MORE_DATA, BROWSING}
 
 
     private View mProgressBar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-     private DataState mDataState = DataState.BROWSING;
+    private DataState mDataState = DataState.BROWSING;
     private DataSource mDataSource;
     private CollectionViewWrapper mCollectionViewWrapper;
 
     public abstract String[] getDataFields();
 
-    public abstract BoItemAdapter getAdapter();
+    public abstract SwappableAdapter getAdapter();
 
     public abstract Processor getProcessor();
 
@@ -68,14 +70,12 @@ public abstract class BaseVKFragment extends Fragment
         showProgress(View.VISIBLE);
         getLoaderManager().initLoader(getLoaderId(), null, this);
         refresh();
-        BoItemAdapter mAdapter = getAdapter();
+        SwappableAdapter mAdapter = getAdapter();
         mAdapter.initAdapter(this, imageLoader);
         mCollectionViewWrapper.setAdapter(mAdapter);
         onAfterCreateView(view);
         return view;
     }
-
-
 
     //could be overriden in child classes
     protected void onAfterCreateView(View view) {
@@ -202,7 +202,7 @@ public abstract class BaseVKFragment extends Fragment
         DataSource.DataSourceCallbacks callBacks = new DataSource.DataSourceCallbacks() {
             @Override
             public void onError(final Exception e) {
-                BaseVKFragment.this.onError(e);
+                BaseFragment.this.onError(e);
                 mDataState = DataState.BROWSING; //if error occures we give another chance to load data
             }
 

@@ -1,4 +1,4 @@
-package com.epamtraining.vklite.attachmentUI;
+package com.epamtraining.vklite.attachmentui;
 
 
 import android.content.Context;

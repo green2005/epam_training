@@ -11,10 +11,7 @@ import com.epamtraining.vklite.bo.Message;
 import java.util.List;
 
 public class MessagesDBHelper extends BODBHelper{
-    protected static final String TABLENAME = "Messages";
-    public static final Uri CONTENT_URI = Uri.parse(CONTENT_URI_PREFIX
-            + AUTHORITY + "/" + TABLENAME);
-
+    public static final String TABLENAME = "Messages";
 
     public static final String ID = "message_id";
     public static final String BODY = "body";
@@ -26,31 +23,31 @@ public class MessagesDBHelper extends BODBHelper{
     public static final String IMAGE_URL = "image_url";
     public static final String OUT = "out";
     public static final String PENDING = "pending";
+    public static final String USER_DIALOG_ID = "user_dialog_id";
 
+    private static final String [] FIELDS = {BaseColumns._ID, ID, BODY, TITLE, RAW_DATE, DATE, USER_ID,
+            FROM_ID, IMAGE_URL, OUT, PENDING, USER_DIALOG_ID};
+    public static final Uri CONTENT_URI = Uri.parse(VKContentProvider.CONTENT_URI_PREFIX
+            + VKContentProvider.AUTHORITY + "/" + TABLENAME);
+    public static Uri CONTENT_URI_ID = Uri.parse(VKContentProvider.CONTENT_URI_PREFIX
+            + VKContentProvider.AUTHORITY + "/" + TABLENAME+"/#");
 
     @Override
     public String getTableName() {
         return TABLENAME;
     }
 
+    @Override
     protected String getFieldDefaultValue(String fieldName){
-        if (PENDING.equals(fieldName)){
-            return "0";
-        } else
-            return null;
+       return null;
     }
 
     @Override
     public String[] fieldNames() {
-        String [] fields = {BaseColumns._ID, ID, BODY, TITLE, RAW_DATE, DATE, USER_ID, FROM_ID, IMAGE_URL, OUT, PENDING};
-        return fields;
+         return FIELDS;
     }
 
     @Override
-    public Uri getContentUri() {
-        return CONTENT_URI;
-    }
-
     public String getCreateTableDefinition(){
         StringBuilder sb = new StringBuilder();
         sb.append("create table ");
@@ -66,8 +63,8 @@ public class MessagesDBHelper extends BODBHelper{
         sb.append(FROM_ID + " text ,");
         sb.append(IMAGE_URL + " text ,");
         sb.append(OUT + " text ,");
+        sb.append(USER_DIALOG_ID+" text , ");
         sb.append(PENDING + " int default 0)");
-       // sb.append(") ");
         return sb.toString();
     }
 

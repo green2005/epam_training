@@ -11,27 +11,25 @@ import android.widget.AdapterView;
 import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.CursorHelper;
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.db.NewsDBHelper;
-import com.epamtraining.vklite.db.VKContentProvider;
 import com.epamtraining.vklite.activities.PostDetailActivity;
 import com.epamtraining.vklite.adapters.BoItemAdapter;
 import com.epamtraining.vklite.adapters.DataAdapterCallback;
 import com.epamtraining.vklite.adapters.NewsAdapter;
+import com.epamtraining.vklite.db.NewsDBHelper;
 import com.epamtraining.vklite.processors.NewsProcessor;
 import com.epamtraining.vklite.processors.Processor;
 
 
-public class NewsFragment extends BaseVKListViewFragment implements
+public class NewsFragment extends BaseListViewFragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         DataAdapterCallback  {
 
-    private final static String[] fields = NewsDBHelper.fields;
+    private final static String[] FIELDS = NewsDBHelper.FIELDS;
     private BoItemAdapter mAdapter;
     private Processor mProcessor;
 
-    public static NewsFragment getNewFragment( ) {
-        NewsFragment newsFragment = new NewsFragment();
-        return newsFragment;
+    public static NewsFragment newInstance() {
+        return new NewsFragment();
     }
 
     @Override
@@ -43,7 +41,7 @@ public class NewsFragment extends BaseVKListViewFragment implements
 
     @Override
     public String[] getDataFields() {
-        return fields;
+        return FIELDS;
     }
 
     @Override
@@ -57,8 +55,8 @@ public class NewsFragment extends BaseVKListViewFragment implements
     }
 
     @Override
-    public String getDataUrl(int offset, String next_id) {
-        return Api.getNewsUrl(getActivity(), next_id);
+    public String getDataUrl(int offset, String nextId) {
+        return Api.getNewsUrl(getActivity(), nextId);
     }
 
     @Override
@@ -68,7 +66,7 @@ public class NewsFragment extends BaseVKListViewFragment implements
 
     @Override
     public int getLoaderId() {
-        return LoaderManagerIds.NEWS.getId();
+        return LoaderManagerIds.NEWS.ordinal();
     }
 
     @Override

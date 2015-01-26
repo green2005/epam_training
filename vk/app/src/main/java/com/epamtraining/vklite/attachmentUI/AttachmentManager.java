@@ -1,4 +1,4 @@
-package com.epamtraining.vklite.attachmentUI;
+package com.epamtraining.vklite.attachmentui;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,7 +8,7 @@ import android.view.View;
 import com.epamtraining.vklite.CursorHelper;
 import com.epamtraining.vklite.bo.Attachments;
 import com.epamtraining.vklite.db.AttachmentsDBHelper;
-import com.epamtraining.vklite.imageLoader.ImageLoader;
+import com.epamtraining.vklite.imageloader.ImageLoader;
 
 public class AttachmentManager {
     public static final int PHOTO = 0;

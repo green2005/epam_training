@@ -19,4 +19,8 @@ public interface Attachment {
     public String getPhoto();//used for video preview
 
     public String getAttachmentType();
+
+    public int getWidth();  //used for images
+
+    public int getHeight(); //used for images
 }

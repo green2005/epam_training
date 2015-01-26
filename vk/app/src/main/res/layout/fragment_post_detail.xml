@@ -22,13 +22,47 @@
         android:layout_above="@+id/editinglayout"
         >
         <ListView
-            android:id="@+id/itemsList"
+            android:id="@android:id/list"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:visibility="visible"
             />
     </android.support.v4.widget.SwipeRefreshLayout>
+    <!-- Dummy item to prevent AutoCompleteTextView from receiving focus -->
+    <LinearLayout
+        android:focusable="true" android:focusableInTouchMode="true"
+        android:layout_width="0px" android:layout_height="0px"/>
 
+    <RelativeLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/editinglayout"
+        android:paddingLeft="8dp"
+        android:paddingBottom="8dp"
+        android:paddingRight="8dp"
+        >
+        <EditText
+            android:layout_alignParentTop="true"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_toLeftOf="@+id/btnsend"
+            android:minHeight="48dip"
+            android:id="@+id/messageedit"
+            android:hint="@string/enter_your_comment"
+            />
+        <ImageButton
+            android:layout_alignParentTop="true"
+            android:id="@+id/btnsend"
+            android:layout_height="wrap_content"
+            android:layout_width="48dip"
+            android:layout_alignTop="@+id/messageedit"
+            android:layout_alignBottom="@+id/messageedit"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="8dip"
+            android:src="@drawable/ic_send"
+            />
+    </RelativeLayout>
 
         <!--android:layout_above="@+id/layout_buttons"
         -->

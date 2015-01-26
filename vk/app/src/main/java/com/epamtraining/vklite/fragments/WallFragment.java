@@ -19,19 +19,18 @@ import com.epamtraining.vklite.db.WallDBHelper;
 import com.epamtraining.vklite.processors.Processor;
 import com.epamtraining.vklite.processors.WallProcessor;
 
-public class WallFragment extends BaseVKListViewFragment implements
+public class WallFragment extends BaseListViewFragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         DataAdapterCallback {
 
 
-    private final static String[] fields = new WallDBHelper().fieldNames();
+    private final static String[] FIELDS = new WallDBHelper().fieldNames();
 
     private WallAdapter mAdapter;
     private WallProcessor mProcessor;
 
-    public static WallFragment getNewFragment() {
-        WallFragment wallFragment = new WallFragment();
-        return wallFragment;
+    public static WallFragment newInstance() {
+        return new WallFragment();
     }
 
     @Override
@@ -48,7 +47,7 @@ public class WallFragment extends BaseVKListViewFragment implements
 
     @Override
     public String getDataUrl(int offset, String next_id) {
-        return Api.getWallUrl(getActivity(), offset + "");
+        return Api.getWallUrl(getActivity(),String.valueOf(offset));
     }
 
     @Override
@@ -58,12 +57,12 @@ public class WallFragment extends BaseVKListViewFragment implements
 
     @Override
     public int getLoaderId() {
-        return LoaderManagerIds.WALL.getId();
+        return LoaderManagerIds.WALL.ordinal();
     }
 
     @Override
     public String[] getDataFields() {
-        return fields;
+        return FIELDS;
     }
 
     @Override

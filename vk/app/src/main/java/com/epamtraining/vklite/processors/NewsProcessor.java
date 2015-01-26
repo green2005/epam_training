@@ -3,7 +3,6 @@ package com.epamtraining.vklite.processors;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.net.Uri;
 
 import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.bo.News;
@@ -49,7 +48,6 @@ public class NewsProcessor extends Processor {
         for (int i = 0; i < newsItems.length(); i++) {
             JSONObject jsonObject = newsItems.getJSONObject(i);
             News newsItem = new News(jsonObject, dateFormat);
-
             List<ContentValues> attaches = mAttachmentDBHelper.getContentValues(newsItem.getAttaches(), newsItem);
             if (attaches != null) {
                 attachContentValues.addAll(attaches);

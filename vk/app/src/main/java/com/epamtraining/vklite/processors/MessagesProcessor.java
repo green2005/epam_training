@@ -3,12 +3,13 @@ package com.epamtraining.vklite.processors;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 
 import com.epamtraining.vklite.Api;
-import com.epamtraining.vklite.db.MessagesDBHelper;
-import com.epamtraining.vklite.db.UsersDBHelper;
 import com.epamtraining.vklite.bo.Friend;
 import com.epamtraining.vklite.bo.Message;
+import com.epamtraining.vklite.db.MessagesDBHelper;
+import com.epamtraining.vklite.db.UsersDBHelper;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -36,9 +37,11 @@ public class MessagesProcessor extends Processor {
         java.text.DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(mContext);
         HashSet<String> userIds = new HashSet<>();
         MessagesDBHelper helper = new MessagesDBHelper();
+        String dialogUserId = getDialogUserId(url);
         for (int i = 0; i < items.length(); i++){
             Message msg = new Message(items.getJSONObject(i), dateFormat);
             ContentValues value =  helper.getContentValue(msg);
+            value.put(MessagesDBHelper.USER_DIALOG_ID, dialogUserId);
             userIds.add(msg.getFromId());
             contentValues[i] = value;
         }
@@ -46,10 +49,15 @@ public class MessagesProcessor extends Processor {
         ContentResolver resolver =  mContext.getContentResolver();
         updateUserInfos(userIds, dataSource, resolver);
         if (isTopRequest(url, Api.OFFSET)) {
-           resolver.delete(MessagesDBHelper.CONTENT_URI, null, null);
+           resolver.delete(MessagesDBHelper.CONTENT_URI, MessagesDBHelper.USER_DIALOG_ID +" = ? ", new String[]{dialogUserId});
         }
         resolver.bulkInsert(MessagesDBHelper.CONTENT_URI, contentValues);
         resolver.notifyChange(MessagesDBHelper.CONTENT_URI, null);
+    }
+
+    private String getDialogUserId(String url) {
+        Uri parsedFragment = Uri.parse(url);
+        return parsedFragment.getQueryParameter(Message.USERID);
     }
 
     private void updateUserInfos(Set<String> userIds, AdditionalInfoSource source, ContentResolver resolver) throws  Exception{

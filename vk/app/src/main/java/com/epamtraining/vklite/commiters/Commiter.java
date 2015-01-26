@@ -17,15 +17,17 @@ public abstract class Commiter {
     abstract protected void setRecordAffected(Cursor cursor);           //set records not marked as pending
 
     private CommiterCallback mCallBack;
+    private Context mContext;
 
     public Commiter(CommiterCallback callback, Context context ){
-        if (callback == null){
-            throw new IllegalArgumentException("Invalid CallBack parameter");
+        if (context  == null){
+            throw new IllegalArgumentException("Context parameter is null");
         }
-        if (context == null){
-            throw new IllegalArgumentException("Invalid Context parameter");
+        if (callback == null){
+            throw new IllegalArgumentException("Callback parameter is null");
         }
         mCallBack = callback;
+        mContext = context;
     }
 
     public void commit(){

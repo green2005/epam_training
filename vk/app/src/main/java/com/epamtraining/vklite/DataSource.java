@@ -3,17 +3,17 @@ package com.epamtraining.vklite;
 import android.content.Context;
 import android.os.Handler;
 
+import com.epamtraining.vklite.os.VKExecutor;
 import com.epamtraining.vklite.processors.AdditionalInfoSource;
 import com.epamtraining.vklite.processors.Processor;
-import com.epamtraining.vklite.os.VKExecutor;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
 public class DataSource implements AdditionalInfoSource {
-    private static  final int CONNECT_TIMEOUT = 3000;
-    private static final int READ_TIMEOUT = 5000;
+  //  private static  final int CONNECT_TIMEOUT = 7000;
+  //  private static final int READ_TIMEOUT = 10000;
 
 
     public interface DataSourceCallbacks {
@@ -35,8 +35,8 @@ public class DataSource implements AdditionalInfoSource {
     private InputStream getInputStream(String href) throws Exception {
         URL url = new URL(href);
         URLConnection con = url.openConnection();
-        con.setConnectTimeout(CONNECT_TIMEOUT);
-        con.setReadTimeout(READ_TIMEOUT);
+       // con.setConnectTimeout(CONNECT_TIMEOUT);
+      //  con.setReadTimeout(READ_TIMEOUT);
         return con.getInputStream();
     }
 
@@ -62,6 +62,8 @@ public class DataSource implements AdditionalInfoSource {
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
+                            VKLog.e("Exception", e.getMessage());
+                            e.printStackTrace();
                             mCallbacks.onError(e);
                         }
                     });

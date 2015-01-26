@@ -26,7 +26,7 @@ public class Attachments extends BoItem {
 
     public Attachments(JSONArray jAttachments) throws JSONException{
         mAttachments = new ArrayList<>();
-        for (int i = 0 ;i<jAttachments.length(); i++){
+        for (int i = 0 ; i<jAttachments.length(); i++){
             Attachment attachment = getAttachment(jAttachments.getJSONObject(i));
             if (attachment != null){
                 mAttachments.add(attachment);
@@ -35,7 +35,6 @@ public class Attachments extends BoItem {
     }
 
     public List<Attachment> getAttachments(){
-        //TODO maybe can use?
         if (mAttachments == null) {
             return Collections.emptyList();
         }
@@ -43,7 +42,9 @@ public class Attachments extends BoItem {
     }
 
     private Attachment getAttachment(JSONObject jo) throws JSONException{
-        //TODO check for NPE
+        if (jo == null){
+            throw new IllegalArgumentException("Null jsonObject parameter");
+        }
         switch (jo.optString(TYPE)){
             case(ATTACHMENT_PHOTO):{
                 return new PhotoAttachment(jo.optJSONObject(ATTACHMENT_PHOTO));

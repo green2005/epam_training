@@ -11,17 +11,19 @@ import com.epamtraining.vklite.bo.Dialog;
 import java.util.List;
 
 public class DialogDBHelper  extends BODBHelper {
-    protected static final String TABLENAME = "Dialogs";
-    public static final Uri CONTENT_URI = Uri.parse(CONTENT_URI_PREFIX
-            + AUTHORITY + "/" + TABLENAME);
-    public String [] fields = {BaseColumns._ID, ID ,BODY, TITLE, RAW_DATE, DATE, USER_ID};
-
+    public static final String TABLENAME = "Dialogs";
     public static final String ID = "message_id";
     public static final String BODY = "body";
     public static final String TITLE = "title";
     public static final String RAW_DATE = "raw_date";
     public static final String DATE = "date";
     public static final String USER_ID = "user_id";
+    public static final String [] FIELDS = {BaseColumns._ID, ID ,BODY, TITLE, RAW_DATE, DATE, USER_ID};
+
+    public static final Uri CONTENT_URI = Uri.parse(VKContentProvider.CONTENT_URI_PREFIX
+            + VKContentProvider.AUTHORITY + "/" + TABLENAME);
+    public static Uri CONTENT_URI_ID = Uri.parse(VKContentProvider.CONTENT_URI_PREFIX
+            + VKContentProvider.AUTHORITY + "/" + TABLENAME+"/#");
 
     @Override
     public String getTableName() {
@@ -30,12 +32,7 @@ public class DialogDBHelper  extends BODBHelper {
 
     @Override
     public String[] fieldNames() {
-        return fields;
-    }
-
-    @Override
-    public Uri getContentUri() {
-        return CONTENT_URI;
+        return FIELDS;
     }
 
     @Override

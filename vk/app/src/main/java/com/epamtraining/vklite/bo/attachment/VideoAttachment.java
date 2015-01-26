@@ -78,4 +78,14 @@ public class VideoAttachment implements Attachment {
     public String getAttachmentType() {
         return Attachments.ATTACHMENT_VIDEO;
     }
+
+    @Override
+    public int getWidth() {
+        return 0;
+    }
+
+    @Override
+    public int getHeight() {
+        return 0;
+    }
 }
