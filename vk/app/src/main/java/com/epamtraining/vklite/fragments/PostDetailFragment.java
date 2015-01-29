@@ -222,8 +222,8 @@ public class PostDetailFragment extends BaseListViewFragment {
                 activity.getContentResolver().notifyChange(CommentsDBHelper.CONTENT_URI, null);
             }
         };
-        Commiter messageCommiter = new CommentCommiter(commiterCallback, activity);
-        messageCommiter.commit();
+        Commiter commentCommiter = new CommentCommiter(commiterCallback, activity);
+        commentCommiter.commit();
     }
 
     private void addAttachments(final LinearLayout linearLayout) {

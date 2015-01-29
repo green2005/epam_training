@@ -3,7 +3,6 @@ package com.epamtraining.vklite.bo;
 import org.json.JSONObject;
 
 public class Friend extends BoItem {
-    private JSONObject mJO;
     private static final String FIRST_NAME = "first_name";
     private static final String LAST_NAME = "last_name";
     private static final String NICKNAME = "nickname";
@@ -18,13 +17,12 @@ public class Friend extends BoItem {
     private String mPhoto;
 
     public Friend(JSONObject jo) throws Exception {
-        mJO = jo;
-        mFirstName = mJO.optString(FIRST_NAME);
-        mLastName = mJO.optString(LAST_NAME);
+        mFirstName = jo.optString(FIRST_NAME);
+        mLastName = jo.optString(LAST_NAME);
         mName = (mFirstName + " " + mLastName).trim();
-        mId =  mJO.getString(ID);
-        mNickName = mJO.optString(NICKNAME);
-        mPhoto = mJO.getString(PHOTO);
+        mId = jo.getString(ID);
+        mNickName = jo.optString(NICKNAME);
+        mPhoto = jo.getString(PHOTO);
     }
 
     public String getName() {
@@ -36,8 +34,8 @@ public class Friend extends BoItem {
         return mFirstName;
     }
 
-    public String getLastName()  {
-       return mLastName;
+    public String getLastName() {
+        return mLastName;
     }
 
 
@@ -51,7 +49,7 @@ public class Friend extends BoItem {
 
     }
 
-    public String getImageUrl()   {
+    public String getImageUrl() {
         return mPhoto;
 
     }

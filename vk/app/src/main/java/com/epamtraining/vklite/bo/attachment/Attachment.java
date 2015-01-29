@@ -1,6 +1,5 @@
 package com.epamtraining.vklite.bo.attachment;
 
-
 public interface Attachment {
     public long getId();
 

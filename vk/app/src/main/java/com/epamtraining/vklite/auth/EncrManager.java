@@ -3,16 +3,12 @@ package com.epamtraining.vklite.auth;
 import android.content.Context;
 import android.provider.Settings;
 import android.util.Base64;
-import android.widget.Toast;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
-/**
- * Created by IstiN on 05.11.2014.
- */
 public class EncrManager {
 
     public static final String ENCODING = "UTF8";
@@ -29,7 +25,6 @@ public class EncrManager {
         final Cipher cipher = Cipher.getInstance(DES);
         cipher.init(Cipher.ENCRYPT_MODE, key);
         return Base64.encodeToString(cipher.doFinal(text), Base64.DEFAULT);
-
     }
 
     public static String decrypt(final Context context, final String value) throws Exception {

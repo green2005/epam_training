@@ -11,9 +11,4 @@ public class CursorHelper {
     public static int getInt(Cursor cursor, String columnName) {
         return cursor.getInt(cursor.getColumnIndex(columnName));
     }
-
-    public static long getLong(Cursor cursor, String columnName){
-        return cursor.getLong(cursor.getColumnIndex(columnName));
-    }
-
 }

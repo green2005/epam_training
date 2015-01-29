@@ -2,11 +2,9 @@ package com.epamtraining.vklite.auth;
 
 
 import android.app.Activity;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.processors.StringReader;
@@ -46,8 +44,7 @@ public class AuthHelper {
             Uri parsedFragment = Uri.parse("http://temp.com?" + fragment);
             String accessToken = parsedFragment.getQueryParameter("access_token");
             if (!TextUtils.isEmpty(accessToken)) {
-                fillUserInfo(accessToken, activity, callbacks);
-                // callbacks.onSuccess(accessToken);
+                fillUserInfo(accessToken, callbacks);
                 return true;
             } else {
                 String error = parsedFragment.getQueryParameter("error");
@@ -63,34 +60,34 @@ public class AuthHelper {
         return false;
     }
 
-    private static void fillUserInfo(final String token, Activity activity, final AuthCallBack callbacks) {
-        //Api.getUsersUri(thi,"");
-        final Handler handler= new Handler();
+    private static void fillUserInfo(final String token,  final AuthCallBack callbacks) {
+        final Handler handler = new Handler();
         new Thread(new Runnable() {
             String currentId;
+
             @Override
             public void run() {
-                    try {
-                        String href = String.format(USERS_URL, token, Api.API_KEY);
-                        URL url = new URL(href);
-                        InputStream stream = url.openStream();
-                        String s = new StringReader().readFromStream(stream);
-                        JSONObject jo = new JSONObject(s);
-                        currentId = jo.optJSONArray(RESPONSE).getJSONObject(0).optInt("id")+"";
-                    }catch (final Exception e){
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callbacks.onError(e);
-                            }
-                        });
-                    }
+                try {
+                    String href = String.format(USERS_URL, token, Api.API_KEY);
+                    URL url = new URL(href);
+                    InputStream stream = url.openStream();
+                    String s = new StringReader().readFromStream(stream);
+                    JSONObject jo = new JSONObject(s);
+                    currentId = String.valueOf(jo.optJSONArray(RESPONSE).getJSONObject(0).optInt("id"));
+                } catch (final Exception e) {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            callbacks.onSuccess(token, currentId);
+                            callbacks.onError(e);
                         }
                     });
+                }
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callbacks.onSuccess(token, currentId);
+                    }
+                });
             }
         }).start();
 

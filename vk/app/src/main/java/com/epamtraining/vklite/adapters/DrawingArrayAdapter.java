@@ -17,10 +17,10 @@ public class DrawingArrayAdapter extends BaseAdapter {
 
     public DrawingArrayAdapter(Context context, FragmentMenuItem[] objects) {
         super();
-        if (context == null){
+        if (context == null) {
             throw new IllegalArgumentException("Context parameter is null");
         }
-        if (objects == null){
+        if (objects == null) {
             throw new IllegalArgumentException("FragmentTypes array is null");
         }
         mInflater = LayoutInflater.from(context);

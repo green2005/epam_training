@@ -1,30 +1,14 @@
 package com.epamtraining.vklite.auth;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
-import com.epamtraining.vklite.Api;
-import com.epamtraining.vklite.DataSource;
-import com.epamtraining.vklite.ErrorHelper;
-import com.epamtraining.vklite.VKApplication;
 import com.epamtraining.vklite.activities.MainActivity;
-import com.epamtraining.vklite.processors.NewsProcessor;
-import com.epamtraining.vklite.processors.Processor;
-import com.epamtraining.vklite.processors.StringReader;
-import com.epamtraining.vklite.processors.UserInfoProcessor;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +23,7 @@ public class StartActivity extends Activity {
         String userId;
         Map<String, String> accountInfo = getSavedCredentials();
         token = accountInfo.get(AuthHelper.TOKEN);
-        userId  = accountInfo.get(AuthHelper.USER_ID);
+        userId = accountInfo.get(AuthHelper.USER_ID);
         if (TextUtils.isEmpty(token)) {
             startLoginActivity();
         } else {
@@ -61,13 +45,11 @@ public class StartActivity extends Activity {
                 } else {//??
                 }
                 finish();
-            } else
-            {
+            } else {
                 finish();
             }
         }
     }
-
 
 
     private void startMainActivity(String token, String userId) {

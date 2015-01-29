@@ -1,5 +1,6 @@
 package com.epamtraining.vklite.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -22,7 +23,7 @@ import com.epamtraining.vklite.processors.Processor;
 
 public class NewsFragment extends BaseListViewFragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
-        DataAdapterCallback  {
+        DataAdapterCallback {
 
     private final static String[] FIELDS = NewsDBHelper.FIELDS;
     private BoItemAdapter mAdapter;
@@ -46,7 +47,7 @@ public class NewsFragment extends BaseListViewFragment implements
 
     @Override
     public BoItemAdapter getAdapter() {
-       return mAdapter;
+        return mAdapter;
     }
 
     @Override
@@ -71,14 +72,16 @@ public class NewsFragment extends BaseListViewFragment implements
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-       if (mAdapter.getCursor().moveToPosition(position)){
-          String userId = CursorHelper.getString(mAdapter.getCursor(), NewsDBHelper.OWNER_ID);
-          String postId = CursorHelper.getString(mAdapter.getCursor(), NewsDBHelper.POST_ID);
-          Intent intent = new Intent(getActivity(), PostDetailActivity.class);
-          intent.putExtra( NewsDBHelper.POST_ID, postId);
-          intent.putExtra( NewsDBHelper.OWNER_ID, userId);
-          intent.putExtra( PostDetailFragment.WALL, false);
-          startActivity(intent);
-       }
+        Cursor cursor = mAdapter.getCursor();
+        Activity activity = getActivity();
+        if (activity != null && cursor != null && cursor.moveToPosition(position)) {
+            String userId = CursorHelper.getString(cursor, NewsDBHelper.OWNER_ID);
+            String postId = CursorHelper.getString(cursor, NewsDBHelper.POST_ID);
+            Intent intent = new Intent(activity, PostDetailActivity.class);
+            intent.putExtra(NewsDBHelper.POST_ID, postId);
+            intent.putExtra(NewsDBHelper.OWNER_ID, userId);
+            intent.putExtra(PostDetailFragment.WALL, false);
+            startActivity(intent);
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.epamtraining.vklite.activities;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -30,10 +29,6 @@ import com.epamtraining.vklite.fragments.Refreshable;
 import com.epamtraining.vklite.imageloader.ImageLoader;
 import com.epamtraining.vklite.processors.Processor;
 import com.epamtraining.vklite.processors.UserInfoProcessor;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
     public static final int REQUEST_CODE_CHOOSE_FRIEND = 1;
@@ -93,11 +88,11 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void initNavigationDrawer() {
-           mFragmentMenuItems = FragmentMenuItem.values();
+        mFragmentMenuItems = FragmentMenuItem.values();
     }
 
 
-    private void updateUserInfo(final String userId ){
+    private void updateUserInfo(final String userId) {
         Processor processor = new UserInfoProcessor(this);
         DataSource ds = new DataSource(processor, new DataSource.DataSourceCallbacks() {
             @Override
@@ -112,12 +107,11 @@ public class MainActivity extends ActionBarActivity {
                         MODE_PRIVATE);
                 String userName = preferences.getString(UserInfoProcessor.USER_NAME, "");
                 String userImage = preferences.getString(UserInfoProcessor.USER_IMAGE, "");
-                Api.setUserInfo((VKApplication)getApplication() ,userName, userImage);
+                Api.setUserInfo((VKApplication) getApplication(), userName, userImage);
             }
 
             @Override
             public void onBeforeStart() {
-
             }
         });
         ds.fillData(Api.getUserInfo(userId), this);
@@ -184,35 +178,12 @@ public class MainActivity extends ActionBarActivity {
                 return true;
             }
         });
-        /*MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setQueryHint(
-                getResources().getString(R.string.search));
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-
-                 Toast.makeText(MainActivity.this, "Здесь будет поиск", Toast.LENGTH_SHORT).show();
-
-
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-
-
-                return true;
-            }
-        });
-        */
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        //  menu.findItem(R.id.action_search).setVisible(!drawerOpen);
+        //boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
         return super.onPrepareOptionsMenu(menu);
     }
 

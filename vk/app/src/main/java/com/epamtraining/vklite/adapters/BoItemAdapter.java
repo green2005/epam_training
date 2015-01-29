@@ -18,20 +18,20 @@ public abstract class BoItemAdapter extends SimpleCursorAdapter implements Swapp
         super(context, layout, c, from, to, flags);
     }
 
-    public void initAdapter(DataAdapterCallback callback, ImageLoader imageLoader){
+    public void initAdapter(DataAdapterCallback callback, ImageLoader imageLoader) {
         mImageLoader = imageLoader;
         mGetDataCallBack = callback;
     }
 
-    protected ImageLoader getImageLoader(){
+    protected ImageLoader getImageLoader() {
         return mImageLoader;
     }
 
-    protected void loadMoreData(int offset, String nextId){
+    protected void loadMoreData(int offset, String nextId) {
         mGetDataCallBack.onGetMoreData(offset, nextId);
     }
 
-    protected void populateImageView(ImageView imageView, String imageUrl){
+    protected void populateImageView(ImageView imageView, String imageUrl) {
         if (TextUtils.isEmpty(imageUrl)) {
             imageView.setVisibility(View.GONE);
         } else {
@@ -41,6 +41,4 @@ public abstract class BoItemAdapter extends SimpleCursorAdapter implements Swapp
             }
         }
     }
-
-
 }

@@ -22,12 +22,12 @@ import com.epamtraining.vklite.processors.FriendsProcessor;
 import com.epamtraining.vklite.processors.Processor;
 
 public class FriendsFragment extends BaseListViewFragment implements LoaderManager.LoaderCallbacks<Cursor>,
-        DataAdapterCallback  {
+        DataAdapterCallback {
     private BoItemAdapter mAdapter;
     private Processor mProcessor;
     private int requestCode = -1;
 
-    private static final String[] FIELDS =  FriendDBHelper.FIELDS;
+    private static final String[] FIELDS = FriendDBHelper.FIELDS;
 
 
     public static FriendsFragment newInstance(Bundle bundle) {
@@ -89,8 +89,8 @@ public class FriendsFragment extends BaseListViewFragment implements LoaderManag
             if (requestCode == MainActivity.REQUEST_CODE_CHOOSE_FRIEND) {
                 cursor.moveToPosition(position);
                 String userId = CursorHelper.getString(cursor, FriendDBHelper.ID);
-                String firstName =  CursorHelper.getString(cursor, FriendDBHelper.FIRST_NAME);
-                String lastName =  CursorHelper.getString(cursor, FriendDBHelper.LAST_NAME);
+                String firstName = CursorHelper.getString(cursor, FriendDBHelper.FIRST_NAME);
+                String lastName = CursorHelper.getString(cursor, FriendDBHelper.LAST_NAME);
                 Intent intent = new Intent();
                 intent.putExtra(FriendDBHelper.ID, userId);
                 intent.putExtra(FriendDBHelper.FIRST_NAME, firstName);

@@ -5,6 +5,7 @@ import android.text.Html;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.epamtraining.vklite.CursorHelper;
@@ -15,8 +16,6 @@ import com.epamtraining.vklite.imageloader.ImageLoader;
 
 public class AttachmentPhotoHelper implements AttachmentHelper {
     private ImageLoader mImageLoader;
-    private TextView mDescription;
-    private ResizableImageView mImageView;
 
     public AttachmentPhotoHelper(ImageLoader imageLoader) {
         super();
@@ -25,12 +24,15 @@ public class AttachmentPhotoHelper implements AttachmentHelper {
 
     @Override
     public View getView(Cursor cursor, LayoutInflater inflater) {
+        if (cursor == null) {
+            return null;
+        }
         View v = inflater.inflate(R.layout.item_attachment_photo, null);
-        mDescription = (TextView) v.findViewById(R.id.textview);
-        mImageView = (ResizableImageView) v.findViewById(R.id.image);
-        mDescription.setText(Html.fromHtml(CursorHelper.getString(cursor, AttachmentsDBHelper.TEXT)));
-        Linkify.addLinks(mDescription, Linkify.ALL);
-        mImageLoader.loadImage(mImageView, CursorHelper.getString(cursor, AttachmentsDBHelper.URL));
+        TextView description = (TextView) v.findViewById(R.id.textview);
+        ImageView imageView = (ResizableImageView) v.findViewById(R.id.image);
+        description.setText(Html.fromHtml(CursorHelper.getString(cursor, AttachmentsDBHelper.TEXT)));
+        Linkify.addLinks(description, Linkify.ALL);
+        mImageLoader.loadImage(imageView, CursorHelper.getString(cursor, AttachmentsDBHelper.URL));
         return v;
     }
 }

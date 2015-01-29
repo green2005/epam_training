@@ -42,22 +42,21 @@ public class CommentCommiter extends Commiter {
 
     @Override
     protected String getUrl(Cursor cr) throws Exception {
-        String userId =  CursorHelper.getString(cr, CommentsDBHelper.OWNER_ID);
+        String userId = CursorHelper.getString(cr, CommentsDBHelper.OWNER_ID);
         String message = CursorHelper.getString(cr, CommentsDBHelper.TEXT);
         String postId = CursorHelper.getString(cr, CommentsDBHelper.POST_ID);
-        //(Context context, String ownerId, String postId, String message)
         return Api.getCommentsCommitUrl(mContext, userId, postId, message);
     }
 
     @Override
     protected boolean checkIsResponseCorrect(String response) throws Exception {
-        if (TextUtils.isEmpty(response)){
+        if (TextUtils.isEmpty(response)) {
             throw new Exception(mContext.getResources().getString(R.string.response_is_empty));
         }
         JSONObject jo = new JSONObject(response);
-        String errorMsg ;
-            if (jo.has(VK_ERROR_RESPONSE)){
-                errorMsg = jo.getJSONObject(VK_ERROR_RESPONSE).optString(VK_ERROR_MSG);
+        String errorMsg;
+        if (jo.has(VK_ERROR_RESPONSE)) {
+            errorMsg = jo.getJSONObject(VK_ERROR_RESPONSE).optString(VK_ERROR_MSG);
             throw new Exception(errorMsg);
         }
         return true;
@@ -68,10 +67,8 @@ public class CommentCommiter extends Commiter {
         int id = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
         ContentValues contentValues = new ContentValues();
         contentValues.put(CommentsDBHelper.PENDING, 0);
-
-
         mResolver.update(CommentsDBHelper.CONTENT_URI,
-                contentValues,BaseColumns._ID + " = ?",
+                contentValues, BaseColumns._ID + " = ?",
                 new String[]{String.valueOf(id)});
     }
 }

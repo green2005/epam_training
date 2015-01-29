@@ -1,6 +1,7 @@
 package com.epamtraining.vklite.fragments;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -17,8 +18,9 @@ import android.widget.ImageButton;
 import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.ErrorHelper;
 import com.epamtraining.vklite.R;
+import com.epamtraining.vklite.VKApplication;
 import com.epamtraining.vklite.adapters.CursorRecyclerViewAdapter;
-import com.epamtraining.vklite.adapters.MessagesRecyclerAdapter;
+import com.epamtraining.vklite.adapters.MessagesAdapter;
 import com.epamtraining.vklite.adapters.SwappableAdapter;
 import com.epamtraining.vklite.commiters.Commiter;
 import com.epamtraining.vklite.commiters.CommiterCallback;
@@ -76,18 +78,18 @@ public class MessagesRecyclerViewFragment extends BaseRecyclerViewFragment {
             }
         }
 
-        mAdapter = new MessagesRecyclerAdapter(activity, ImageLoader.get(activity));
+        mAdapter = new MessagesAdapter(activity, ImageLoader.get(activity));
         mProcessor = new MessagesProcessor(getActivity());
     }
 
     @Override
     protected String getCursorLoaderSelection() {
-        return MessagesDBHelper.USER_DIALOG_ID +" = ? ";
+        return MessagesDBHelper.USER_DIALOG_ID + " = ? ";
     }
 
     @Override
     protected String[] getCursorLoaderSelectionArgs() {
-        return new String[]{mUserId };//super.getCursorLoaderSelectionArgs();
+        return new String[]{mUserId};//super.getCursorLoaderSelectionArgs();
     }
 
     @Override
@@ -142,7 +144,6 @@ public class MessagesRecyclerViewFragment extends BaseRecyclerViewFragment {
     }
 
 
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -174,27 +175,37 @@ public class MessagesRecyclerViewFragment extends BaseRecyclerViewFragment {
     }
 
     private void commitPendingMessages() {
+        final Activity activity = getActivity();
+        if (activity == null){
+            return;
+        }
+        final ContentResolver resolver = activity.getContentResolver();
+        if (resolver == null){
+            return;
+        }
         CommiterCallback commiterCallback = new CommiterCallback() {
             @Override
             public void onAfterExecute() {
-                getActivity().getContentResolver().notifyChange(MessagesDBHelper.CONTENT_URI, null);
+                resolver.notifyChange(MessagesDBHelper.CONTENT_URI, null);
             }
 
             @Override
             public void onException(Exception e) {
-                ErrorHelper.showError(getActivity(), e);
-                getActivity().getContentResolver().notifyChange(MessagesDBHelper.CONTENT_URI, null);
+                ErrorHelper.showError(activity, e);
+                resolver.notifyChange(MessagesDBHelper.CONTENT_URI, null);
             }
         };
-        Commiter messageCommiter = new MessageCommiter(commiterCallback, getActivity());
+        Commiter messageCommiter = new MessageCommiter(commiterCallback, activity);
         messageCommiter.commit();
     }
 
     private void sendMessage(String message) {
         final Activity activity = getActivity();
-        if (activity == null) {return;}
+        if (activity == null) {
+            return;
+        }
         ContentValues values = new ContentValues();
-        String currentUserId = Api.getUserId(getActivity().getApplication());
+        String currentUserId = Api.getUserId((VKApplication) activity.getApplication());
         values.put(MessagesDBHelper.FROM_ID, currentUserId);
         values.put(MessagesDBHelper.USER_ID, mUserId);
         values.put(MessagesDBHelper.USER_DIALOG_ID, mUserId);
@@ -202,24 +213,27 @@ public class MessagesRecyclerViewFragment extends BaseRecyclerViewFragment {
         Date date = new Date();
         long rawDate = date.getTime() / 1000;
         values.put(MessagesDBHelper.RAW_DATE, rawDate);
-        java.text.DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(getActivity());
+        java.text.DateFormat dateFormat = android.text.format.DateFormat.getDateFormat(activity);
         String cDate = dateFormat.format(date);
         values.put(MessagesDBHelper.DATE, cDate);
         values.put(MessagesDBHelper.PENDING, "1");
         values.put(MessagesDBHelper.BODY, message);
-
-        new UIQueryHelper(activity.getContentResolver()).insert(MessagesDBHelper.CONTENT_URI,
+        final ContentResolver resolver = activity.getContentResolver();
+        if (resolver == null) {
+            return;
+        }
+        new UIQueryHelper(resolver).insert(MessagesDBHelper.CONTENT_URI,
                 values, new UIQueryHelper.OnInsertResultListener() {
                     @Override
                     public void onInsertSuccess() {
-                        activity.getContentResolver().notifyChange(MessagesDBHelper.CONTENT_URI, null);
+                        resolver.notifyChange(MessagesDBHelper.CONTENT_URI, null);
                         commitPendingMessages();
                     }
 
                     @Override
                     public void onError(Exception e) {
                         ErrorHelper.showError(activity, e);
-                        activity.getContentResolver().notifyChange(MessagesDBHelper.CONTENT_URI, null);
+                        resolver.notifyChange(MessagesDBHelper.CONTENT_URI, null);
                     }
                 }
         );
@@ -227,7 +241,7 @@ public class MessagesRecyclerViewFragment extends BaseRecyclerViewFragment {
 
     @Override
     public Uri getContentsUri() {
-        return  MessagesDBHelper.CONTENT_URI;
+        return MessagesDBHelper.CONTENT_URI;
     }
 
     @Override

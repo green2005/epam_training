@@ -1,5 +1,6 @@
 package com.epamtraining.vklite.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -47,7 +48,7 @@ public class WallFragment extends BaseListViewFragment implements
 
     @Override
     public String getDataUrl(int offset, String next_id) {
-        return Api.getWallUrl(getActivity(),String.valueOf(offset));
+        return Api.getWallUrl(getActivity(), String.valueOf(offset));
     }
 
     @Override
@@ -73,11 +74,12 @@ public class WallFragment extends BaseListViewFragment implements
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Cursor cursor = mAdapter.getCursor();
-        if (cursor != null) {
+        Activity activity = getActivity();
+        if (activity != null && cursor != null) {
             if (cursor.moveToPosition(position)) {
                 String userId = CursorHelper.getString(cursor, WallDBHelper.OWNER_ID);
                 String postId = CursorHelper.getString(cursor, WallDBHelper.POST_ID);
-                Intent intent = new Intent(getActivity(), PostDetailActivity.class);
+                Intent intent = new Intent(activity, PostDetailActivity.class);
                 intent.putExtra(WallDBHelper.POST_ID, postId);
                 intent.putExtra(WallDBHelper.OWNER_ID, userId);
                 intent.putExtra(PostDetailFragment.WALL, true);

@@ -13,7 +13,7 @@ public class ListViewWrapper
     private View mFooterView;
 
 
-    public ListViewWrapper(int widgetResourceId,  View parentView, ImageLoader imageLoader) {
+    public ListViewWrapper(int widgetResourceId, View parentView, ImageLoader imageLoader) {
         super(widgetResourceId, parentView, imageLoader);
     }
 

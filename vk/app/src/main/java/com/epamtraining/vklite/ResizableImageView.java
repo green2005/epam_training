@@ -17,26 +17,26 @@ public class ResizableImageView extends ImageView {
         super(context, attrs);
     }
 
-    public void setOriginalImageSize(int width, int height){
+    public void setOriginalImageSize(int width, int height) {
         mOriginalHeight = height;
         mOriginalWidth = width;
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){
-        Drawable d = getDrawable();
-        if (mOriginalWidth != 0){
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (mOriginalWidth != 0) {
             setImageSize(widthMeasureSpec, mOriginalWidth, mOriginalHeight);
-        } else
-        if (d != null){
-            setImageSize(widthMeasureSpec, d.getIntrinsicWidth(), d.getIntrinsicHeight());
-        } else
-        {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        } else {
+            Drawable d = getDrawable();
+            if (d != null) {
+                setImageSize(widthMeasureSpec, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+            } else {
+                super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            }
         }
     }
 
-    private void setImageSize(int widthMeasureSpec, int imageWidth, int imageHeight){
+    private void setImageSize(int widthMeasureSpec, int imageWidth, int imageHeight) {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = (int) Math.ceil((float) width * (float) imageHeight / (float) imageWidth);
         setMeasuredDimension(width, height);

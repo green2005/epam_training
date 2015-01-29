@@ -11,9 +11,8 @@ import com.epamtraining.vklite.db.AttachmentsDBHelper;
 import com.epamtraining.vklite.imageloader.ImageLoader;
 
 public class AttachmentManager {
-    public static final int PHOTO = 0;
-    public static final int VIDEO = 1;
-    public static final int AUDIO = 2;
+    private enum ATTACHMENT_TYPE {PHOTO, VIDEO, AUDIO}
+
     //TODO maps
     //TODO post
     //TODO repost
@@ -26,15 +25,15 @@ public class AttachmentManager {
         mContext = context;
     }
 
-    private int getAttachmentType(Cursor attachmentsCursor) {
+    private ATTACHMENT_TYPE getAttachmentType(Cursor attachmentsCursor) {
         String attachmentType = CursorHelper.getString(attachmentsCursor, AttachmentsDBHelper.ATTACHMENT_TYPE);
         switch (attachmentType) {
             case (Attachments.ATTACHMENT_PHOTO):
-                return AttachmentManager.PHOTO;
+                return ATTACHMENT_TYPE.PHOTO;
             case (Attachments.ATTACHMENT_AUDIO):
-                return AttachmentManager.AUDIO;
+                return ATTACHMENT_TYPE.AUDIO;
             case (Attachments.ATTACHMENT_VIDEO):
-                return AttachmentManager.VIDEO;
+                return ATTACHMENT_TYPE.VIDEO;
             default:
                 throw new IllegalArgumentException("Unknown attachment type");
         }
@@ -42,14 +41,14 @@ public class AttachmentManager {
 
     public View getView(Cursor cursor, ImageLoader imageLoader) {
         AttachmentHelper helper = null;
-        int attachmentType = getAttachmentType(cursor);
+        ATTACHMENT_TYPE attachmentType = getAttachmentType(cursor);
         switch (attachmentType) {
             case PHOTO: {
                 helper = new AttachmentPhotoHelper(imageLoader);
                 break;
             }
             case VIDEO: {
-                helper = new AttachmentVideoHelper(mContext, imageLoader);
+                helper = new AttachmentVideoHelper(imageLoader);
                 break;
             }
             case AUDIO: {

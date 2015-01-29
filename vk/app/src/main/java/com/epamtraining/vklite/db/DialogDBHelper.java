@@ -10,7 +10,7 @@ import com.epamtraining.vklite.bo.Dialog;
 
 import java.util.List;
 
-public class DialogDBHelper  extends BODBHelper {
+public class DialogDBHelper extends BODBHelper {
     public static final String TABLENAME = "Dialogs";
     public static final String ID = "message_id";
     public static final String BODY = "body";
@@ -18,12 +18,12 @@ public class DialogDBHelper  extends BODBHelper {
     public static final String RAW_DATE = "raw_date";
     public static final String DATE = "date";
     public static final String USER_ID = "user_id";
-    public static final String [] FIELDS = {BaseColumns._ID, ID ,BODY, TITLE, RAW_DATE, DATE, USER_ID};
+    public static final String[] FIELDS = {BaseColumns._ID, ID, BODY, TITLE, RAW_DATE, DATE, USER_ID};
 
     public static final Uri CONTENT_URI = Uri.parse(VKContentProvider.CONTENT_URI_PREFIX
             + VKContentProvider.AUTHORITY + "/" + TABLENAME);
     public static Uri CONTENT_URI_ID = Uri.parse(VKContentProvider.CONTENT_URI_PREFIX
-            + VKContentProvider.AUTHORITY + "/" + TABLENAME+"/#");
+            + VKContentProvider.AUTHORITY + "/" + TABLENAME + "/#");
 
     @Override
     public String getTableName() {
@@ -37,10 +37,10 @@ public class DialogDBHelper  extends BODBHelper {
 
     @Override
     public ContentValues getContentValue(BoItem item) {
-        if (item == null){
+        if (item == null) {
             throw new IllegalArgumentException("BOItem is null");
         }
-        if (!(item instanceof Dialog)){
+        if (!(item instanceof Dialog)) {
             throw new IllegalArgumentException("Could process Dialogs only");
         }
         Dialog msg = (Dialog) item;
@@ -56,7 +56,7 @@ public class DialogDBHelper  extends BODBHelper {
 
     @Override
     public List<ContentValues> getContentValues(BoItem item, PostSourceId postSource) {
-         throw new UnsupportedOperationException("Not realized");
+        throw new UnsupportedOperationException("Not realized");
     }
 
 

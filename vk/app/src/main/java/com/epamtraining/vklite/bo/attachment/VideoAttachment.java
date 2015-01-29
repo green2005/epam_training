@@ -16,7 +16,6 @@ public class VideoAttachment implements Attachment {
     private static final String OWNER_ID = "owner_id";
 
     private long mId;
-    private long mAlbumId;
     private String mText;
     private String mDate;
     private long mOwnerId;
@@ -46,7 +45,7 @@ public class VideoAttachment implements Attachment {
 
     @Override
     public long getAlbumId() {
-        return mAlbumId;
+        return 0;
     }
 
     @Override

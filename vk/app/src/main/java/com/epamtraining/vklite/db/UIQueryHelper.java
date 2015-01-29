@@ -12,8 +12,9 @@ public class UIQueryHelper {
         public void onQueryResult(Cursor cursor);
     }
 
-    public interface OnInsertResultListener{
+    public interface OnInsertResultListener {
         public void onInsertSuccess();
+
         public void onError(Exception e);
     }
 
@@ -26,7 +27,7 @@ public class UIQueryHelper {
         mResolver = contentResolver;
     }
 
-    public void insert(final Uri uri, final ContentValues values,final OnInsertResultListener insertResultListener){
+    public void insert(final Uri uri, final ContentValues values, final OnInsertResultListener insertResultListener) {
         if (uri == null) {
             throw new IllegalArgumentException("Uri cannot be null");
         }
@@ -42,8 +43,7 @@ public class UIQueryHelper {
                             insertResultListener.onInsertSuccess();
                         }
                     });
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     insertResultListener.onError(e);
                 }
             }

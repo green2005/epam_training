@@ -24,9 +24,11 @@ public class WallAdapter extends BoItemAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Cursor cursor = (Cursor)getItem(position);
-        if (cursor == null){return null;}
-        if (position == getCursor().getCount() - 1) {
+        Cursor cursor = (Cursor) getItem(position);
+        if (cursor == null) {
+            return null;
+        }
+        if (position == cursor.getCount() - 1) {
             loadMoreData(position + 1, null);
         }
         View v = convertView;
@@ -47,7 +49,7 @@ public class WallAdapter extends BoItemAdapter {
         holder.text.setText(CursorHelper.getString(cursor, WallDBHelper.TEXT));
         holder.userName.setText(CursorHelper.getString(cursor, WallDBHelper.USERNAME));
         holder.image.setOriginalImageSize(CursorHelper.getInt(cursor, WallDBHelper.IMAGE_WIDTH),
-                                          CursorHelper.getInt(cursor, WallDBHelper.IMAGE_HEIGHT));
+                CursorHelper.getInt(cursor, WallDBHelper.IMAGE_HEIGHT));
         populateImageView(holder.image, CursorHelper.getString(getCursor(), WallDBHelper.IMAGE_URL));
         populateImageView(holder.userImage, CursorHelper.getString(getCursor(), WallDBHelper.USERIMAGE));
         return v;

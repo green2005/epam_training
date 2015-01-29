@@ -13,7 +13,6 @@ import com.epamtraining.vklite.CursorHelper;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.db.DialogDBHelper;
 import com.epamtraining.vklite.db.UsersDBHelper;
-import com.epamtraining.vklite.db.VKContentProvider;
 
 public class DialogsAdapter extends BoItemAdapter {
     private LayoutInflater mInflater;
@@ -26,7 +25,9 @@ public class DialogsAdapter extends BoItemAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Cursor cursor = (Cursor) getItem(position);
-        if (cursor == null){ return null;}
+        if (cursor == null) {
+            return null;
+        }
         if (position == cursor.getCount() - 1) {
             loadMoreData(position + 1, null);
         }
@@ -50,7 +51,7 @@ public class DialogsAdapter extends BoItemAdapter {
         return v;
     }
 
-    private class ViewHolder{
+    private class ViewHolder {
         TextView date;
         TextView userName;
         TextView message;

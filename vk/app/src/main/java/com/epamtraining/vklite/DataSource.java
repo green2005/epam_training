@@ -12,13 +12,15 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class DataSource implements AdditionalInfoSource {
-  //  private static  final int CONNECT_TIMEOUT = 7000;
-  //  private static final int READ_TIMEOUT = 10000;
+    //  private static  final int CONNECT_TIMEOUT = 7000;
+    //  private static final int READ_TIMEOUT = 10000;
 
 
     public interface DataSourceCallbacks {
         public void onError(Exception e);
+
         public void onLoadEnd(int recordsFetched);
+
         public void onBeforeStart();
     }
 
@@ -35,13 +37,13 @@ public class DataSource implements AdditionalInfoSource {
     private InputStream getInputStream(String href) throws Exception {
         URL url = new URL(href);
         URLConnection con = url.openConnection();
-       // con.setConnectTimeout(CONNECT_TIMEOUT);
-      //  con.setReadTimeout(READ_TIMEOUT);
+        // con.setConnectTimeout(CONNECT_TIMEOUT);
+        //  con.setReadTimeout(READ_TIMEOUT);
         return con.getInputStream();
     }
 
     @Override
-    public InputStream getAdditionalInfo(String href)throws Exception {
+    public InputStream getAdditionalInfo(String href) throws Exception {
         return getInputStream(href);
     }
 
@@ -75,5 +77,5 @@ public class DataSource implements AdditionalInfoSource {
         if (executor != null) {
             executor.start(dataLoader);
         }
-     }
+    }
 }

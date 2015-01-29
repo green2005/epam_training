@@ -17,7 +17,7 @@ public abstract class BaseListViewFragment extends BaseFragment implements Adapt
     }
 
     @Override
-    protected ListViewWrapper getCollectionViewWrapper() {
+    public ListViewWrapper getCollectionViewWrapper() {
         return mWrapper;
     }
 

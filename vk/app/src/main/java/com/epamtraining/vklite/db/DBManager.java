@@ -38,28 +38,28 @@ class DBManager extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-       dropTables(db);
-       createTables(db);
+        dropTables(db);
+        createTables(db);
     }
 
-    private void createTables(SQLiteDatabase db){
+    private void createTables(SQLiteDatabase db) {
         List<String> additionalSQL = new ArrayList<>();
-        for (BODBHelper helper : sHelpers){
+        for (BODBHelper helper : sHelpers) {
             db.execSQL(helper.getCreateTableDefinition());
             List<String> list = helper.getAdditionalSQL();
-            if (list != null){
+            if (list != null) {
                 additionalSQL.addAll(list);
                 //additional sql for creating triggers, foreign keys etc...
             }
-        };
+        }
         //make two passes because all tables should be created first
-        for (String sql:additionalSQL){
+        for (String sql : additionalSQL) {
             db.execSQL(sql);
         }
     }
 
-    private void dropTables(SQLiteDatabase db){
-        for (BODBHelper helper : sHelpers){
+    private void dropTables(SQLiteDatabase db) {
+        for (BODBHelper helper : sHelpers) {
             db.execSQL(helper.getDropTableDefinition());
         }
     }

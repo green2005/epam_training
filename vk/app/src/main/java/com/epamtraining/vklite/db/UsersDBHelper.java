@@ -13,7 +13,7 @@ public class UsersDBHelper extends BODBHelper {
     public static final String ID = "user_id";
     public static final String NAME = "name";
     public static final String IMAGE = "image_url";
-    public static final String FULL_ID = TABLENAME+"_"+"user_id";
+    // public static final String FULL_ID = TABLENAME + "_" + "user_id";
 
     public static final String IMAGE_FULL = TABLENAME + "_" + IMAGE;
     private static final String[] FIELDS = {ID, NAME, IMAGE};

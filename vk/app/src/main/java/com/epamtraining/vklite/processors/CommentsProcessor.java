@@ -15,7 +15,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommentsProcessor extends Processor{
+public class CommentsProcessor extends Processor {
     private CommentsDBHelper mCommentDBHelper;
     private int mRecordsFetched;
     private Context mContext;
@@ -67,6 +67,7 @@ public class CommentsProcessor extends Processor{
         return mRecordsFetched;
     }
 
-    public String getPostId(){ return mPostId;}
-    public void setPostId(String postId){mPostId = postId;}
+    public void setPostId(String postId) {
+        mPostId = postId;
+    }
 }

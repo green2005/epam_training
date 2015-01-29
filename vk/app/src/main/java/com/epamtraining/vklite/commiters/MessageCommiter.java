@@ -22,15 +22,15 @@ public class MessageCommiter extends Commiter {
     private static final String VK_ERROR_MSG = "error_msg";
     private static final String RESPONSE = "response";
 
-    public MessageCommiter(CommiterCallback callback,Context context ) {
-        super(callback, context );
+    public MessageCommiter(CommiterCallback callback, Context context) {
+        super(callback, context);
         mContext = context;
         mResolver = context.getContentResolver();
     }
 
     @Override
     protected Cursor getPendingChanges() {
-      return mResolver.query(
+        return mResolver.query(
                 MessagesDBHelper.CONTENT_URI,
                 new String[]{BaseColumns._ID, MessagesDBHelper.PENDING,
                         MessagesDBHelper.BODY, MessagesDBHelper.FROM_ID,
@@ -41,18 +41,17 @@ public class MessageCommiter extends Commiter {
     }
 
 
-    protected boolean checkIsResponseCorrect(String response) throws Exception{
-        if (TextUtils.isEmpty(response)){
-           throw new Exception(mContext.getResources().getString(R.string.response_is_empty));
+    protected boolean checkIsResponseCorrect(String response) throws Exception {
+        if (TextUtils.isEmpty(response)) {
+            throw new Exception(mContext.getResources().getString(R.string.response_is_empty));
         }
         JSONObject jo = new JSONObject(response);
-        int id =  jo.optInt(RESPONSE, -1);
-        String errorMsg ;
-        if (id < 0 ){
-            if (jo.has(VK_ERROR_RESPONSE)){
+        int id = jo.optInt(RESPONSE, -1);
+        String errorMsg;
+        if (id < 0) {
+            if (jo.has(VK_ERROR_RESPONSE)) {
                 errorMsg = jo.getJSONObject(VK_ERROR_RESPONSE).optString(VK_ERROR_MSG);
-            } else
-            {
+            } else {
                 errorMsg = mContext.getResources().getString(R.string.unknown_server_error);
             }
             throw new Exception(errorMsg);
@@ -60,19 +59,19 @@ public class MessageCommiter extends Commiter {
         return true;
     }
 
-    protected String getUrl(Cursor cr) throws Exception{
+    protected String getUrl(Cursor cr) throws Exception {
         String userId = cr.getString(cr.getColumnIndex(MessagesDBHelper.USER_ID));
         String message = cr.getString(cr.getColumnIndex(MessagesDBHelper.BODY));
         return Api.getMessagesCommitUrl(mContext, userId, message);
     }
 
-    protected void setRecordAffected(Cursor cursor){
+    protected void setRecordAffected(Cursor cursor) {
         int id = cursor.getInt(cursor.getColumnIndex(BaseColumns._ID));
         ContentValues contentValues = new ContentValues();
         contentValues.put(MessagesDBHelper.PENDING, 0);
 
         mResolver.update(MessagesDBHelper.CONTENT_URI,
-                contentValues,BaseColumns._ID + " = ?",
+                contentValues, BaseColumns._ID + " = ?",
                 new String[]{String.valueOf(id)});
 
     }

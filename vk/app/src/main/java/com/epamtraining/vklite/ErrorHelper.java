@@ -3,16 +3,13 @@ package com.epamtraining.vklite;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Resources;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.io.IOException;
 
 public class ErrorHelper {
     public static void showError(Context context, String errorMessage) {
-       if (context != null) {
+        if (context != null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setNegativeButton(context.getResources().getString(R.string.ok), new AlertDialog.OnClickListener() {
                 @Override
@@ -36,9 +33,10 @@ public class ErrorHelper {
     }
 
     public static void showError(Context context, Exception e) {
+        e.printStackTrace();
         if (context != null) {
             String errorMessage;
-            if (e instanceof  VKException) {
+            if (e instanceof VKException) {
                 errorMessage = context.getResources().getString(R.string.vkError) + "/" + e.getMessage();
             } else if (e instanceof IOException) {
                 errorMessage = context.getResources().getString(R.string.checkInetConnection);

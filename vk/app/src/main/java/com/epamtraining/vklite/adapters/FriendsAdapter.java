@@ -9,10 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.epamtraining.vklite.CursorHelper;
-import com.epamtraining.vklite.db.FriendDBHelper;
-import com.epamtraining.vklite.db.NewsDBHelper;
-import com.epamtraining.vklite.db.VKContentProvider;
 import com.epamtraining.vklite.R;
+import com.epamtraining.vklite.db.FriendDBHelper;
 
 public class FriendsAdapter extends BoItemAdapter {
     private LayoutInflater mInflater;
@@ -25,7 +23,9 @@ public class FriendsAdapter extends BoItemAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Cursor cursor = (Cursor) getItem(position);
-        if (cursor == null){ return null;}
+        if (cursor == null) {
+            return null;
+        }
         View v = convertView;
         ViewHolder holder;
         if (v == null) {

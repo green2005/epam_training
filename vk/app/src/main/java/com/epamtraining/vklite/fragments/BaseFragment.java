@@ -92,7 +92,9 @@ public abstract class BaseFragment extends Fragment
         Activity activity = getActivity();
         if (activity != null) {
             return activity.getLayoutInflater().inflate(R.layout.footer_progress_layout, null);
-        } else {return null;}
+        } else {
+            return null;
+        }
     }
 
     //could be overriden in child classes
@@ -128,14 +130,14 @@ public abstract class BaseFragment extends Fragment
         }
     }
 
-    private void refresh(){
+    private void refresh() {
         loadData(0, null);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-     }
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

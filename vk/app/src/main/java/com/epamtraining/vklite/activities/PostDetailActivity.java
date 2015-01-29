@@ -1,9 +1,10 @@
 package com.epamtraining.vklite.activities;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.fragments.PostDetailFragment;
 
@@ -22,13 +23,13 @@ public class PostDetailActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-         getMenuInflater().inflate(R.menu.menu_post_detail, menu);
+        getMenuInflater().inflate(R.menu.menu_post_detail, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-          int id = item.getItemId();
+        int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
         }

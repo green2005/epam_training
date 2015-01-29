@@ -60,5 +60,4 @@ public class CommentAdapter extends BoItemAdapter {
         TextView message;
         ImageView userImage;
     }
-
 }

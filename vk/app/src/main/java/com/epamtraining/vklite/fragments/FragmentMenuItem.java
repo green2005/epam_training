@@ -6,10 +6,9 @@ import com.epamtraining.vklite.R;
 
 public enum FragmentMenuItem {
     NEWS_ITEM(R.string.news, R.drawable.ic_news),
-    WALL_ITEM( R.string.wall, R.drawable.ic_wall),
-    FRIEND_ITEM( R.string.friends, R.drawable.ic_friends),
-    DIALOG_ITEM(R.string.messages, R.drawable.ic_messages),
-    ;
+    WALL_ITEM(R.string.wall, R.drawable.ic_wall),
+    FRIEND_ITEM(R.string.friends, R.drawable.ic_friends),
+    DIALOG_ITEM(R.string.messages, R.drawable.ic_messages),;
 
     private int mNameResourceId;
     private int mImageResourceId;
@@ -17,7 +16,7 @@ public enum FragmentMenuItem {
     FragmentMenuItem(int nameResourceId, int imageResourceId) {
         mImageResourceId = imageResourceId;
         mNameResourceId = nameResourceId;
-      }
+    }
 
     public int getNameResourceId() {
         return mNameResourceId;

@@ -22,29 +22,30 @@ public class VKApplication extends Application {
 
     @Override
     public Object getSystemService(String name) {
-        if (mSystemServices == null){
+        if (mSystemServices == null) {
             initLocalServices();
         }
         Object systemServiceResult = mSystemServices.get(name);
         if (systemServiceResult != null) {
-            if (systemServiceResult instanceof StringHolder){
-              return ((StringHolder) systemServiceResult).getString();
-            } else
-            {return systemServiceResult;}
+            if (systemServiceResult instanceof StringHolder) {
+                return ((StringHolder) systemServiceResult).getString();
+            } else {
+                return systemServiceResult;
+            }
         } else {
             return super.getSystemService(name);
         }
     }
 
-    public void setToken(String token){
-        if (mSystemServices == null){
+    public void setToken(String token) {
+        if (mSystemServices == null) {
             initLocalServices();
         }
         mSystemServices.put(Api.TOKEN_KEY, new StringHolder(token));
     }
 
-    public void setUserId(String userId){
-        if (mSystemServices == null){
+    public void setUserId(String userId) {
+        if (mSystemServices == null) {
             initLocalServices();
         }
         mSystemServices.put(Api.USERID_KEY, new StringHolder(userId));
@@ -58,7 +59,7 @@ public class VKApplication extends Application {
         mSystemServices.put(Api.USERID_IMAGE, new StringHolder(image));
     }
 
-    private void initLocalServices(){
+    private void initLocalServices() {
         mSystemServices = new HashMap<>();
         ImageLoader imageLoader = new ImageLoader(this);
         VKExecutor executor = new VKExecutor();
@@ -67,14 +68,14 @@ public class VKApplication extends Application {
     }
 
     public static <T> T get(Context context, String key) {
-        if ((context == null)||(TextUtils.isEmpty(key))){
+        if ((context == null) || (TextUtils.isEmpty(key))) {
             throw new IllegalArgumentException("Parameters are null");
         }
         T systemService = (T) context.getSystemService(key);
-        if (systemService == null){
-            systemService = (T)context.getApplicationContext().getSystemService(key);
-            if (systemService == null){
-                throw new IllegalArgumentException("Service by key "+ key + " is unavaliable");
+        if (systemService == null) {
+            systemService = (T) context.getApplicationContext().getSystemService(key);
+            if (systemService == null) {
+                throw new IllegalArgumentException(String.format("Service by key %s is unavaliable", key));
             }
         }
         return systemService;

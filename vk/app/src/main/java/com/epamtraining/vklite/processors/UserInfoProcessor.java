@@ -5,11 +5,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.InputStream;
 
-public class UserInfoProcessor extends Processor{
+public class UserInfoProcessor extends Processor {
     private static final String FIRST_NAME = "first_name";
     private static final String LAST_NAME = "last_name";
     private static final String IMAGE = "photo_100";
@@ -28,9 +27,9 @@ public class UserInfoProcessor extends Processor{
     @Override
     public void process(InputStream stream, String url, AdditionalInfoSource dataSource) throws Exception {
         JSONArray response = getVKResponseArray(stream);
-        if (response.length() > 0 ){
+        if (response.length() > 0) {
             String userName = (response.getJSONObject(0).optString(FIRST_NAME) + " " +
-                                    response.getJSONObject(0).optString(LAST_NAME)).trim();
+                    response.getJSONObject(0).optString(LAST_NAME)).trim();
             String image = response.getJSONObject(0).optString(IMAGE);
             SharedPreferences prefs = mContext.getSharedPreferences(USER_INFO, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();

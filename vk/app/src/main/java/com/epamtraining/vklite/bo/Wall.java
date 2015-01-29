@@ -9,10 +9,6 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 
 public class Wall extends BoItem implements PostSourceId {
-    /*
-    CREATE TABLE Wall(_id Integer not null PRIMARY KEY AUTOINCREMENT, postid text, from_id text,"+
-            " owner_id text, rawDate text, date text, itemText text, post_type text, image_Url text, level int)";
-     */
     private static final String DATE = "date";
     private static final String TEXT = "text";
     private static final String ID = "id";

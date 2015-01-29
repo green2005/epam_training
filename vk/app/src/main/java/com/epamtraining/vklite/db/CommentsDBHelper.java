@@ -9,7 +9,7 @@ import com.epamtraining.vklite.bo.Comment;
 
 import java.util.List;
 
-public class CommentsDBHelper extends  BODBHelper{
+public class CommentsDBHelper extends BODBHelper {
     public static String TABLENAME = "Comments";
     public static final String DATE = "Date";
     public static final String TEXT = "Text";
@@ -23,10 +23,10 @@ public class CommentsDBHelper extends  BODBHelper{
     public static final Uri CONTENT_URI = Uri.parse(VKContentProvider.CONTENT_URI_PREFIX
             + VKContentProvider.AUTHORITY + "/" + TABLENAME);
     public static Uri CONTENT_URI_ID = Uri.parse(VKContentProvider.CONTENT_URI_PREFIX
-            + VKContentProvider.AUTHORITY + "/" + TABLENAME+"/#");
+            + VKContentProvider.AUTHORITY + "/" + TABLENAME + "/#");
 
     public static final String[] FIELDS = {BaseColumns._ID, COMMENT_ID, RAW_DATE, DATE, OWNER_ID,
-                                            TEXT,  USERIMAGE, USERNAME, POST_ID, PENDING};
+            TEXT, USERIMAGE, USERNAME, POST_ID, PENDING};
 
     @Override
     public String getTableName() {

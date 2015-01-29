@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.fragments.FriendsFragment;
 
-public class ChooseFriendActivity  extends ActionBarActivity {
+public class ChooseFriendActivity extends ActionBarActivity {
 
 
     @Override
@@ -28,7 +28,6 @@ public class ChooseFriendActivity  extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-       // getMenuInflater().inflate(R.menu.menu_messages, menu);
         return true;
     }
 

@@ -1,8 +1,6 @@
 package com.epamtraining.vklite.bo;
 
 
-import android.view.View;
-
 import com.epamtraining.vklite.bo.attachment.Attachment;
 import com.epamtraining.vklite.bo.attachment.AudioAttachment;
 import com.epamtraining.vklite.bo.attachment.PhotoAttachment;
@@ -24,38 +22,38 @@ public class Attachments extends BoItem {
 
     private List<Attachment> mAttachments;
 
-    public Attachments(JSONArray jAttachments) throws JSONException{
+    public Attachments(JSONArray jAttachments) throws JSONException {
         mAttachments = new ArrayList<>();
-        for (int i = 0 ; i<jAttachments.length(); i++){
+        for (int i = 0; i < jAttachments.length(); i++) {
             Attachment attachment = getAttachment(jAttachments.getJSONObject(i));
-            if (attachment != null){
+            if (attachment != null) {
                 mAttachments.add(attachment);
             }
         }
     }
 
-    public List<Attachment> getAttachments(){
+    public List<Attachment> getAttachments() {
         if (mAttachments == null) {
             return Collections.emptyList();
         }
         return mAttachments;
     }
 
-    private Attachment getAttachment(JSONObject jo) throws JSONException{
-        if (jo == null){
+    private Attachment getAttachment(JSONObject jo) throws JSONException {
+        if (jo == null) {
             throw new IllegalArgumentException("Null jsonObject parameter");
         }
-        switch (jo.optString(TYPE)){
-            case(ATTACHMENT_PHOTO):{
+        switch (jo.optString(TYPE)) {
+            case (ATTACHMENT_PHOTO): {
                 return new PhotoAttachment(jo.optJSONObject(ATTACHMENT_PHOTO));
             }
-            case (ATTACHMENT_VIDEO):{
+            case (ATTACHMENT_VIDEO): {
                 return new VideoAttachment(jo.optJSONObject(ATTACHMENT_VIDEO));
             }
-            case (ATTACHMENT_AUDIO):{
+            case (ATTACHMENT_AUDIO): {
                 return new AudioAttachment(jo.optJSONObject(ATTACHMENT_AUDIO));
             }
-            default:{
+            default: {
                 return null;
             }
         }

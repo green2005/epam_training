@@ -21,7 +21,7 @@ public class MessagesActivity extends ActionBarActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container,
                             MessagesRecyclerViewFragment.getNewFragment(getIntent().getExtras()))
-                                    .commit();
+                    .commit();
         }
     }
 
@@ -40,10 +40,10 @@ public class MessagesActivity extends ActionBarActivity {
         return true;
     }
 
-    private void refreshMessages(){
-        if (getSupportFragmentManager() != null){
-            for (Fragment ft: getSupportFragmentManager().getFragments()){
-                if (ft instanceof Refreshable){
+    private void refreshMessages() {
+        if (getSupportFragmentManager() != null) {
+            for (Fragment ft : getSupportFragmentManager().getFragments()) {
+                if (ft instanceof Refreshable) {
                     ((Refreshable) ft).refreshData();
                 }
             }
@@ -55,6 +55,4 @@ public class MessagesActivity extends ActionBarActivity {
         int id = item.getItemId();
         return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
-
-
 }

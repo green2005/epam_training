@@ -19,15 +19,17 @@ public class NewsAdapter extends BoItemAdapter {
     public NewsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
         super(context, layout, c, from, to, flags);
         mInflater = LayoutInflater.from(context);
-   }
+    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Cursor cursor = (Cursor) getItem(position);
-        if (cursor == null){ return null;}
+        if (cursor == null) {
+            return null;
+        }
         if (position == cursor.getCount() - 1) {
             String startItemId = CursorHelper.getString(getCursor(), NewsDBHelper.NEXT_FROM);
-            loadMoreData(position+1, startItemId);
+            loadMoreData(position + 1, startItemId);
         }
         View v = convertView;
         ViewHolder holder;
@@ -50,8 +52,7 @@ public class NewsAdapter extends BoItemAdapter {
         holder.image.setOriginalImageSize(
                 CursorHelper.getInt(cursor, NewsDBHelper.IMAGE_WIDTH),
                 CursorHelper.getInt(cursor, NewsDBHelper.IMAGE_HEIGHT)
-                );
-
+        );
         populateImageView(holder.image, CursorHelper.getString(cursor, NewsDBHelper.IMAGE_URL));
         populateImageView(holder.userImage, CursorHelper.getString(cursor, NewsDBHelper.USERIMAGE));
         return v;

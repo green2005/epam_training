@@ -38,18 +38,18 @@ public class MessagesProcessor extends Processor {
         HashSet<String> userIds = new HashSet<>();
         MessagesDBHelper helper = new MessagesDBHelper();
         String dialogUserId = getDialogUserId(url);
-        for (int i = 0; i < items.length(); i++){
+        for (int i = 0; i < items.length(); i++) {
             Message msg = new Message(items.getJSONObject(i), dateFormat);
-            ContentValues value =  helper.getContentValue(msg);
+            ContentValues value = helper.getContentValue(msg);
             value.put(MessagesDBHelper.USER_DIALOG_ID, dialogUserId);
             userIds.add(msg.getFromId());
             contentValues[i] = value;
         }
         mRecordsFetched = items.length();
-        ContentResolver resolver =  mContext.getContentResolver();
+        ContentResolver resolver = mContext.getContentResolver();
         updateUserInfos(userIds, dataSource, resolver);
         if (isTopRequest(url, Api.OFFSET)) {
-           resolver.delete(MessagesDBHelper.CONTENT_URI, MessagesDBHelper.USER_DIALOG_ID +" = ? ", new String[]{dialogUserId});
+            resolver.delete(MessagesDBHelper.CONTENT_URI, MessagesDBHelper.USER_DIALOG_ID + " = ? ", new String[]{dialogUserId});
         }
         resolver.bulkInsert(MessagesDBHelper.CONTENT_URI, contentValues);
         resolver.notifyChange(MessagesDBHelper.CONTENT_URI, null);
@@ -60,9 +60,9 @@ public class MessagesProcessor extends Processor {
         return parsedFragment.getQueryParameter(Message.USERID);
     }
 
-    private void updateUserInfos(Set<String> userIds, AdditionalInfoSource source, ContentResolver resolver) throws  Exception{
+    private void updateUserInfos(Set<String> userIds, AdditionalInfoSource source, ContentResolver resolver) throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
-        for (String user:userIds){
+        for (String user : userIds) {
             stringBuilder.append(user);
             stringBuilder.append(",");
         }
@@ -72,13 +72,14 @@ public class MessagesProcessor extends Processor {
         JSONArray userItems = getVKResponseArray(stream);
         ContentValues[] contentValues = new ContentValues[userItems.length()];
         UsersDBHelper helper = new UsersDBHelper();
-        for (int i = 0 ; i < userItems.length(); i++){
+        for (int i = 0; i < userItems.length(); i++) {
             Friend userItem = new Friend(userItems.getJSONObject(i));
-            ContentValues value =helper.getContentValue(userItem);
+            ContentValues value = helper.getContentValue(userItem);
             contentValues[i] = value;
         }
-         resolver.bulkInsert(UsersDBHelper.CONTENT_URI, contentValues);
+        resolver.bulkInsert(UsersDBHelper.CONTENT_URI, contentValues);
     }
+
     @Override
     public int getRecordsFetched() {
         return mRecordsFetched;

@@ -34,7 +34,7 @@ public class Message extends BoItem {
         mRawDate = jo.optString(DATE);
         mTitle = jo.optString(TITLE);
         mOut = jo.optString(OUT);
-        java.util.Date time = new java.util.Date((long) Long.parseLong(mRawDate) * 1000);
+        java.util.Date time = new java.util.Date(Long.parseLong(mRawDate) * 1000);
         mDate = ft.format(time);
         JSONArray attachments = jo.optJSONArray(ATTACHMENTS);
         if (attachments != null) {
@@ -77,7 +77,7 @@ public class Message extends BoItem {
         return mImageUrl;
     }
 
-    public String getOut(){
+    public String getOut() {
         return mOut;
     }
 

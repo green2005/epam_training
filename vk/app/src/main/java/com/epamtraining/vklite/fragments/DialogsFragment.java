@@ -30,7 +30,7 @@ import com.epamtraining.vklite.processors.DialogsProcessor;
 import com.epamtraining.vklite.processors.Processor;
 
 public class DialogsFragment extends BaseListViewFragment
-        implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback  {
+        implements LoaderManager.LoaderCallbacks<Cursor>, DataAdapterCallback {
 
     private static final String[] FIELDS = new String[]{
             DialogDBHelper.USER_ID, DialogDBHelper.BODY,
@@ -133,10 +133,10 @@ public class DialogsFragment extends BaseListViewFragment
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Cursor cursor = mAdapter.getCursor();
         if (cursor != null) {
-                cursor.moveToPosition(position);
-                String userId = CursorHelper.getString(cursor, DialogDBHelper.USER_ID);
-                String userName = CursorHelper.getString(cursor, UsersDBHelper.NAME);
-                startMessagesActivity(userId, userName);
+            cursor.moveToPosition(position);
+            String userId = CursorHelper.getString(cursor, DialogDBHelper.USER_ID);
+            String userName = CursorHelper.getString(cursor, UsersDBHelper.NAME);
+            startMessagesActivity(userId, userName);
         }
     }
 }

@@ -30,8 +30,8 @@ public class RecyclerViewWrapper
 
     @Override
     public void initOnScrollListener() {
-       //not yet implemented
-       // it wasn't still in need
+        //not yet implemented
+        // it wasn't still in need
     }
 
     @Override

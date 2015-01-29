@@ -9,11 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -154,7 +152,7 @@ public class VKContentProvider extends ContentProvider {
                 }
                 break;
             }
-            case COMMENTS:{
+            case COMMENTS: {
                 if (TextUtils.isEmpty(selection)) {
                     selection = " ifnull(" + CommentsDBHelper.PENDING + ",0)" + " <> 1";
                 } else {
@@ -256,7 +254,7 @@ public class VKContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-         //moved to singleTon, bug on 9 or 10 api
+        //moved to singleTon, bug on 9 or 10 api
         if (sDbManager == null) {
             sDbManager = new DBManager(getContext());
         }
@@ -268,25 +266,25 @@ public class VKContentProvider extends ContentProvider {
                         String[] selectionArgs, String sortOrder) {
         URI_TYPE uriType = getUriTypeByUri(uri);
         Uri contentUri = uriType.getContentUri();
-        String tableName  = uriType.getTableName();
+        String tableName = uriType.getTableName();
         SQLiteDatabase db = sDbManager.getReadableDatabase();
         switch (uriType) {
-            case  NEWS: {
+            case NEWS: {
                 if (TextUtils.isEmpty(sortOrder))
                     sortOrder = NewsDBHelper.RAW_DATE + " DESC";
                 break;
             }
-            case  COMMENTS: {
+            case COMMENTS: {
                 if (TextUtils.isEmpty(sortOrder))
                     sortOrder = CommentsDBHelper.RAW_DATE + " DESC";
                 break;
             }
-            case  FRIENDS: {
+            case FRIENDS: {
                 if (TextUtils.isEmpty(sortOrder))
                     sortOrder = FriendDBHelper.LAST_NAME + " ASC";
                 break;
             }
-            case  NEWS_ID: {
+            case NEWS_ID: {
                 String id = uri.getLastPathSegment();
                 if (!TextUtils.isEmpty(selection)) {
                     selection = selection + " AND " + NewsDBHelper.POST_ID + " = " + id;
@@ -295,7 +293,7 @@ public class VKContentProvider extends ContentProvider {
                 }
                 break;
             }
-            case  FRIENDS_ID: {
+            case FRIENDS_ID: {
                 String id = uri.getLastPathSegment();
                 if (!TextUtils.isEmpty(selection)) {
                     selection = selection + " AND " + FriendDBHelper.ID + " = " + id;
@@ -304,12 +302,12 @@ public class VKContentProvider extends ContentProvider {
                 }
                 break;
             }
-            case  WALL: {
+            case WALL: {
                 if (TextUtils.isEmpty(sortOrder))
                     sortOrder = WallDBHelper.RAW_DATE + " DESC";
                 break;
             }
-            case  DIALOGS: {
+            case DIALOGS: {
                 SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
                 StringBuilder sb = new StringBuilder();
                 sb.append(DialogDBHelper.TABLENAME);
@@ -335,7 +333,7 @@ public class VKContentProvider extends ContentProvider {
                 mColumnMap.put(DialogDBHelper.TABLENAME + "." + DialogDBHelper.RAW_DATE, DialogDBHelper.TABLENAME + "." + DialogDBHelper.RAW_DATE + " as " + DialogDBHelper.RAW_DATE);
                 mColumnMap.put(DialogDBHelper.TABLENAME + "." + BaseColumns._ID, DialogDBHelper.TABLENAME + "." + BaseColumns._ID + " as " + BaseColumns._ID);
                 queryBuilder.setProjectionMap(mColumnMap);
-                 if (TextUtils.isEmpty(sortOrder)) {
+                if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = DialogDBHelper.RAW_DATE + " DESC";
                 }
                 String[] projections = new String[mColumnMap.size()];
@@ -347,7 +345,7 @@ public class VKContentProvider extends ContentProvider {
                 return cr;
             }
 
-            case  MESSAGES: {
+            case MESSAGES: {
                 SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
                 StringBuilder sb = new StringBuilder();
                 sb.append(MessagesDBHelper.TABLENAME);
@@ -379,7 +377,7 @@ public class VKContentProvider extends ContentProvider {
                 mColumnMap.put(MessagesDBHelper.TABLENAME + "." + MessagesDBHelper.USER_ID, MessagesDBHelper.TABLENAME + "." + MessagesDBHelper.USER_ID + " as " + MessagesDBHelper.USER_ID);
 
                 queryBuilder.setProjectionMap(mColumnMap);
-                 if (TextUtils.isEmpty(sortOrder)) {
+                if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = MessagesDBHelper.RAW_DATE + " DESC";
                 }
                 String[] projections = new String[mColumnMap.size()];
@@ -399,7 +397,7 @@ public class VKContentProvider extends ContentProvider {
 
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
- int insertCount = 0;
+        int insertCount = 0;
         URI_TYPE uriType = getUriTypeByUri(uri);
         SQLiteDatabase sqlDB = sDbManager.getWritableDatabase();
         String tableName = uriType.getTableName();
@@ -460,7 +458,7 @@ public class VKContentProvider extends ContentProvider {
                 } else {
                     rowsUpdated = sqlDB.update(CommentsDBHelper.TABLENAME,
                             values,
-                            BaseColumns._ID  + "=" + id
+                            BaseColumns._ID + "=" + id
                                     + " and "
                                     + selection,
                             selectionArgs);

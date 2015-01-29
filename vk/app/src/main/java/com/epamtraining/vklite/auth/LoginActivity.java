@@ -19,21 +19,19 @@ import com.epamtraining.vklite.R;
 
 public class LoginActivity extends ActionBarActivity implements AuthHelper.AuthCallBack{
     private WebView mWebView;
-    private ProgressBar mProgress;
-    private AuthHelper mHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         mWebView = (WebView)findViewById(R.id.webView);
-        mProgress = (ProgressBar)findViewById(R.id.progress);
+        ProgressBar progress = (ProgressBar)findViewById(R.id.progress);
         getSupportActionBar().hide();
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         mWebView.setWebViewClient(new WebViewLoginClient());
         mWebView.loadUrl(AuthHelper.AUTORIZATION_URL);
-        mHelper = new AuthHelper();
+//        mHelper = new AuthHelper();
     }
 
     @Override

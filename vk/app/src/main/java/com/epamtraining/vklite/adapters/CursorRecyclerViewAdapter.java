@@ -1,6 +1,5 @@
 package com.epamtraining.vklite.adapters;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.provider.BaseColumns;
@@ -10,7 +9,6 @@ import com.epamtraining.vklite.imageloader.ImageLoader;
 
 public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH>
         implements SwappableAdapter {
-    private Context mContext;
 
     private Cursor mCursor;
 
@@ -24,25 +22,22 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
 
     private DataAdapterCallback mGetDataCallBack;
 
-    public CursorRecyclerViewAdapter(Context context, ImageLoader imageLoader) {
-        if (context == null){
-            throw new IllegalArgumentException("Context parameter is null");
-        }
-        if (imageLoader == null){
+    public CursorRecyclerViewAdapter(ImageLoader imageLoader) {
+        if (imageLoader == null) {
             throw new IllegalArgumentException("ImageLoader parameter is null");
         }
-        mContext = context;
         mDataValid = false;
         mImageLoader = imageLoader;
         mDataSetObserver = new RecycleObserver();
     }
 
-    public void initAdapter(DataAdapterCallback callback, ImageLoader imageLoader){
+    @Override
+    public void initAdapter(DataAdapterCallback callback, ImageLoader imageLoader) {
         mImageLoader = imageLoader;
         mGetDataCallBack = callback;
     }
 
-    protected void loadMoreData(int offset, String nextId){
+    protected void loadMoreData(int offset, String nextId) {
         mGetDataCallBack.onGetMoreData(offset, nextId);
     }
 
@@ -50,10 +45,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
         return mCursor;
     }
 
-    public Context getContext() {
-        return mContext;
-    }
-
+    @Override
     public Cursor swapCursor(Cursor newCursor) {
         if (newCursor == mCursor) {
             return null;
@@ -97,7 +89,6 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
         }
         return 0;
     }
-
 
     private class RecycleObserver extends DataSetObserver {
         @Override

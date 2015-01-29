@@ -17,7 +17,7 @@ public abstract class Commiter {
     abstract protected void setRecordAffected(Cursor cursor);           //set records not marked as pending
 
     private CommiterCallback mCallBack;
-    private Context mContext;
+
 
     public Commiter(CommiterCallback callback, Context context ){
         if (context  == null){
@@ -27,7 +27,6 @@ public abstract class Commiter {
             throw new IllegalArgumentException("Callback parameter is null");
         }
         mCallBack = callback;
-        mContext = context;
     }
 
     public void commit(){
