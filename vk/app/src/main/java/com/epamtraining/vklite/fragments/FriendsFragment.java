@@ -18,6 +18,7 @@ import com.epamtraining.vklite.adapters.BoItemAdapter;
 import com.epamtraining.vklite.adapters.DataAdapterCallback;
 import com.epamtraining.vklite.adapters.FriendsAdapter;
 import com.epamtraining.vklite.db.FriendDBHelper;
+import com.epamtraining.vklite.db.UsersDBHelper;
 import com.epamtraining.vklite.processors.FriendsProcessor;
 import com.epamtraining.vklite.processors.Processor;
 
@@ -26,6 +27,7 @@ public class FriendsFragment extends BaseListViewFragment implements LoaderManag
     private BoItemAdapter mAdapter;
     private Processor mProcessor;
     private int requestCode = -1;
+    private String mUserId = "";
 
     private static final String[] FIELDS = FriendDBHelper.FIELDS;
 
@@ -46,9 +48,12 @@ public class FriendsFragment extends BaseListViewFragment implements LoaderManag
             if (arguments.containsKey(MainActivity.FRAGMENT_REQUEST)) {
                 requestCode = arguments.getInt(MainActivity.FRAGMENT_REQUEST);
             }
+            if (arguments.containsKey(UsersDBHelper.ID)) {
+                mUserId = arguments.getString(UsersDBHelper.ID);
+            }
         }
         mAdapter = new FriendsAdapter(getActivity(), R.layout.item_post, null, getDataFields(), null, 0);
-        mProcessor = new FriendsProcessor(getActivity());
+        mProcessor = new FriendsProcessor(getActivity(), mUserId);
     }
 
 
@@ -69,13 +74,25 @@ public class FriendsFragment extends BaseListViewFragment implements LoaderManag
 
     @Override
     public String getDataUrl(int offset, String next_id) {
-        return Api.getFriendsUrl(getActivity());
+        return Api.getFriendsUrl(getActivity(), mUserId);
     }
 
     @Override
     public Uri getContentsUri() {
         return FriendDBHelper.CONTENT_URI;
     }
+
+
+    @Override
+    protected String getCursorLoaderSelection() {
+        return FriendDBHelper.OWNER_ID + " = ? ";
+    }
+
+    @Override
+    protected String[] getCursorLoaderSelectionArgs() {
+        return new String[]{mUserId};
+    }
+
 
     @Override
     public int getLoaderId() {

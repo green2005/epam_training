@@ -8,5 +8,9 @@
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
-    <color name="navigationDrawer">#001427</color>>
+    <color name="navigationDrawer">#001427</color>
+    <color name="userHeaderBackground">#313743</color>
+    <color name="userHeaderBackgroundButton">#242833</color>
+    <color name="userHeaderBackgroundButtonClicked">#868fa7</color>
+
 </resources>

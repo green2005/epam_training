@@ -2,7 +2,7 @@ package com.epamtraining.vklite.fragments.wrappers;
 
 import android.view.View;
 
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 
 public abstract class CollectionViewWrapper<CollectionView extends View, Adapter, OnItemClickListener, OnScrollListener> {
     private CollectionView mCollectionView;

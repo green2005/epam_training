@@ -1,0 +1,154 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/all"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/userHeaderBackground">
+
+    <RelativeLayout
+        android:id="@+id/title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp">
+
+        <ImageView
+            android:id="@+id/userPhoto"
+            android:layout_width="150dp"
+            android:layout_height="180dp"
+            android:src="@drawable/ic_friend" />
+
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="wrap_content"
+
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/userPhoto"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:text="username"
+            android:textColor="@color/abc_primary_text_material_dark"
+            android:textSize="@dimen/abc_text_size_title_material" />
+
+        <TextView
+            android:id="@+id/lastseen"
+            android:layout_width="wrap_content"
+
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/userName"
+            android:layout_toRightOf="@+id/userPhoto"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:text="lastseen"
+            android:textColor="@color/abc_primary_text_material_dark" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lastseen"
+            android:layout_toRightOf="@+id/userPhoto"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:text="status"
+            android:textColor="@color/abc_primary_text_material_dark" />
+
+        <Button
+            android:id="@+id/sendmessage"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/userPhoto"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/primary"
+            android:text="@string/new_message"
+            android:textColor="@color/primary_text" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/first_row"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/title"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingTop="16dp">
+
+        <Button
+            android:id="@+id/friends"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/backgrounditem"
+            android:text="%s\nfriends"
+            android:textColor="@color/abc_primary_text_material_dark" />
+
+        <Button
+            android:id="@+id/signers"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="0.9"
+            android:background="@drawable/backgrounditem"
+            android:text="%s\nsigners"
+            android:textColor="@color/abc_primary_text_material_dark" />
+
+        <Button
+            android:id="@+id/foto"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/backgrounditem"
+            android:text="%s\nfoto"
+            android:textColor="@color/abc_primary_text_material_dark" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/second_row"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/first_row"
+        android:orientation="horizontal"
+        android:paddingBottom="12dp"
+        android:paddingTop="8dp">
+
+        <Button
+            android:id="@+id/video"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/backgrounditem"
+            android:text="%s\nvideo"
+            android:textColor="@color/abc_primary_text_material_dark" />
+
+        <Button
+            android:id="@+id/audio"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="0.9"
+            android:background="@drawable/backgrounditem"
+            android:text="%s\naudio"
+            android:textColor="@color/abc_primary_text_material_dark" />
+
+        <Button
+            android:id="@+id/groups"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/backgrounditem"
+            android:text="%s\ngroups"
+            android:textColor="@color/abc_primary_text_material_dark" />
+    </LinearLayout>
+</RelativeLayout>

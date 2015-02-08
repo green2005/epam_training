@@ -33,11 +33,14 @@ public class WallDBHelper extends BODBHelper {
     public static final String USERIMAGE = "userimage";
     public static final String NEXT_FROM = "next_From";
     public static final String CAN_COMMENT = "can_comment";
+    public static final String WALL_OWNER_ID = "wall_owner_id";
 
     public static final String[] FIELDS = {BaseColumns._ID, POST_ID, RAW_DATE, DATE, OWNER_ID,
             IMAGE_URL, IMAGE_WIDTH, IMAGE_HEIGHT, TEXT, NEXT_FROM, USERIMAGE, USERNAME,
-            URL, POST_TYPE, LEVEL, FROM_ID, CAN_COMMENT
+            URL, POST_TYPE, LEVEL, FROM_ID, CAN_COMMENT, WALL_OWNER_ID
     };
+
+    private String mWallOwnerId = "";
 
     @Override
     public String getTableName() {
@@ -49,6 +52,9 @@ public class WallDBHelper extends BODBHelper {
         return FIELDS;
     }
 
+    public void setWallOwnerId(String wallOwnerId){
+        mWallOwnerId = wallOwnerId;
+    }
 
     @Override
     public ContentValues getContentValue(BoItem item) {
@@ -71,6 +77,7 @@ public class WallDBHelper extends BODBHelper {
         value.put(WallDBHelper.IMAGE_WIDTH, wallItem.getImageWidth());
         value.put(WallDBHelper.IMAGE_HEIGHT, wallItem.getImageHeight());
         value.put(WallDBHelper.CAN_COMMENT, wallItem.getCanComment());
+        value.put(WallDBHelper.WALL_OWNER_ID, mWallOwnerId);
         return value;
     }
 

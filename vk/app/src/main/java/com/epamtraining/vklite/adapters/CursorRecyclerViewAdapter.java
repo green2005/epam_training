@@ -5,7 +5,7 @@ import android.database.DataSetObserver;
 import android.provider.BaseColumns;
 import android.support.v7.widget.RecyclerView;
 
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 
 public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH>
         implements SwappableAdapter {

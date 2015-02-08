@@ -7,7 +7,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 
 public abstract class BoItemAdapter extends SimpleCursorAdapter implements SwappableAdapter {
     private ImageLoader mImageLoader;

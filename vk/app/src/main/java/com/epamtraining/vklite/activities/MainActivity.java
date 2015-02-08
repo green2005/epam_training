@@ -26,7 +26,7 @@ import com.epamtraining.vklite.adapters.DrawingArrayAdapter;
 import com.epamtraining.vklite.auth.AuthHelper;
 import com.epamtraining.vklite.fragments.FragmentMenuItem;
 import com.epamtraining.vklite.fragments.Refreshable;
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 import com.epamtraining.vklite.processors.Processor;
 import com.epamtraining.vklite.processors.UserInfoProcessor;
 
@@ -94,7 +94,7 @@ public class MainActivity extends ActionBarActivity {
 
     private void updateUserInfo(final String userId) {
         Processor processor = new UserInfoProcessor(this);
-        DataSource ds = new DataSource(processor, new DataSource.DataSourceCallbacks() {
+        DataSource ds = new DataSource(processor, new DataSource.DataSourceCallbacksResult() {
             @Override
             public void onError(Exception e) {
                 ErrorHelper.showError(MainActivity.this, e);
@@ -102,16 +102,20 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onLoadEnd(int recordsFetched) {
-                SharedPreferences preferences;
-                preferences = MainActivity.this.getSharedPreferences(UserInfoProcessor.USER_INFO,
-                        MODE_PRIVATE);
-                String userName = preferences.getString(UserInfoProcessor.USER_NAME, "");
-                String userImage = preferences.getString(UserInfoProcessor.USER_IMAGE, "");
-                Api.setUserInfo((VKApplication) getApplication(), userName, userImage);
             }
+
 
             @Override
             public void onBeforeStart() {
+            }
+
+            @Override
+            public void onResult(Bundle result) {
+                if (result != null) {
+                    String userName = result.getString(UserInfoProcessor.USER_NAME);
+                    String userImage = result.getString(UserInfoProcessor.USER_IMAGE);
+                    Api.setUserInfo((VKApplication) getApplication(), userName, userImage);
+                }
             }
         });
         ds.fillData(Api.getUserInfo(userId), this);

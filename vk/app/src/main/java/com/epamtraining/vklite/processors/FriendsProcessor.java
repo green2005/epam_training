@@ -18,10 +18,12 @@ public class FriendsProcessor extends Processor {
     private Context mContext;
     private static final String ITEMS = "items";
     private int mRecordsFetched;
+    private String mOwnerId;
 
-    public FriendsProcessor(Context context) {
+    public FriendsProcessor(Context context, String ownerId) {
         super(context);
         mContext = context;
+        mOwnerId = ownerId;
     }
 
     @Override
@@ -29,6 +31,7 @@ public class FriendsProcessor extends Processor {
         JSONObject response = getVKResponseObject(stream);
         JSONArray friendItems = response.getJSONArray(ITEMS);
         FriendDBHelper helper = new FriendDBHelper();
+        helper.setOwnerId(mOwnerId);
         ContentValues[] vals = new ContentValues[friendItems.length()];
         for (int i = 0; i < friendItems.length(); i++) {
             JSONObject jsonObject = friendItems.getJSONObject(i);
@@ -39,7 +42,7 @@ public class FriendsProcessor extends Processor {
         mRecordsFetched = friendItems.length();
         ContentResolver resolver = mContext.getContentResolver();
         if (resolver != null) {
-            resolver.delete(FriendDBHelper.CONTENT_URI, null, null);
+            resolver.delete(FriendDBHelper.CONTENT_URI, FriendDBHelper.OWNER_ID + " = ? ", new String[]{mOwnerId});
             if (vals.length > 0)
                 resolver.bulkInsert(FriendDBHelper.CONTENT_URI, vals);
             resolver.notifyChange(FriendDBHelper.CONTENT_URI, null);

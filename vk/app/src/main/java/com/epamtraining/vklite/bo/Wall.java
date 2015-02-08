@@ -15,6 +15,7 @@ public class Wall extends BoItem implements PostSourceId {
     private static final String COPY_HISTORY = "copy_history";
     private static final String ATTACHMENTS = "attachments";
     private static final String POSTER_ID = "owner_id";
+    private static final String FROM_ID = "from_id";
     private static final String CAN_COMMENT = "can_post";
     private static final String COMMENTS = "comments";
 
@@ -34,7 +35,7 @@ public class Wall extends BoItem implements PostSourceId {
     public Wall(JSONObject jo, DateFormat ft) throws Exception {
         mRawDate = jo.optString(DATE);
         mId = jo.optString(ID);
-        mPosterId = jo.optLong(POSTER_ID); //Math.abs(jo.optLong(POSTER_ID));
+        mPosterId =  jo.optLong(FROM_ID);// jo.optLong(POSTER_ID); //Math.abs(jo.optLong(POSTER_ID));
         JSONObject comments = jo.optJSONObject(COMMENTS);
         if (comments != null){
             mCanComment = comments.optInt(CAN_COMMENT);

@@ -1,6 +1,7 @@
 package com.epamtraining.vklite;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 
 import com.epamtraining.vklite.os.VKExecutor;
@@ -15,13 +16,14 @@ public class DataSource implements AdditionalInfoSource {
     //  private static  final int CONNECT_TIMEOUT = 7000;
     //  private static final int READ_TIMEOUT = 10000;
 
-
-    public interface DataSourceCallbacks {
+    public interface  DataSourceCallbacks{
         public void onError(Exception e);
-
-        public void onLoadEnd(int recordsFetched);
-
         public void onBeforeStart();
+        public void onLoadEnd(int recordsFetched);
+    }
+
+    public interface DataSourceCallbacksResult extends DataSourceCallbacks{
+        public void onResult(Bundle result);
     }
 
     private Processor mProcessor;
@@ -58,6 +60,9 @@ public class DataSource implements AdditionalInfoSource {
                         @Override
                         public void run() {
                             mCallbacks.onLoadEnd(mProcessor.getRecordsFetched());
+                            if (mCallbacks instanceof  DataSourceCallbacksResult) {
+                                ((DataSourceCallbacksResult) mCallbacks).onResult(mProcessor.getResult());
+                            }
                         }
                     });
                 } catch (final Exception e) {

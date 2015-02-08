@@ -5,7 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 import com.epamtraining.vklite.os.VKExecutor;
 
 import java.util.HashMap;

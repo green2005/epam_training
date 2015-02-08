@@ -5,7 +5,7 @@ import android.widget.AdapterView;
 
 import com.epamtraining.vklite.fragments.wrappers.CollectionViewWrapper;
 import com.epamtraining.vklite.fragments.wrappers.ListViewWrapper;
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 
 public abstract class BaseListViewFragment extends BaseFragment implements AdapterView.OnItemClickListener{
     private ListViewWrapper mWrapper;

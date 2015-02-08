@@ -17,11 +17,18 @@ public class FriendDBHelper extends BODBHelper {
     public static final String LAST_NAME = "last_name";
     public static final String NICK_NAME = "nick_name";
     public static final String IMAGE_URL = "image_url";
-    public static final String[] FIELDS = {BaseColumns._ID, ID, FIRST_NAME, LAST_NAME, NICK_NAME, IMAGE_URL};
+    public static final String OWNER_ID = "owner_id";
+    public static final String[] FIELDS = {BaseColumns._ID, ID, FIRST_NAME, LAST_NAME, NICK_NAME, IMAGE_URL, OWNER_ID};
     public static final Uri CONTENT_URI = Uri.parse(VKContentProvider.CONTENT_URI_PREFIX
             + VKContentProvider.AUTHORITY + "/" + TABLENAME);
     public static Uri CONTENT_URI_ID = Uri.parse(VKContentProvider.CONTENT_URI_PREFIX
             + VKContentProvider.AUTHORITY + "/" + TABLENAME + "/#");
+
+    private String mOwnerId = "";
+
+    public void setOwnerId(String ownerId){
+        mOwnerId = ownerId;
+    }
 
     @Override
     public String getTableName() {
@@ -48,6 +55,7 @@ public class FriendDBHelper extends BODBHelper {
         value.put(LAST_NAME, friend.getLastName());
         value.put(IMAGE_URL, friend.getImageUrl());
         value.put(NICK_NAME, friend.getNick());
+        value.put(OWNER_ID, mOwnerId);
         return value;
     }
 

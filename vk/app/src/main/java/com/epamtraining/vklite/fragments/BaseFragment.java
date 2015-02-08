@@ -18,18 +18,13 @@ import android.view.ViewGroup;
 import com.epamtraining.vklite.DataSource;
 import com.epamtraining.vklite.ErrorHelper;
 import com.epamtraining.vklite.R;
-import com.epamtraining.vklite.adapters.BoItemAdapter;
 import com.epamtraining.vklite.adapters.DataAdapterCallback;
 import com.epamtraining.vklite.adapters.SwappableAdapter;
 import com.epamtraining.vklite.fragments.wrappers.CollectionViewWrapper;
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 import com.epamtraining.vklite.processors.Processor;
 
-//TODO create one more level BaseFragment without collectionview wrapper
-//+Fragment with CollectionViewWrapper
-//  - ListView fragment
-//  - RecyclerView fragment
-//  etc.
+
 public abstract class BaseFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>,
         DataAdapterCallback,

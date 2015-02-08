@@ -6,7 +6,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.epamtraining.vklite.adapters.BoItemAdapter;
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 
 public class ListViewWrapper
         extends CollectionViewWrapper<ListView, BoItemAdapter, AdapterView.OnItemClickListener, AbsListView.OnScrollListener> {

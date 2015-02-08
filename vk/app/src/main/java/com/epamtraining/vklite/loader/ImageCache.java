@@ -1,4 +1,4 @@
-package com.epamtraining.vklite.imageloader;
+package com.epamtraining.vklite.loader;
 
 
 import android.content.Context;

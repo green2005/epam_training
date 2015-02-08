@@ -12,7 +12,7 @@ import com.epamtraining.vklite.CursorHelper;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.ResizableImageView;
 import com.epamtraining.vklite.db.AttachmentsDBHelper;
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 
 public class AttachmentPhotoHelper implements AttachmentHelper {
     private ImageLoader mImageLoader;

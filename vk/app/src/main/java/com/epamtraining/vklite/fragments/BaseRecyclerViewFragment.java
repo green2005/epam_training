@@ -5,7 +5,7 @@ import android.view.View;
 
 import com.epamtraining.vklite.fragments.wrappers.CollectionViewWrapper;
 import com.epamtraining.vklite.fragments.wrappers.RecyclerViewWrapper;
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 
 public abstract class BaseRecyclerViewFragment extends BaseFragment {
     private RecyclerViewWrapper mWrapper;

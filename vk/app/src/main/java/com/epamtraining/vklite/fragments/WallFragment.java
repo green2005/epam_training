@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import com.epamtraining.vklite.Api;
 import com.epamtraining.vklite.CursorHelper;
 import com.epamtraining.vklite.R;
+import com.epamtraining.vklite.VKApplication;
 import com.epamtraining.vklite.activities.PostDetailActivity;
 import com.epamtraining.vklite.adapters.BoItemAdapter;
 import com.epamtraining.vklite.adapters.DataAdapterCallback;
@@ -24,11 +25,11 @@ public class WallFragment extends BaseListViewFragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         DataAdapterCallback {
 
-
     private final static String[] FIELDS = new WallDBHelper().fieldNames();
 
     private WallAdapter mAdapter;
     private WallProcessor mProcessor;
+    private String mUserId;
 
     public static WallFragment newInstance() {
         return new WallFragment();
@@ -37,10 +38,14 @@ public class WallFragment extends BaseListViewFragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mUserId = Api.getUserId((VKApplication) getActivity().getApplication());
         mAdapter = new WallAdapter(getActivity(), R.layout.item_post, null, getDataFields(), null, 0);
         mProcessor = new WallProcessor(getActivity());
     }
 
+    public String getWallOwnerId() {
+        return mUserId;
+    }
 
     public Processor getProcessor() {
         return mProcessor;
@@ -48,7 +53,8 @@ public class WallFragment extends BaseListViewFragment implements
 
     @Override
     public String getDataUrl(int offset, String next_id) {
-        return Api.getWallUrl(getActivity(), String.valueOf(offset));
+        return Api.getWallUrl(getActivity(), String.valueOf(offset), mUserId);
+        //return Api.getWallUrl(getActivity(), String.valueOf(offset));
     }
 
     @Override
@@ -74,17 +80,30 @@ public class WallFragment extends BaseListViewFragment implements
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Cursor cursor = mAdapter.getCursor();
+        int realPos = position - getCollectionViewWrapper().getCollectionView().getHeaderViewsCount();
         Activity activity = getActivity();
         if (activity != null && cursor != null) {
-            if (cursor.moveToPosition(position)) {
+            if (cursor.moveToPosition(realPos)) {
                 String userId = CursorHelper.getString(cursor, WallDBHelper.OWNER_ID);
                 String postId = CursorHelper.getString(cursor, WallDBHelper.POST_ID);
+                String wallOwnerId = CursorHelper.getString(cursor, WallDBHelper.WALL_OWNER_ID);
                 Intent intent = new Intent(activity, PostDetailActivity.class);
                 intent.putExtra(WallDBHelper.POST_ID, postId);
                 intent.putExtra(WallDBHelper.OWNER_ID, userId);
+                intent.putExtra(WallDBHelper.WALL_OWNER_ID, wallOwnerId);
                 intent.putExtra(PostDetailFragment.WALL, true);
                 startActivity(intent);
             }
         }
+    }
+
+    @Override
+    protected String getCursorLoaderSelection() {
+        return WallDBHelper.WALL_OWNER_ID + " = ? ";
+    }
+
+    @Override
+    protected String[] getCursorLoaderSelectionArgs() {
+        return new String[]{getWallOwnerId()};
     }
 }

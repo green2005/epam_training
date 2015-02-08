@@ -8,7 +8,7 @@ import android.view.View;
 import com.epamtraining.vklite.CursorHelper;
 import com.epamtraining.vklite.bo.Attachments;
 import com.epamtraining.vklite.db.AttachmentsDBHelper;
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 
 public class AttachmentManager {
     private enum ATTACHMENT_TYPE {PHOTO, VIDEO, AUDIO}
@@ -48,7 +48,7 @@ public class AttachmentManager {
                 break;
             }
             case VIDEO: {
-                helper = new AttachmentVideoHelper(imageLoader);
+                helper = new AttachmentVideoHelper(imageLoader, mContext);
                 break;
             }
             case AUDIO: {
@@ -57,8 +57,7 @@ public class AttachmentManager {
             }
         }
         if (helper != null) {
-            View v = helper.getView(cursor, mLayoutInflater);
-            return v;
+            return helper.getView(cursor, mLayoutInflater);
         } else {
             return null;
         }

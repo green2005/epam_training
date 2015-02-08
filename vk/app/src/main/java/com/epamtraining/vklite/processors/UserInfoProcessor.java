@@ -2,7 +2,7 @@ package com.epamtraining.vklite.processors;
 
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.os.Bundle;
 
 import org.json.JSONArray;
 
@@ -17,30 +17,33 @@ public class UserInfoProcessor extends Processor {
     public static final String USER_IMAGE = "image";
     public static final String USER_INFO = "userInfo";
 
-    private Context mContext;
+   private String mUserName;
+    private String mUserImage;
 
     public UserInfoProcessor(Context context) {
         super(context);
-        mContext = context;
-    }
+     }
 
     @Override
     public void process(InputStream stream, String url, AdditionalInfoSource dataSource) throws Exception {
         JSONArray response = getVKResponseArray(stream);
         if (response.length() > 0) {
-            String userName = (response.getJSONObject(0).optString(FIRST_NAME) + " " +
+            mUserName = (response.getJSONObject(0).optString(FIRST_NAME) + " " +
                     response.getJSONObject(0).optString(LAST_NAME)).trim();
-            String image = response.getJSONObject(0).optString(IMAGE);
-            SharedPreferences prefs = mContext.getSharedPreferences(USER_INFO, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString(USER_NAME, userName);
-            editor.putString(USER_IMAGE, image);
-            editor.apply();
+            mUserImage = response.getJSONObject(0).optString(IMAGE);
         }
     }
 
     @Override
     public int getRecordsFetched() {
         return 0;
+    }
+
+    @Override
+    public Bundle getResult() {
+        Bundle b = new Bundle();
+        b.putString(UserInfoProcessor.USER_NAME, mUserName);
+        b.putString(UserInfoProcessor.USER_IMAGE, mUserImage);
+        return b;
     }
 }

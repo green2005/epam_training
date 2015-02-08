@@ -3,6 +3,7 @@ package com.epamtraining.vklite.processors;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.epamtraining.vklite.R;
@@ -72,5 +73,9 @@ public abstract class Processor {
         } else {
             return false;
         }
+    }
+
+    public Bundle getResult(){
+        return null;
     }
 }

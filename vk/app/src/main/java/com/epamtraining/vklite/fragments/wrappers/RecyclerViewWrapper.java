@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.epamtraining.vklite.adapters.CursorRecyclerViewAdapter;
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 
 public class RecyclerViewWrapper
         extends CollectionViewWrapper<RecyclerView, CursorRecyclerViewAdapter, RecyclerView.OnItemTouchListener, RecyclerView.OnScrollListener> {

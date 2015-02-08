@@ -12,7 +12,7 @@ import java.util.Set;
 
 class DBManager extends SQLiteOpenHelper {
     private static final String DB_NAME = "VKLite";
-    private static final int DB_VERSION = 24;
+    private static final int DB_VERSION = 26;
     private static Set<BODBHelper> sHelpers;
 
     static {

@@ -13,7 +13,7 @@ import com.epamtraining.vklite.CursorHelper;
 import com.epamtraining.vklite.R;
 import com.epamtraining.vklite.db.MessagesDBHelper;
 import com.epamtraining.vklite.db.UsersDBHelper;
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 
 public class MessagesAdapter extends CursorRecyclerViewAdapter<MessagesAdapter.MessagesHolder> {
     private LayoutInflater mInflater;

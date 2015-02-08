@@ -28,7 +28,7 @@ import com.epamtraining.vklite.commiters.MessageCommiter;
 import com.epamtraining.vklite.db.MessagesDBHelper;
 import com.epamtraining.vklite.db.UIQueryHelper;
 import com.epamtraining.vklite.db.UsersDBHelper;
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 import com.epamtraining.vklite.processors.MessagesProcessor;
 import com.epamtraining.vklite.processors.Processor;
 

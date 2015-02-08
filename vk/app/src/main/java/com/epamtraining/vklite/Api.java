@@ -19,13 +19,16 @@ public class Api {
 
     private static final String ENCODE_FORMAT = "UTF-8"; //used for url encoding
     private static final String BASE_PATH = "https://api.vk.com/method";
-    private static final String FRIENDS_URL = BASE_PATH + "/friends.get?fields=photo_100,nickname&order=name&access_token=%s&v=%s";
+    private static final String FRIENDS_URL = BASE_PATH + "/friends.get?fields=photo_100,nickname&order=name&access_token=%s&v=%s&user_id=%s";
     // "https://api.vk.com/method/users.search?FIELDS=photo_100,online,nickname&count=100&city=1&access_token=%s&v=%s";
     private static final String NEWS_URL = BASE_PATH + "/newsfeed.get?filters=post&fields=photo_100" +
             "&count=10&access_token=%s&v=%s%s";
 
     private static final String WALL_URL = BASE_PATH + "/wall.get?filters=owner&fields=photo_100" +
             "&extended=1&access_token=%s&v=%s%s";
+
+    private static final String WALL_URL_USER = BASE_PATH + "/wall.get?filters=owner&fields=photo_100" +
+            "&owner_id=%s&extended=1&access_token=%s&v=%s%s";
 
     private static final String DIALOGS_URL = BASE_PATH + "/messages.getDialogs?" +
             "access_token=%s&v=%s%s";
@@ -46,6 +49,14 @@ public class Api {
             "owner_id=%s&post_id=%s&text=%s&v=%s";
 
     private static final String USER_INFO = BASE_PATH + "/users.get?user_ids=%s&v=%s&fields=photo_100";
+
+    private static final String USER_INFO_WIDE = BASE_PATH + "/users.get?access_token=%s&user_ids=%s&v=%s&fields=photo_100," +
+    "online,"+
+    "online_mobile,domain,has_mobile,contacts,connections,site,can_post,can_see_all_posts,"+
+    "can_see_audio,can_write_private_message,status,last_seen,common_count,relation,relatives,counters,screen_name,"+
+    "occupation,interests,music,movies,tv,books,games,about,quotes,personal";
+
+    private static final String VIDEO_GET = BASE_PATH + "/video.get?videos=%s&access_token=%s&v=%s&offset=0";
 
 
     public static String getToken(Context context) {
@@ -88,8 +99,8 @@ public class Api {
         return String.format(COMMENTS_ADD_URL, token, ownerId, postId, msg, API_KEY);
     }
 
-    public static String getFriendsUrl(Context context) {
-        return String.format(FRIENDS_URL, getToken(context), API_KEY);
+    public static String getFriendsUrl(Context context, String userId) {
+        return String.format(FRIENDS_URL, getToken(context), API_KEY, userId);
     }
 
     public static String getWallUrl(Context context, String offset) {
@@ -99,6 +110,15 @@ public class Api {
             sOffset = String.format("&%s=%s", OFFSET, offset);
         }
         return String.format(WALL_URL, token, API_KEY, sOffset);
+    }
+
+    public static String getWallUrl(Context context, String offset, String ownerId) {
+        String token = getToken(context);
+        String sOffset = "";
+        if (!TextUtils.isEmpty(offset)) {
+            sOffset = String.format("&%s=%s", OFFSET, offset);
+        }
+        return String.format(WALL_URL_USER, ownerId, token, API_KEY, sOffset);
     }
 
     public static String getMessagesUrl(Context context, String offset, String user_id) {
@@ -149,4 +169,13 @@ public class Api {
         return String.format(USER_INFO, userId, API_KEY);
     }
 
+    public static String getUserInfoWide(String userId, Context context) {
+        String token = getToken(context);
+        return  String.format(USER_INFO_WIDE, token, userId, API_KEY);
+    }
+
+    public static String getVideoUrl(Context context, String videoId) {
+        String token = getToken(context);
+        return String.format(VIDEO_GET, videoId, token, API_KEY);
+    }
 }

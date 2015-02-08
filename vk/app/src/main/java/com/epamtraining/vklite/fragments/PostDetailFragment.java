@@ -40,7 +40,7 @@ import com.epamtraining.vklite.db.MessagesDBHelper;
 import com.epamtraining.vklite.db.NewsDBHelper;
 import com.epamtraining.vklite.db.UIQueryHelper;
 import com.epamtraining.vklite.db.WallDBHelper;
-import com.epamtraining.vklite.imageloader.ImageLoader;
+import com.epamtraining.vklite.loader.ImageLoader;
 import com.epamtraining.vklite.processors.CommentsProcessor;
 import com.epamtraining.vklite.processors.Processor;
 
@@ -78,7 +78,7 @@ public class PostDetailFragment extends BaseListViewFragment {
             }
             if (mIsWallRecord) {
                 mPostId = b.getString(WallDBHelper.POST_ID);
-                mUserId = b.getString(WallDBHelper.OWNER_ID);
+                mUserId = b.getString(WallDBHelper.WALL_OWNER_ID);
             } else {
                 mPostId = b.getString(NewsDBHelper.POST_ID);
                 mUserId = b.getString(NewsDBHelper.OWNER_ID);
@@ -364,8 +364,8 @@ public class PostDetailFragment extends BaseListViewFragment {
                 listener,
                 WallDBHelper.CONTENT_URI,
                 WallDBHelper.FIELDS,
-                WallDBHelper.POST_ID + " = ?",
-                new String[]{mPostId}, null
+                WallDBHelper.POST_ID + " = ? and " + WallDBHelper.WALL_OWNER_ID +" = ? ",
+                new String[]{mPostId, mUserId}, null
         );
     }
 

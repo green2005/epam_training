@@ -34,4 +34,21 @@
     <string name="title_activity_post_detail">Запись на стене</string>
     <string name="db_empty">Набор данных пуст</string>
     <string name="comments_title">Комментарии</string>
+    <string name="user_profile">Профиль</string>
+    <string name="last_seen">Был в сети %s</string>
+    <string name="foto_count">%s \n фото</string>
+    <string name="video_count">%s \n видео</string>
+    <string name="audio_count">%s \n аудио</string>
+    <string name="group_count1">%s \n групп</string>
+    <string name="group_count2">%s \n группа</string>
+    <string name="group_count3">%s \n группы</string>
+    <string name="friend_count1">%s \n друзей</string>
+    <string name="friend_count2">%s \n друг</string>
+    <string name="friend_count3">%s \n друга</string>
+    <string name="signer_count1">%s \n подписчиков</string>
+    <string name="signer_count2">%s \n подписчик</string>
+    <string name="signer_count3">%s \n подписчика</string>
+
+
+
 </resources>
